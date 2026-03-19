@@ -1,10 +1,7 @@
 **/.hitl
 .gradle/
 build/
-*.class
-*.jar
 !customer-service-deployment/helm-charts/customer-service/charts/*.tgz
-*.war
 .hitl/
 
 # Claude Code
