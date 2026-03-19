@@ -3,14 +3,14 @@
 curl -Lo /usr/local/bin/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 chmod +x /usr/local/bin/kubectl
 
-curl -Lo /usr/local/bin/kind https://kind.sigs.k8s.io/dl/v0.23.0/kind-linux-amd64
+curl -Lo /usr/local/bin/kind https://kind.sigs.k8s.io/dl/v0.31.0/kind-linux-amd64
 chmod +x /usr/local/bin/kind
 
-curl https://get.helm.sh/helm-v3.15.2-linux-amd64.tar.gz | tar xfz -
+curl https://get.helm.sh/helm-v4.1.3-linux-amd64.tar.gz | tar xfz -
 cp linux-amd64/helm /usr/local/bin/helm
 chmod +x /usr/local/bin/helm            
 
-curl -s --location https://github.com/yannh/kubeconform/releases/download/v0.6.6/kubeconform-linux-amd64.tar.gz | tar -C /usr/local/bin -z -xf - kubeconform
+curl -s --location https://github.com/yannh/kubeconform/releases/download/v0.7.0/kubeconform-linux-amd64.tar.gz | tar -C /usr/local/bin -z -xf - kubeconform
 chmod +x /usr/local/bin/kubeconform
 
 curl -SsL https://packages.httpie.io/deb/KEY.gpg | apt-key add -
@@ -22,6 +22,6 @@ apt-get install jq
 
 curl -s https://fluxcd.io/install.sh | sudo bash
 
-curl -SsL https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.20.5/kubeseal-0.20.5-linux-amd64.tar.gz | \
+curl -SsL https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.36.1/kubeseal-0.36.1-linux-amd64.tar.gz | \
     tar -xvzf - kubeseal
 sudo install -m 755 kubeseal /usr/local/bin/kubeseal
