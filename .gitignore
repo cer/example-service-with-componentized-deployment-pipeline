@@ -1,0 +1,23 @@
+**/.hitl
+.gradle/
+build/
+*.class
+*.jar
+!customer-service-deployment/helm-charts/customer-service/charts/*.tgz
+*.war
+.hitl/
+
+# Claude Code
+.claude/settings.local.json
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db

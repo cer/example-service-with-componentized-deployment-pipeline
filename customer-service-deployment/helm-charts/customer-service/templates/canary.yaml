@@ -1,0 +1,53 @@
+{{- if .Values.canary.enabled -}}
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: {{ include "customer-service.fullname" . }}
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "customer-service.fullname" . }}
+  progressDeadlineSeconds: 60
+  service:
+    port: 80
+    targetPort: 8080
+    trafficPolicy:
+      tls:
+        mode: DISABLE
+    retries:
+      attempts: 3
+      perTryTimeout: 1s
+      retryOn: "gateway-error,connect-failure,refused-stream"
+  analysis:
+    interval: 30s
+    threshold: 5
+    maxWeight: 50
+    stepWeight: 10
+    metrics:
+      - name: request-success-rate
+        # minimum req success rate (non 5xx responses)
+        # percentage (0-100)
+        thresholdRange:
+          min: 99
+        interval: 30s
+      - name: request-duration
+        # maximum req duration P99
+        # milliseconds
+        thresholdRange:
+          max: 500
+        interval: 30s      
+    webhooks:
+      - name: acceptance-test
+        type: pre-rollout
+        url: http://flagger-system-flagger-loadtester.flagger-system/
+        timeout: 30s
+        metadata:
+          type: bash
+          cmd: "curl -s http://{{ include "customer-service.fullname" . }}-canary.{{ .Release.Namespace }}/actuator/health"
+      - name: load-test
+        url: http://flagger-system-flagger-loadtester.flagger-system/
+        timeout: 5s
+        metadata:
+          cmd: "hey -z 1m -q 10 -c 2 http://{{ include "customer-service.fullname" . }}-canary.{{ .Release.Namespace }}/actuator/health"
+{{- end }}
