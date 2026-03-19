@@ -32,7 +32,7 @@ jobs:
       run: ./test/validate-k8s-yaml.sh
 
     - name: Build
-      run: ./gradlew build
+      run: ./gradlew build --build-cache
 
     - name: Create Kind Cluster
       env:
