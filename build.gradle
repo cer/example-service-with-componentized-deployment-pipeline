@@ -4,9 +4,9 @@ buildscript {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
+        eventuateMavenRepoUrl.split(',').each { repoUrl -> maven { url repoUrl } }
     }
     dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
         classpath "org.springframework.cloud:spring-cloud-contract-gradle-plugin:$springCloudContractDependenciesVersion"
     }
 }
@@ -16,6 +16,7 @@ apply plugin: GitRepositoryUrlPlugin
 subprojects {
 
     apply plugin: "java-library"
+    apply plugin: "io.spring.dependency-management"
 
     java {
         toolchain {
@@ -28,18 +29,20 @@ subprojects {
         eventuateMavenRepoUrl.split(',').each { repoUrl -> maven { url repoUrl } }
     }
 
-    dependencies {
-        implementation(platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"))
+    dependencyManagement {
+        imports {
+            mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+            mavenBom "io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"
+        }
+    }
 
-        implementation(platform("org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"))
-        implementation(platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion"))
-        implementation(platform("org.springframework.cloud:spring-cloud-contract-dependencies:$springCloudContractDependenciesVersion"))
+    dependencies {
 
         testImplementation "junit:junit:4.13.2"
 
-        constraints {
-            implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion"
-        }
+        // constraints {
+        //     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion"
+        // }
 
         testImplementation "org.springframework.boot:spring-boot-starter-test"
 
@@ -52,10 +55,6 @@ subprojects {
             resolutionStrategy.cacheChangingModulesFor Integer.parseInt(System.getenv("GRADLE_CACHE_CHANGING_VERSIONS_IN_MINUTES")), 'minutes'
         }
 
-}
-
-task clean(type:Delete) {
-    delete 'build/repo'
 }
 
 task compileAll(type: GradleBuild) {

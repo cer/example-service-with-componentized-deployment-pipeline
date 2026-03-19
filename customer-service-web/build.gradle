@@ -1,6 +1,8 @@
+plugins {
+    id 'io.eventuate.plugins.gradle.testing.integration-tests'
+}
 
 apply plugin: 'maven-publish'
-apply plugin: IntegrationTestsPlugin
 
 if (!springBootVersion.startsWith("3")) {
     apply plugin: 'spring-cloud-contract'
@@ -41,7 +43,6 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
 
-    testImplementation "org.springframework.cloud:spring-cloud-starter-contract-verifier"
     testImplementation "io.rest-assured:spring-mock-mvc"
 
     integrationTestImplementation "io.eventuate.examples.spring-authorization-server:authorization-server-test-containers:$eventuateExamplesSpringAuthorizationServerVersion"

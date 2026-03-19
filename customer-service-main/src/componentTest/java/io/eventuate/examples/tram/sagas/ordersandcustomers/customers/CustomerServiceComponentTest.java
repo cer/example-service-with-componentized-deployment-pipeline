@@ -1,17 +1,20 @@
 package io.eventuate.examples.tram.sagas.ordersandcustomers.customers;
 
 
-import io.eventuate.common.testcontainers.DatabaseContainerFactory;
-import io.eventuate.common.testcontainers.EventuateDatabaseContainer;
+import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.examples.springauthorizationserver.testcontainers.AuthorizationServerContainerForServiceContainers;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaCluster;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaContainer;
+import io.eventuate.testcontainers.service.BuildArgsResolver;
 import io.eventuate.testcontainers.service.ServiceContainer;
 import io.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.lifecycle.Startables;
+
+import java.nio.file.Paths;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.oauth2;
@@ -22,8 +25,8 @@ public class CustomerServiceComponentTest {
 
     public static EventuateKafkaContainer kafka = eventuateKafkaCluster.kafka;
 
-    public static EventuateDatabaseContainer<?> database =
-            DatabaseContainerFactory.makeVanillaPostgresContainer()
+    public static EventuateVanillaPostgresContainer database =
+            new EventuateVanillaPostgresContainer()
                     .withNetwork(eventuateKafkaCluster.network)
                     .withNetworkAliases("customer-service-db")
                     .withReuse(true);
@@ -36,7 +39,10 @@ public class CustomerServiceComponentTest {
 
 
     public static ServiceContainer service =
-            new ServiceContainer("./Dockerfile", "../gradle.properties")
+            new ServiceContainer(new ImageFromDockerfile()
+                    .withFileFromPath(".", Paths.get(".").toAbsolutePath())
+                    .withDockerfilePath("Dockerfile")
+                    .withBuildArgs(BuildArgsResolver.buildArgs()))
                     .withNetwork(eventuateKafkaCluster.network)
                     .withDatabase(database)
                     .withKafka(kafka)

@@ -1,7 +1,6 @@
 package io.eventuate.examples.tram.sagas.ordersandcustomers.customers.persistence;
 
-import io.eventuate.common.testcontainers.DatabaseContainerFactory;
-import io.eventuate.common.testcontainers.EventuateDatabaseContainer;
+import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.common.testcontainers.PropertyProvidingContainer;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain.Customer;
@@ -31,7 +30,7 @@ import static org.junit.Assert.assertEquals;
 public class RepositoriesTest {
 
 
-  public static EventuateDatabaseContainer<?> database = DatabaseContainerFactory.makeVanillaPostgresContainer();
+  public static EventuateVanillaPostgresContainer database = new EventuateVanillaPostgresContainer();
 
   @DynamicPropertySource
   static void registerDbProperties(DynamicPropertyRegistry registry) {

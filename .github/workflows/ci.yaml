@@ -57,17 +57,13 @@ jobs:
     - name: Test customer service
       run: ./test/test-all-services.sh
 
-    - name: Undeploy services
-      if: ${{ always() }}
-      run: ./manage/undeploy-services.sh
-
-    - name: Delete Kind Cluster
-      if: ${{ always() }}
-      run: ./manage/delete-kind-cluster.sh
-
     - name: Save pod logs
       if: ${{ always() }}
       run: ./.github/workflows/dump-k8s.sh
+
+    - name: Get container logs
+      if: ${{ always() }}
+      run: ./.github/workflows/print-container-logs.sh
 
     - name: Save test results
       if: ${{ always() }}
@@ -78,13 +74,17 @@ jobs:
           **/build/reports
           **/build/test-results
 
-    - name: Get container logs
-      if: ${{ always() }}
-      run: ./.github/workflows/print-container-logs.sh
-
     - name: Save container logs
       if: ${{ always() }}
       uses: actions/upload-artifact@v4
       with:
         name: container-logs
         path: ~/container-logs
+
+    - name: Undeploy services
+      if: ${{ always() }}
+      run: ./manage/undeploy-services.sh
+
+    - name: Delete Kind Cluster
+      if: ${{ always() }}
+      run: ./manage/delete-kind-cluster.sh

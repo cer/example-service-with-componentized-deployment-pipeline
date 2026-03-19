@@ -1,7 +1,6 @@
 package io.eventuate.examples.tram.sagas.ordersandcustomers.customers.messaging;
 
-import io.eventuate.common.testcontainers.DatabaseContainerFactory;
-import io.eventuate.common.testcontainers.EventuateDatabaseContainer;
+import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.api.messaging.commands.ReserveCreditCommand;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain.CustomerService;
@@ -17,13 +16,15 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.testcontainers.lifecycle.Startables;
+import io.eventuate.common.testcontainers.DatabaseContainerFactory;
+import io.eventuate.common.testcontainers.EventuateDatabaseContainer;
 
 import java.util.Collections;
 import java.util.stream.Stream;
@@ -36,7 +37,7 @@ public class CustomerCommandHandlerIntegrationTest {
 
   public static EventuateKafkaCluster eventuateKafkaCluster = new EventuateKafkaCluster();
 
-  public static EventuateDatabaseContainer database = DatabaseContainerFactory.makeVanillaPostgresContainer();
+    private static final EventuateDatabaseContainer database = DatabaseContainerFactory.makeVanillaDatabaseContainer();
 
   @DynamicPropertySource
   static void registerDbProperties(DynamicPropertyRegistry registry) {
@@ -57,7 +58,7 @@ public class CustomerCommandHandlerIntegrationTest {
 
   }
 
-  @MockBean
+  @MockitoBean
   private CustomerService customerService;
 
 

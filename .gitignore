@@ -15,6 +15,9 @@ build/
 .classpath
 .settings/
 
+ci-artifacts/
+bin/
+
 # OS
 .DS_Store
 Thumbs.db

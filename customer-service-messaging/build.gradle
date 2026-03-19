@@ -1,4 +1,6 @@
-apply plugin: IntegrationTestsPlugin
+plugins {
+    id 'io.eventuate.plugins.gradle.testing.integration-tests'
+}
 
 apply plugin: 'maven-publish'
 
@@ -40,29 +42,28 @@ dependencies {
     implementation project(":customer-service-domain")
 
     implementation "io.eventuate.tram.core:eventuate-tram-spring-flyway"
+    implementation 'org.flywaydb:flyway-database-postgresql:11.8.2'
+    implementation "org.flywaydb:flyway-core"
     runtimeOnly "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-flyway"
 
 
     implementation "io.eventuate.tram.core:eventuate-tram-spring-jdbc-kafka"
     implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-participant-starter"
-    implementation "io.eventuate.tram.core:eventuate-tram-spring-optimistic-locking"
+    implementation("io.eventuate.tram.core:eventuate-tram-spring-optimistic-locking") {
+        exclude group: "io.micronaut"
+    }
 
 
-//    testImplementation(platform("org.springframework.cloud:spring-cloud-contract-dependencies:$springCloudContractDependenciesVersion"))
-//    testImplementation "org.springframework.cloud:spring-cloud-starter-contract-verifier"
-//    testImplementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-in-memory"
-    testImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-cloud-contract"
     testImplementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-in-memory"
 
     testImplementation "io.eventuate.messaging.kafka:eventuate-messaging-kafka-spring-producer"
     testImplementation "io.eventuate.tram.core:eventuate-tram-spring-logging"
 
 
-    // TODO shouldn't need to do this too
-    testImplementation "org.testcontainers:testcontainers:$testContainersVersion"
-
     integrationTestImplementation "io.eventuate.common:eventuate-common-testcontainers"
     integrationTestImplementation "io.eventuate.messaging.kafka:eventuate-messaging-kafka-testcontainers"
+    integrationTestImplementation "org.testcontainers:testcontainers"
+    integrationTestImplementation "org.testcontainers:postgresql"
 
     integrationTestImplementation project(":customer-service-persistence")
     testImplementation "io.eventuate.util:eventuate-util-test"

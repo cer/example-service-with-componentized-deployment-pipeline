@@ -85,6 +85,8 @@ affinity: {}
 
 
 postgres:
+  image:
+    tag: "0.21.0.BUILD-SNAPSHOT"
   postgresDatabase: customer_service
   persistentStorage: true
 
