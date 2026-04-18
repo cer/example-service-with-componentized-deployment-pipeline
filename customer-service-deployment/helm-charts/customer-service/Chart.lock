@@ -1,6 +1,9 @@
 dependencies:
+- name: eventuate-spring-boot-service-library-chart
+  repository: https://cer.github.io/helm-library-charts
+  version: 0.1.0-SNAPSHOT
 - name: postgres
   repository: https://raw.githubusercontent.com/eventuate-platform/eventuate-helm-charts/helm-repository
   version: v0.4.0
-digest: sha256:9a727b9f5a2608e073b0e07213afc58f005e69bb04d22a72683acebce00e002f
-generated: "2024-08-06T21:30:12.83369-07:00"
+digest: sha256:010b46e2ff5bdcf690e9ce69173753b819be75119a0d3e6895896ff163bf6c68
+generated: "2026-04-18T12:10:12.646442-07:00"

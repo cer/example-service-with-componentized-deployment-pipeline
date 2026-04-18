@@ -24,7 +24,10 @@ version: 0.1.0
 
 appVersion: "0.1.0-SNAPSHOT"
 
-dependencies: # A list of the chart requirements (optional)
+dependencies:
+  - name: eventuate-spring-boot-service-library-chart
+    version: 0.1.0-SNAPSHOT
+    repository: "https://cer.github.io/helm-library-charts"
   - name: postgres
     version: v0.4.0
     repository: "@eventuate"
