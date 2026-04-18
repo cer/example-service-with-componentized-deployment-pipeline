@@ -40,6 +40,9 @@ The `customer-service-deployment/` directory contains:
 
 - Java 17
 - Docker (for Kind cluster and container images)
+- [Kind](https://kind.sigs.k8s.io/) (for local Kubernetes cluster)
+- [Helm](https://helm.sh/) (for deploying to Kubernetes)
+- [Kubeconform](https://github.com/yannh/kubeconform)
 
 ## Building
 
@@ -50,12 +53,17 @@ The `customer-service-deployment/` directory contains:
 ## Running tests
 
 ```sh
-# Unit tests
-./gradlew test
-
-# Integration and component tests
-./gradlew testAll
+./test/test-end-to-end.sh
 ```
+
+This script:
+
+1. Validates the Helm chart YAML
+2. Runs the Gradle build
+3. Creates a Kind cluster
+4. Deploys infrastructure services via Helm
+5. Deploys the service using Helm
+6. Runs smoke tests against the deployed service
 
 ## License
 
