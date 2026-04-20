@@ -53,6 +53,6 @@ jobs:
 
     - name: Publish Helm Charts
       env: 
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       run: |
         ./manage/publish-helm-chart.sh customer-service ${VERSION?} ${VERSION?}
