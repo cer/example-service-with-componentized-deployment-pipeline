@@ -22,19 +22,8 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: set build env
-      run: |
-        BUILD_DATE=$(date -u +'%Y%m%d%H%M%S')
-        echo "BUILD_DATE=${BUILD_DATE}" >> "$GITHUB_ENV"
-        echo "VERSION=0.1.0-BUILD.${BUILD_DATE?}" >> "$GITHUB_ENV"
-
-    - name: Push images
-      env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      run: ./manage/push-images.sh ${VERSION?}
-
-    - name: Publish Helm Charts
-      env: 
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      run: |
-        ./manage/publish-helm-chart.sh customer-service ${VERSION?} ${VERSION?}
+    - name: Publish
+      uses: cer/github-build-and-test-action/k8s-publish@main
+      with:
+        github-token: ${{ secrets.GH_TOKEN }}
+        service-name: customer-service
