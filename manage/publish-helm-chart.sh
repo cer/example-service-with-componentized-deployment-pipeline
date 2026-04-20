@@ -11,6 +11,6 @@ helm package --dependency-update --version "$version" --app-version "$app_versio
 echo "${GITHUB_TOKEN?}" | helm registry login --username "${GITHUB_REPOSITORY_OWNER?}" --password-stdin ghcr.io
 
 helm push "helm-repository/${service_name?}-$version.tgz" \
-    oci://ghcr.io/microservices-live-projects/manning-live-project-series-kubernetes/charts
+    "oci://ghcr.io/${GITHUB_REPOSITORY?}/charts"
 
 echo published "$version"

@@ -56,7 +56,7 @@ echo installing "$service_name"
 
 if [ -n "$PRIVATE_REGISTRY" ] ; then
   helmOpts=()
-  chart="oci://ghcr.io/microservices-live-projects/manning-live-project-series-kubernetes/charts/${service_name?}"
+  chart="oci://ghcr.io/cer/example-service/charts/${service_name?}"
 else
   helmOpts=("--set-string" "image.repository=localhost:5002/${service_name}")
   chart="$service_name-deployment/helm-charts/$service_name"
@@ -75,7 +75,7 @@ echo running helm test "$release_name" ...
 
 SUCCESS=
 
-for i in {1..5}; do
+for _i in {1..5}; do
     if helm test "$release_name" ; then
         SUCCESS=yes
         break
@@ -109,7 +109,7 @@ if [ -n "$ingress_test_path" ] ; then
 
     echo accessing ingress "$ingress_test_path" with authOpts "${authOpts[@]}"
 
-    for i in {1..5}; do
+    for _i in {1..5}; do
         if curl "${authOpts[@]}" --retry-connrefused --retry 5 --retry-delay 1 --fail "localhost$ingress_test_path" > /dev/null ; then
             break
         fi
