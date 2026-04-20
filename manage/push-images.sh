@@ -10,7 +10,7 @@ else
     echo GITHUB_TOKEN is not set - not logging in
 fi
 
-./gradlew -P imageVersion="${VERSION}" \
+./gradlew --build-cache -P imageVersion="${VERSION}" \
     -P "imageRemoteRegistry=ghcr.io/${GITHUB_REPOSITORY?}"  \
     buildDockerImageRemote
 
