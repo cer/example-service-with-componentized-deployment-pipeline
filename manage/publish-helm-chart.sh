@@ -8,7 +8,7 @@ chart_dir=${service_name}-deployment/helm-charts/$service_name
 
 helm package --dependency-update --version "$version" --app-version "$app_version" "$chart_dir" -d helm-repository
 
-echo "${GITHUB_TOKEN?}" | helm registry login --username "${GITHUB_USER?}" --password-stdin ghcr.io
+echo "${GITHUB_TOKEN?}" | helm registry login --username "${GITHUB_REPOSITORY_OWNER?}" --password-stdin ghcr.io
 
 helm push "helm-repository/${service_name?}-$version.tgz" \
     oci://ghcr.io/microservices-live-projects/manning-live-project-series-kubernetes/charts
