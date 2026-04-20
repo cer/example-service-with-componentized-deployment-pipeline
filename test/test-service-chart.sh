@@ -56,7 +56,7 @@ echo installing "$service_name"
 
 if [ -n "$PRIVATE_REGISTRY" ] ; then
   helmOpts=()
-  chart="oci://ghcr.io/cer/example-service/charts/${service_name?}"
+  chart="oci://ghcr.io/cer/example-service-with-componentized-deployment-pipeline/charts/${service_name?}"
 else
   helmOpts=("--set-string" "image.repository=localhost:5002/${service_name}")
   chart="$service_name-deployment/helm-charts/$service_name"
