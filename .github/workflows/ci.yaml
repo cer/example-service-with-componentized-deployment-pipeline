@@ -32,6 +32,9 @@ jobs:
     - name: Install Helm
       uses: azure/setup-helm@v4
 
+    - name: Add Helm repos
+      run: helm repo add eventuate https://raw.githubusercontent.com/eventuate-platform/eventuate-helm-charts/helm-repository
+
     - name: set build env
       run: |
         BUILD_DATE=$(date -u +'%Y%m%d%H%M%S')
