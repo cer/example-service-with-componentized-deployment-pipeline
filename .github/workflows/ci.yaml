@@ -2,7 +2,7 @@ name: Build, test and publish
 
 on:
   push:
-    branches: [ main, wip-initial ]
+    branches: [ main, wip-publish ]
   pull_request:
     branches: [ main ]
 
