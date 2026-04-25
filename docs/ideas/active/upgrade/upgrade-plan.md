@@ -238,14 +238,14 @@ Add Springwolf async API documentation and API docs generation test to `customer
     - [x] Add test for OpenAPI docs (`/v3/api-docs`) asserting domain-specific endpoints
     - [x] Add test for AsyncAPI docs (`/springwolf/docs`) asserting domain-specific channels
 
-- [ ] **Task 5.3: Add component test outbox verification dependencies**
+- [x] **Task 5.3: Add component test outbox verification dependencies**
   - TaskType: OUTCOME
   - Entrypoint: `cat customer-service-main/build.gradle`
   - Observable: Component test dependencies include `eventuate-tram-spring-testing-support-outbox` and `eventuate-tram-spring-testing-support-producer-kafka`
   - Evidence: `./gradlew compileAll`
   - Steps:
-    - [ ] Add `eventuate-tram-spring-testing-support-outbox` to componentTestImplementation
-    - [ ] Add `eventuate-tram-spring-testing-support-producer-kafka` to componentTestImplementation
+    - [x] Add `eventuate-tram-spring-testing-support-outbox` to componentTestImplementation
+    - [x] Add `eventuate-tram-spring-testing-support-producer-kafka` to componentTestImplementation
 
 - [ ] **Task 5.4: Update TestContainers to use JUnit Jupiter lifecycle**
   - TaskType: OUTCOME

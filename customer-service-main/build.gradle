@@ -35,6 +35,8 @@ dependencies {
     componentTestImplementation "io.eventuate.messaging.kafka:eventuate-messaging-kafka-testcontainers"
     componentTestImplementation "io.eventuate.cdc:eventuate-cdc-testcontainers"
     componentTestImplementation "io.rest-assured:rest-assured"
+    componentTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-outbox"
+    componentTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-producer-kafka"
     componentTestImplementation "io.eventuate.examples.spring-authorization-server:authorization-server-test-containers:$eventuateExamplesSpringAuthorizationServerVersion"
 
 }
