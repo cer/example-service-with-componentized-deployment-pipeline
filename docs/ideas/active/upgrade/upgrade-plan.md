@@ -79,13 +79,13 @@ Align root build.gradle with the Eventuate Gradle setup pattern and remove vesti
     - [x] Remove `maven-publish` plugin and publication config from `customer-service-web/build.gradle`
     - [x] Remove `maven-publish` plugin and publication config from `customer-service-messaging/build.gradle`
 
-- [ ] **Task 1.5: Remove outdated Mockito version pin**
+- [x] **Task 1.5: Remove outdated Mockito version pin**
   - TaskType: OUTCOME
   - Entrypoint: `cat customer-service-persistence/build.gradle`
   - Observable: No hardcoded Mockito version; uses Spring Boot BOM version
   - Evidence: `./gradlew compileAll`
   - Steps:
-    - [ ] Remove `mockito-core:2.23.0` dependency from `customer-service-persistence/build.gradle`
+    - [x] Remove `mockito-core:2.23.0` dependency from `customer-service-persistence/build.gradle`
 
 ---
 
