@@ -105,17 +105,17 @@ Inline the API modules and reorganize flat subprojects into nested `customer-man
     - [x] Remove `customer-service-api-web` from `settings.gradle`
     - [x] Delete the `customer-service-api-web/` directory
 
-- [ ] **Task 2.2: Inline customer-service-api-messaging into customer-service-messaging**
+- [x] **Task 2.2: Inline customer-service-api-messaging into customer-service-messaging**
   - TaskType: OUTCOME
   - Entrypoint: `cat settings.gradle`
   - Observable: `customer-service-api-messaging` is no longer in `settings.gradle`; its classes are in `customer-service-messaging`
   - Evidence: `./gradlew compileAll`
   - Steps:
-    - [ ] Copy classes from `customer-service-api-messaging/src/main/java` into `customer-service-messaging/src/main/java`
-    - [ ] Update `customer-service-messaging/build.gradle` to include any dependencies from `customer-service-api-messaging/build.gradle`
-    - [ ] Replace `project(":customer-service-api-messaging")` dependency with inlined dependencies
-    - [ ] Remove `customer-service-api-messaging` from `settings.gradle`
-    - [ ] Delete the `customer-service-api-messaging/` directory
+    - [x] Copy classes from `customer-service-api-messaging/src/main/java` into `customer-service-messaging/src/main/java`
+    - [x] Update `customer-service-messaging/build.gradle` to include any dependencies from `customer-service-api-messaging/build.gradle`
+    - [x] Replace `project(":customer-service-api-messaging")` dependency with inlined dependencies
+    - [x] Remove `customer-service-api-messaging` from `settings.gradle`
+    - [x] Delete the `customer-service-api-messaging/` directory
 
 - [ ] **Task 2.3: Reorganize into nested customer-management structure**
   - TaskType: OUTCOME
