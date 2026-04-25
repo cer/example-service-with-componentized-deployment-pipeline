@@ -261,14 +261,14 @@ Add Springwolf async API documentation and API docs generation test to `customer
 ## Steel Thread 6: Event Publishing Integration Test
 Add integration test to the event-publishing module verifying events are written to the Eventuate outbox, per the domain-event-publishing skill.
 
-- [ ] **Task 6.1: Add integration test plugin and dependencies to event-publishing build.gradle**
+- [x] **Task 6.1: Add integration test plugin and dependencies to event-publishing build.gradle**
   - TaskType: INFRA
   - Entrypoint: `cat customer-management/customer-management-event-publishing/build.gradle`
   - Observable: build.gradle applies `io.eventuate.plugins.gradle.testing.integration-tests` plugin and declares integrationTest dependencies for TestContainers PostgreSQL and eventuate outbox testing
   - Evidence: `./gradlew :customer-management:customer-management-event-publishing:compileIntegrationTestJava`
   - Steps:
-    - [ ] Apply `io.eventuate.plugins.gradle.testing.integration-tests` plugin
-    - [ ] Add integrationTestImplementation dependencies: `eventuate-common-testcontainers`, `eventuate-tram-spring-producer-jdbc`, `org.testcontainers:postgresql`, `org.flywaydb:flyway-database-postgresql`
+    - [x] Apply `io.eventuate.plugins.gradle.testing.integration-tests` plugin
+    - [x] Add integrationTestImplementation dependencies: `eventuate-common-testcontainers`, `eventuate-tram-spring-producer-jdbc`, `org.testcontainers:postgresql`, `org.flywaydb:flyway-database-postgresql`
 - [ ] **Task 6.2: Add integration test verifying events are written to outbox**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew :customer-management:customer-management-event-publishing:integrationTest`

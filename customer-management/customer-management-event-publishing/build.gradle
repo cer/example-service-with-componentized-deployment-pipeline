@@ -1,5 +1,14 @@
+plugins {
+    id 'io.eventuate.plugins.gradle.testing.integration-tests'
+}
+
 dependencies {
     implementation project(':customer-management:customer-management-domain')
     implementation 'io.eventuate.tram.core:eventuate-tram-spring-events-publisher-starter'
     implementation 'io.eventuate.tram.core:eventuate-tram-spring-flyway'
+
+    integrationTestImplementation 'io.eventuate.common:eventuate-common-testcontainers'
+    integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc'
+    integrationTestImplementation 'org.testcontainers:postgresql'
+    integrationTestRuntimeOnly 'org.flywaydb:flyway-database-postgresql:11.8.2'
 }
