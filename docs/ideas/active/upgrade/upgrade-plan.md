@@ -149,17 +149,17 @@ Add domain event publishing to the customer-management domain following the `Dom
     - [x] Create `CustomerCreditReservedEvent` record implementing `CustomerEvent`
     - [x] Create `CustomerEventPublisher` interface extending `DomainEventPublisherForAggregate<Customer, Long, CustomerEvent>`
 
-- [ ] **Task 3.2: Create event-publishing adapter module**
+- [x] **Task 3.2: Create event-publishing adapter module**
   - TaskType: OUTCOME
   - Entrypoint: `cat settings.gradle`
   - Observable: `customer-management:customer-management-event-publishing` module exists with `CustomerEventPublisherImpl` and configuration
   - Evidence: `./gradlew compileAll`
   - Steps:
-    - [ ] Create `customer-management/customer-management-event-publishing/` directory structure
-    - [ ] Add `customer-management:customer-management-event-publishing` to `settings.gradle`
-    - [ ] Create `build.gradle` with dependencies on domain, `eventuate-tram-spring-events-publisher-starter`, `eventuate-tram-spring-flyway`
-    - [ ] Create `CustomerEventPublisherImpl` extending `AbstractDomainEventPublisherForAggregateImpl`
-    - [ ] Create `CustomerEventPublishingConfiguration` with `@Bean` for the publisher
+    - [x] Create `customer-management/customer-management-event-publishing/` directory structure
+    - [x] Add `customer-management:customer-management-event-publishing` to `settings.gradle`
+    - [x] Create `build.gradle` with dependencies on domain, `eventuate-tram-spring-events-publisher-starter`, `eventuate-tram-spring-flyway`
+    - [x] Create `CustomerEventPublisherImpl` extending `AbstractDomainEventPublisherForAggregateImpl`
+    - [x] Create `CustomerEventPublishingConfiguration` with `@Bean` for the publisher
 
 - [ ] **Task 3.3: Inject publisher into CustomerService**
   - TaskType: OUTCOME
@@ -291,3 +291,6 @@ Reorganized into nested customer-management structure. compileAll passes.
 
 ### 2026-04-24 21:55 - mark-task-complete
 Added CustomerEvent, CustomerCreditReservedEvent, CustomerEventPublisher, and eventuate-tram-spring-events dependency
+
+### 2026-04-25 08:38 - mark-task-complete
+Created event-publishing adapter module with CustomerEventPublisherImpl and CustomerEventPublishingConfiguration, compileAll passes
