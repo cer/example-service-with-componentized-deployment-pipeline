@@ -11,8 +11,8 @@ pluginManagement {
 
 rootProject.name = "example-service"
 
-include 'customer-service-domain'
-include 'customer-service-web'
+include 'customer-management:customer-management-domain'
+include 'customer-management:customer-management-web-api'
+include 'customer-management:customer-management-command-api'
+include 'customer-management:customer-management-persistence'
 include 'customer-service-main'
-include 'customer-service-messaging'
-include 'customer-service-persistence'

@@ -5,9 +5,9 @@ plugins {
 apply plugin: ServicePlugin
 
 dependencies {
-    implementation project(":customer-service-web")
-    implementation project(":customer-service-persistence")
-    implementation project(":customer-service-messaging")
+    implementation project(":customer-management:customer-management-web-api")
+    implementation project(":customer-management:customer-management-persistence")
+    implementation project(":customer-management:customer-management-command-api")
     implementation "io.eventuate.tram.core:eventuate-tram-spring-logging"
 
     implementation "org.springframework.boot:spring-boot-starter-actuator"
@@ -27,7 +27,6 @@ dependencies {
 }
 
 
-check.shouldRunAfter(":customer-service-web:check")
-check.shouldRunAfter(":customer-service-persistence:check")
-check.shouldRunAfter(":customer-service-messaging:check")
-check.shouldRunAfter(":customer-service-messaging:check")
+check.shouldRunAfter(":customer-management:customer-management-web-api:check")
+check.shouldRunAfter(":customer-management:customer-management-persistence:check")
+check.shouldRunAfter(":customer-management:customer-management-command-api:check")

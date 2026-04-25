@@ -117,20 +117,20 @@ Inline the API modules and reorganize flat subprojects into nested `customer-man
     - [x] Remove `customer-service-api-messaging` from `settings.gradle`
     - [x] Delete the `customer-service-api-messaging/` directory
 
-- [ ] **Task 2.3: Reorganize into nested customer-management structure**
+- [x] **Task 2.3: Reorganize into nested customer-management structure**
   - TaskType: OUTCOME
   - Entrypoint: `cat settings.gradle`
   - Observable: Subprojects are `customer-management:customer-management-domain`, `customer-management:customer-management-web-api`, `customer-management:customer-management-command-api`, `customer-management:customer-management-persistence`; `customer-service-main` remains top-level
   - Evidence: `./gradlew compileAll`
   - Steps:
-    - [ ] Create `customer-management/` directory
-    - [ ] Move `customer-service-domain/` to `customer-management/customer-management-domain/`
-    - [ ] Move `customer-service-web/` to `customer-management/customer-management-web-api/`
-    - [ ] Move `customer-service-messaging/` to `customer-management/customer-management-command-api/`
-    - [ ] Move `customer-service-persistence/` to `customer-management/customer-management-persistence/`
-    - [ ] Update `settings.gradle` with new nested include paths
-    - [ ] Update all `project(":customer-service-*")` references in build.gradle files to new paths
-    - [ ] Update all `project(":customer-service-*")` references in `customer-service-main/build.gradle`
+    - [x] Create `customer-management/` directory
+    - [x] Move `customer-service-domain/` to `customer-management/customer-management-domain/`
+    - [x] Move `customer-service-web/` to `customer-management/customer-management-web-api/`
+    - [x] Move `customer-service-messaging/` to `customer-management/customer-management-command-api/`
+    - [x] Move `customer-service-persistence/` to `customer-management/customer-management-persistence/`
+    - [x] Update `settings.gradle` with new nested include paths
+    - [x] Update all `project(":customer-service-*")` references in build.gradle files to new paths
+    - [x] Update all `project(":customer-service-*")` references in `customer-service-main/build.gradle`
 
 ---
 
@@ -261,3 +261,30 @@ Add Springwolf async API documentation and API docs generation test to `customer
 ## Change History
 ### 2026-04-24 08:37 - mark-task-complete
 Updated eventuatePlatformVersion to 2026.1.BUILD-SNAPSHOT, verified with ./gradlew compileAll - BUILD SUCCESSFUL
+
+### 2026-04-24 21:36 - mark-step-complete
+Created customer-management/ directory
+
+### 2026-04-24 21:36 - mark-step-complete
+Moved customer-service-domain/ to customer-management/customer-management-domain/
+
+### 2026-04-24 21:36 - mark-step-complete
+Moved customer-service-web/ to customer-management/customer-management-web-api/
+
+### 2026-04-24 21:36 - mark-step-complete
+Moved customer-service-messaging/ to customer-management/customer-management-command-api/
+
+### 2026-04-24 21:36 - mark-step-complete
+Moved customer-service-persistence/ to customer-management/customer-management-persistence/
+
+### 2026-04-24 21:36 - mark-step-complete
+Updated settings.gradle with nested include paths
+
+### 2026-04-24 21:36 - mark-step-complete
+Updated all project references in submodule build.gradle files
+
+### 2026-04-24 21:36 - mark-step-complete
+Updated all project references in customer-service-main/build.gradle
+
+### 2026-04-24 21:36 - mark-task-complete
+Reorganized into nested customer-management structure. compileAll passes.

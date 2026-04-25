@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation project(":customer-service-domain")
+    implementation project(":customer-management:customer-management-domain")
 
     implementation "io.eventuate.tram.core:eventuate-tram-spring-flyway"
     runtimeOnly "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-flyway"

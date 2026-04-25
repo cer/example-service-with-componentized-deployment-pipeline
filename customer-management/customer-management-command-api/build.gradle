@@ -5,7 +5,7 @@ plugins {
 dependencies {
     implementation "io.eventuate.examples.common:eventuate-examples-common-money-jakarta9:$eventuateCommonExamplesVersion"
     implementation "io.eventuate.tram.core:eventuate-tram-spring-commands"
-    implementation project(":customer-service-domain")
+    implementation project(":customer-management:customer-management-domain")
 
     implementation "io.eventuate.tram.core:eventuate-tram-spring-flyway"
     implementation 'org.flywaydb:flyway-database-postgresql:11.8.2'
@@ -31,7 +31,7 @@ dependencies {
     integrationTestImplementation "org.testcontainers:testcontainers"
     integrationTestImplementation "org.testcontainers:postgresql"
 
-    integrationTestImplementation project(":customer-service-persistence")
+    integrationTestImplementation project(":customer-management:customer-management-persistence")
     testImplementation "io.eventuate.util:eventuate-util-test"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
 
