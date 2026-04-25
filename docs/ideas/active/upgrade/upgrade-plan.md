@@ -93,17 +93,17 @@ Align root build.gradle with the Eventuate Gradle setup pattern and remove vesti
 
 Inline the API modules and reorganize flat subprojects into nested `customer-management/customer-management-*` structure.
 
-- [ ] **Task 2.1: Inline customer-service-api-web into customer-service-web**
+- [x] **Task 2.1: Inline customer-service-api-web into customer-service-web**
   - TaskType: OUTCOME
   - Entrypoint: `cat settings.gradle`
   - Observable: `customer-service-api-web` is no longer in `settings.gradle`; its classes are in `customer-service-web`
   - Evidence: `./gradlew compileAll`
   - Steps:
-    - [ ] Copy classes from `customer-service-api-web/src/main/java` into `customer-service-web/src/main/java`
-    - [ ] Update `customer-service-web/build.gradle` to include any dependencies from `customer-service-api-web/build.gradle`
-    - [ ] Replace `project(":customer-service-api-web")` dependency in `customer-service-web/build.gradle` with the inlined dependencies
-    - [ ] Remove `customer-service-api-web` from `settings.gradle`
-    - [ ] Delete the `customer-service-api-web/` directory
+    - [x] Copy classes from `customer-service-api-web/src/main/java` into `customer-service-web/src/main/java`
+    - [x] Update `customer-service-web/build.gradle` to include any dependencies from `customer-service-api-web/build.gradle`
+    - [x] Replace `project(":customer-service-api-web")` dependency in `customer-service-web/build.gradle` with the inlined dependencies
+    - [x] Remove `customer-service-api-web` from `settings.gradle`
+    - [x] Delete the `customer-service-api-web/` directory
 
 - [ ] **Task 2.2: Inline customer-service-api-messaging into customer-service-messaging**
   - TaskType: OUTCOME
