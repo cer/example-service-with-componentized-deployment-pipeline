@@ -138,16 +138,16 @@ Inline the API modules and reorganize flat subprojects into nested `customer-man
 
 Add domain event publishing to the customer-management domain following the `DomainEventPublisherForAggregate` pattern.
 
-- [ ] **Task 3.1: Add domain event classes and publisher interface**
+- [x] **Task 3.1: Add domain event classes and publisher interface**
   - TaskType: OUTCOME
   - Entrypoint: `find customer-management/customer-management-domain/src -name '*Event*'`
   - Observable: `CustomerEvent` interface, `CustomerCreditReservedEvent` record, and `CustomerEventPublisher` interface exist in domain
   - Evidence: `./gradlew compileAll`
   - Steps:
-    - [ ] Add `api 'io.eventuate.tram.core:eventuate-tram-spring-events'` to `customer-management-domain/build.gradle`
-    - [ ] Create `CustomerEvent` interface extending `DomainEvent` in domain package
-    - [ ] Create `CustomerCreditReservedEvent` record implementing `CustomerEvent`
-    - [ ] Create `CustomerEventPublisher` interface extending `DomainEventPublisherForAggregate<Customer, Long, CustomerEvent>`
+    - [x] Add `api 'io.eventuate.tram.core:eventuate-tram-spring-events'` to `customer-management-domain/build.gradle`
+    - [x] Create `CustomerEvent` interface extending `DomainEvent` in domain package
+    - [x] Create `CustomerCreditReservedEvent` record implementing `CustomerEvent`
+    - [x] Create `CustomerEventPublisher` interface extending `DomainEventPublisherForAggregate<Customer, Long, CustomerEvent>`
 
 - [ ] **Task 3.2: Create event-publishing adapter module**
   - TaskType: OUTCOME
@@ -288,3 +288,6 @@ Updated all project references in customer-service-main/build.gradle
 
 ### 2026-04-24 21:36 - mark-task-complete
 Reorganized into nested customer-management structure. compileAll passes.
+
+### 2026-04-24 21:55 - mark-task-complete
+Added CustomerEvent, CustomerCreditReservedEvent, CustomerEventPublisher, and eventuate-tram-spring-events dependency
