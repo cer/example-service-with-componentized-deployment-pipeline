@@ -2,10 +2,6 @@ plugins {
     id 'io.eventuate.plugins.gradle.testing.integration-tests'
 }
 
-apply plugin: 'maven-publish'
-
-
-
 dependencies {
     implementation "io.eventuate.examples.common:eventuate-examples-common-money-jakarta9:$eventuateCommonExamplesVersion"
     implementation project(":customer-service-api-messaging")

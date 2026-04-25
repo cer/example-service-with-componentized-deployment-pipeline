@@ -70,14 +70,14 @@ Align root build.gradle with the Eventuate Gradle setup pattern and remove vesti
     - [x] Remove conditional `spring-cloud-contract` block from `customer-service-web/build.gradle`
     - [x] Remove conditional `spring-cloud-contract` block from `customer-service-messaging/build.gradle`
 
-- [ ] **Task 1.4: Remove maven-publish plugin and stub publication config**
+- [x] **Task 1.4: Remove maven-publish plugin and stub publication config**
   - TaskType: OUTCOME
   - Entrypoint: `grep -r maven-publish . --include='*.gradle' || echo not found`
   - Observable: No `maven-publish` references remain in web or messaging modules
   - Evidence: `./gradlew compileAll`
   - Steps:
-    - [ ] Remove `maven-publish` plugin and publication config from `customer-service-web/build.gradle`
-    - [ ] Remove `maven-publish` plugin and publication config from `customer-service-messaging/build.gradle`
+    - [x] Remove `maven-publish` plugin and publication config from `customer-service-web/build.gradle`
+    - [x] Remove `maven-publish` plugin and publication config from `customer-service-messaging/build.gradle`
 
 - [ ] **Task 1.5: Remove outdated Mockito version pin**
   - TaskType: OUTCOME
