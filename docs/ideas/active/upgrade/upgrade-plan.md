@@ -258,6 +258,57 @@ Add Springwolf async API documentation and API docs generation test to `customer
 
 ---
 
+## Steel Thread 6: Event Publishing Integration Test
+Add integration test to the event-publishing module verifying events are written to the Eventuate outbox, per the domain-event-publishing skill.
+
+- [ ] **Task 6.1: Add integration test plugin and dependencies to event-publishing build.gradle**
+  - TaskType: INFRA
+  - Entrypoint: `cat customer-management/customer-management-event-publishing/build.gradle`
+  - Observable: build.gradle applies `io.eventuate.plugins.gradle.testing.integration-tests` plugin and declares integrationTest dependencies for TestContainers PostgreSQL and eventuate outbox testing
+  - Evidence: `./gradlew :customer-management:customer-management-event-publishing:compileIntegrationTestJava`
+  - Steps:
+    - [ ] Apply `io.eventuate.plugins.gradle.testing.integration-tests` plugin
+    - [ ] Add integrationTestImplementation dependencies: `eventuate-common-testcontainers`, `eventuate-tram-spring-producer-jdbc`, `org.testcontainers:postgresql`, `org.flywaydb:flyway-database-postgresql`
+- [ ] **Task 6.2: Add integration test verifying events are written to outbox**
+  - TaskType: OUTCOME
+  - Entrypoint: `./gradlew :customer-management:customer-management-event-publishing:integrationTest`
+  - Observable: Integration test publishes a `CustomerCreditReservedEvent` via `CustomerEventPublisher` and asserts the event appears in the Eventuate outbox table
+  - Evidence: `./gradlew :customer-management:customer-management-event-publishing:integrationTest`
+  - Steps:
+    - [ ] Create integration test class that boots Spring context with `CustomerEventPublishingConfiguration`, `CustomerDomainConfiguration`, persistence, and TestContainers PostgreSQL
+    - [ ] Test creates a Customer, calls `customerEventPublisher.publish()`, and verifies the event is in the outbox
+## Steel Thread 7: Command Handler Unit Test
+Add unit test for the command-api module using in-memory Tram, per the saga-command-handler skill.
+
+- [ ] **Task 7.1: Add unit test for CustomerCommandHandler using in-memory Tram**
+  - TaskType: OUTCOME
+  - Entrypoint: `./gradlew :customer-management:customer-management-command-api:test`
+  - Observable: Unit test sends a `ReserveCreditCommand` via in-memory Tram and verifies the handler invokes `CustomerService.reserveCredit()` and returns a success reply
+  - Evidence: `./gradlew :customer-management:customer-management-command-api:test`
+  - Steps:
+    - [ ] Create `CustomerCommandHandlerTest` in `src/test/java` using `@SpringBootTest` with `SagaInMemoryConfiguration` and `@MockitoBean` for `CustomerService`
+    - [ ] Test sends `ReserveCreditCommand` via `CommandProducer` and verifies `CustomerService.reserveCredit()` is called
+    - [ ] Add test for failure case: when `CustomerService` throws `CustomerNotFoundException`, verify `CustomerNotFound` reply
+## Steel Thread 8: Web API Unit Test Coverage
+Expand unit test coverage for CustomerController to cover all three endpoints, per the web-api-adapter skill.
+
+- [ ] **Task 8.1: Add unit test for POST /customers endpoint**
+  - TaskType: OUTCOME
+  - Entrypoint: `./gradlew :customer-management:customer-management-web-api:test`
+  - Observable: Unit test POSTs a `CreateCustomerRequest` and asserts 200 response with `customerId`
+  - Evidence: `./gradlew :customer-management:customer-management-web-api:test`
+  - Steps:
+    - [ ] Add `shouldCreateCustomer` test to `CustomerControllerTest` using RestAssuredMockMvc standaloneSetup
+    - [ ] Mock `customerService.createCustomer()` to return a Customer with known ID
+    - [ ] Assert response status 200 and body contains `customerId`
+- [ ] **Task 8.2: Add unit test for GET /customers/{customerId} endpoint**
+  - TaskType: OUTCOME
+  - Entrypoint: `./gradlew :customer-management:customer-management-web-api:test`
+  - Observable: Unit tests cover both found (200 with customer data) and not-found (404) cases
+  - Evidence: `./gradlew :customer-management:customer-management-web-api:test`
+  - Steps:
+    - [ ] Add `shouldGetCustomer` test — mock `customerService.findById()` returning `Optional.of(customer)`, assert 200 with customer fields
+    - [ ] Add `shouldReturn404WhenCustomerNotFound` test — mock `customerService.findById()` returning `Optional.empty()`, assert 404
 ## Change History
 ### 2026-04-24 08:37 - mark-task-complete
 Updated eventuatePlatformVersion to 2026.1.BUILD-SNAPSHOT, verified with ./gradlew compileAll - BUILD SUCCESSFUL
@@ -348,3 +399,12 @@ Updated RepositoriesTest to use @Testcontainers and @Container annotations
 
 ### 2026-04-25 16:24 - mark-task-complete
 Added junit-jupiter dependency and updated RepositoriesTest with @Testcontainers/@Container annotations. compileAll passes.
+
+### 2026-04-25 16:42 - insert-thread-after
+Missing test identified by comparing codebase against eventuate-development plugin testing strategy
+
+### 2026-04-25 16:42 - insert-thread-after
+Missing test identified by comparing codebase against eventuate-development plugin testing strategy
+
+### 2026-04-25 16:42 - insert-thread-after
+Missing test identified by comparing codebase against eventuate-development plugin testing strategy
