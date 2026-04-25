@@ -199,15 +199,15 @@ Add a domain event consumer for `CustomerCreditReservedEvent` following the `@Ev
     - [x] Add unit test dependencies: `eventuate-tram-spring-in-memory`, `eventuate-tram-spring-events-publisher-starter`, `awaitility`, `h2`
     - [x] Create unit test using `TramInMemoryConfiguration` + `@MockitoBean` + Awaitility
 
-- [ ] **Task 4.3: Add integration test for event consumer**
+- [x] **Task 4.3: Add integration test for event consumer**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew :customer-management:customer-management-event-subscribers:integrationTest`
   - Observable: Integration test passes with real Kafka and PostgreSQL via TestContainers
   - Evidence: `./gradlew :customer-management:customer-management-event-subscribers:integrationTest`
   - Steps:
-    - [ ] Apply `io.eventuate.plugins.gradle.testing.integration-tests` plugin
-    - [ ] Add integration test dependencies: `eventuate-common-testcontainers`, `eventuate-messaging-kafka-testcontainers`, `awaitility`, TestContainers PostgreSQL
-    - [ ] Create integration test using TestContainers
+    - [x] Apply `io.eventuate.plugins.gradle.testing.integration-tests` plugin
+    - [x] Add integration test dependencies: `eventuate-common-testcontainers`, `eventuate-messaging-kafka-testcontainers`, `awaitility`, TestContainers PostgreSQL
+    - [x] Create integration test using TestContainers
 
 ---
 
@@ -321,3 +321,15 @@ Created CustomerCreditReservedEventConsumerTest using TramInMemoryConfiguration,
 
 ### 2026-04-25 09:09 - mark-task-complete
 Unit test passes — publishes event via in-memory Tram and verifies handler is invoked
+
+### 2026-04-25 12:17 - mark-step-complete
+Plugin already applied in build.gradle
+
+### 2026-04-25 12:17 - mark-step-complete
+Integration test dependencies already in build.gradle
+
+### 2026-04-25 12:17 - mark-step-complete
+Integration test already exists and passes with TestContainers
+
+### 2026-04-25 12:17 - mark-task-complete
+Integration test passes with real Kafka and PostgreSQL via TestContainers - BUILD SUCCESSFUL
