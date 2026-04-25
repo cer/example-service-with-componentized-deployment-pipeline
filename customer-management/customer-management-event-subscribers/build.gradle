@@ -1,3 +1,7 @@
+plugins {
+    id 'io.eventuate.plugins.gradle.testing.integration-tests'
+}
+
 dependencies {
     implementation project(':customer-management:customer-management-domain')
     implementation 'io.eventuate.tram.core:eventuate-tram-spring-events-subscriber-starter'
@@ -6,4 +10,17 @@ dependencies {
     testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-events-publisher-starter'
     testImplementation 'org.awaitility:awaitility'
     testRuntimeOnly 'com.h2database:h2'
+
+    integrationTestImplementation 'io.eventuate.common:eventuate-common-testcontainers'
+    integrationTestImplementation 'io.eventuate.messaging.kafka:eventuate-messaging-kafka-testcontainers'
+    integrationTestImplementation 'io.eventuate.util:eventuate-util-test'
+    integrationTestImplementation 'org.awaitility:awaitility'
+    integrationTestImplementation 'org.testcontainers:postgresql'
+    integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka'
+    integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-events-publisher-starter'
+    integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-jdbc-kafka'
+    integrationTestImplementation 'io.eventuate.messaging.kafka:eventuate-messaging-kafka-spring-producer'
+    integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-flyway'
+    integrationTestRuntimeOnly 'org.postgresql:postgresql'
+    integrationTestRuntimeOnly 'org.flywaydb:flyway-database-postgresql'
 }
