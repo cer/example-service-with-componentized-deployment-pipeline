@@ -190,14 +190,14 @@ Add a domain event consumer for `CustomerCreditReservedEvent` following the `@Ev
     - [x] Create `CustomerCreditReservedEventConsumer` with `@EventuateDomainEventHandler` method
     - [x] Create `CustomerEventSubscribersConfiguration` with `@Bean` for the consumer
 
-- [ ] **Task 4.2: Add unit test for event consumer**
+- [x] **Task 4.2: Add unit test for event consumer**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew :customer-management:customer-management-event-subscribers:test`
   - Observable: Unit test passes — publishes event via in-memory Tram and verifies handler is invoked
   - Evidence: `./gradlew :customer-management:customer-management-event-subscribers:test`
   - Steps:
-    - [ ] Add unit test dependencies: `eventuate-tram-spring-in-memory`, `eventuate-tram-spring-events-publisher-starter`, `awaitility`, `h2`
-    - [ ] Create unit test using `TramInMemoryConfiguration` + `@MockitoBean` + Awaitility
+    - [x] Add unit test dependencies: `eventuate-tram-spring-in-memory`, `eventuate-tram-spring-events-publisher-starter`, `awaitility`, `h2`
+    - [x] Create unit test using `TramInMemoryConfiguration` + `@MockitoBean` + Awaitility
 
 - [ ] **Task 4.3: Add integration test for event consumer**
   - TaskType: OUTCOME
@@ -312,3 +312,12 @@ Created CustomerEventSubscribersConfiguration with @Bean
 
 ### 2026-04-25 09:02 - mark-task-complete
 Created event-subscribers adapter module with consumer and configuration, compileAll passes
+
+### 2026-04-25 09:09 - mark-step-complete
+Added eventuate-tram-spring-in-memory, eventuate-tram-spring-events-publisher-starter, awaitility, h2 test dependencies
+
+### 2026-04-25 09:09 - mark-step-complete
+Created CustomerCreditReservedEventConsumerTest using TramInMemoryConfiguration, spy on consumer bean, and Awaitility to verify handler invocation
+
+### 2026-04-25 09:09 - mark-task-complete
+Unit test passes — publishes event via in-memory Tram and verifies handler is invoked
