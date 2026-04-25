@@ -24,3 +24,4 @@ bin/
 Thumbs.db
 **/charts/*.tgz
 .env.local
+logs/

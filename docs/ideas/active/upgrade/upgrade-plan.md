@@ -40,25 +40,25 @@ Use these skills by invoking them before the relevant action:
 
 Align root build.gradle with the Eventuate Gradle setup pattern and remove vestigial code. This thread has no functional dependencies and can be done first.
 
-- [ ] **Task 1.1: Align root build.gradle with Eventuate Gradle setup**
+- [x] **Task 1.1: Align root build.gradle with Eventuate Gradle setup**
   - TaskType: OUTCOME
   - Entrypoint: `cat build.gradle`
   - Observable: Root build.gradle uses `useJUnitPlatform()`, `-parameters` flag, `junit-platform-launcher`, no `junit:junit` dependency
   - Evidence: `./gradlew compileAll`
   - Steps:
-    - [ ] Add `useJUnitPlatform()` globally in subprojects block
-    - [ ] Add `-parameters` compiler flag via `tasks.withType(JavaCompile)`
-    - [ ] Add `testRuntimeOnly 'org.junit.platform:junit-platform-launcher'` globally
-    - [ ] Remove `junit:junit:4.13.2` dependency from root `build.gradle`
-    - [ ] Remove `junit:junit:4.12` dependency from `customer-service-persistence/build.gradle`
+    - [x] Add `useJUnitPlatform()` globally in subprojects block
+    - [x] Add `-parameters` compiler flag via `tasks.withType(JavaCompile)`
+    - [x] Add `testRuntimeOnly 'org.junit.platform:junit-platform-launcher'` globally
+    - [x] Remove `junit:junit:4.13.2` dependency from root `build.gradle`
+    - [x] Remove `junit:junit:4.12` dependency from `customer-service-persistence/build.gradle`
 
-- [ ] **Task 1.2: Upgrade eventuate-platform-dependencies**
+- [x] **Task 1.2: Upgrade eventuate-platform-dependencies**
   - TaskType: OUTCOME
   - Entrypoint: `cat gradle.properties`
   - Observable: `eventuatePlatformVersion` is `2026.1.BUILD-SNAPSHOT`
   - Evidence: `./gradlew compileAll`
   - Steps:
-    - [ ] Update `eventuatePlatformVersion` in `gradle.properties` from `2025.1.BUILD-SNAPSHOT` to `2026.1.BUILD-SNAPSHOT`
+    - [x] Update `eventuatePlatformVersion` in `gradle.properties` from `2025.1.BUILD-SNAPSHOT` to `2026.1.BUILD-SNAPSHOT`
 
 - [ ] **Task 1.3: Remove Spring Cloud Contract configuration**
   - TaskType: OUTCOME
@@ -255,3 +255,9 @@ Add Springwolf async API documentation and API docs generation test to `customer
   - Steps:
     - [ ] Add `org.testcontainers:junit-jupiter` to persistence integration test dependencies
     - [ ] Update persistence integration tests to use `@Testcontainers` and `@Container` annotations
+
+---
+
+## Change History
+### 2026-04-24 08:37 - mark-task-complete
+Updated eventuatePlatformVersion to 2026.1.BUILD-SNAPSHOT, verified with ./gradlew compileAll - BUILD SUCCESSFUL

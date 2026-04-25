@@ -13,7 +13,6 @@ dependencies {
     implementation "org.flywaydb:flyway-core"
     implementation 'org.flywaydb:flyway-database-postgresql:11.8.2'
 
-    testImplementation "junit:junit:4.12"
     testImplementation "org.mockito:mockito-core:2.23.0"
 
     integrationTestImplementation "io.eventuate.common:eventuate-common-testcontainers"

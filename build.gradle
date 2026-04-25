@@ -36,15 +36,18 @@ subprojects {
         }
     }
 
+    tasks.withType(JavaCompile) {
+        options.compilerArgs += '-parameters'
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+
     dependencies {
 
-        testImplementation "junit:junit:4.13.2"
-
-        // constraints {
-        //     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion"
-        // }
-
         testImplementation "org.springframework.boot:spring-boot-starter-test"
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     }
 

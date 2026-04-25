@@ -8,9 +8,9 @@ import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaContainer;
 import io.eventuate.testcontainers.service.BuildArgsResolver;
 import io.eventuate.testcontainers.service.ServiceContainer;
 import io.restassured.RestAssured;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.lifecycle.Startables;
 
@@ -33,8 +33,13 @@ public class CustomerServiceComponentTest {
 
 
     public static AuthorizationServerContainerForServiceContainers authorizationServer = new AuthorizationServerContainerForServiceContainers()
+            .withUserDb()
             .withNetwork(eventuateKafkaCluster.network)
             .withNetworkAliases("authorization-server")
+            .withEnv("USERS_INITIAL_0_USERNAME", "user")
+            .withEnv("USERS_INITIAL_0_PASSWORD", "password")
+            .withEnv("USERS_INITIAL_0_ROLES_0_", "USER")
+            .withEnv("USERS_INITIAL_0_ENABLED", "true")
             .withReuse(true);
 
 
@@ -52,12 +57,12 @@ public class CustomerServiceComponentTest {
                     .withReuse(false) // should rebuild
             ;
 
-    @BeforeClass
+    @BeforeAll
     public static void startContainers() {
         Startables.deepStart(service, authorizationServer).join();
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         RestAssured.port = service.getFirstMappedPort();
         RestAssured.authentication = oauth2(authorizationServer.getJwt());

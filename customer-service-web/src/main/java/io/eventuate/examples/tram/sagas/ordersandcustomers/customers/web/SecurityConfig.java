@@ -2,6 +2,7 @@ package io.eventuate.examples.tram.sagas.ordersandcustomers.customers.web;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,9 +14,8 @@ import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig  {
-
-  private final String serviceRole = "USER";
 
   public SecurityConfig() {
   }
@@ -26,7 +26,7 @@ public class SecurityConfig  {
     jwtConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
       List<String> roles = jwt.getClaim("authorities");
       return roles != null ? roles.stream()
-              .map(SimpleGrantedAuthority::new)
+              .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
               .collect(Collectors.toList())
               : null;
     });
@@ -39,7 +39,7 @@ public class SecurityConfig  {
     return http.authorizeHttpRequests(authz -> {
       authz.requestMatchers("/actuator/**").permitAll()
               .requestMatchers("/swagger**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-              .requestMatchers("/**").hasRole(serviceRole);
+              .anyRequest().authenticated();
 
     }).oauth2ResourceServer(configurer -> {
       configurer.jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter()));
