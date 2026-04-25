@@ -9,10 +9,22 @@ dependencies {
     implementation project(":customer-management:customer-management-persistence")
     implementation project(":customer-management:customer-management-command-api")
     implementation project(":customer-management:customer-management-event-publishing")
+    implementation project(":customer-management:customer-management-event-subscribers")
     implementation "io.eventuate.tram.core:eventuate-tram-spring-logging"
 
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-web"
+
+    // REST API documentation
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion"
+
+    // Async API documentation
+    implementation "io.eventuate.tram.springwolf:eventuate-tram-springwolf-support-starter"
+
+    // API docs generation test (in-memory, no infra)
+    testImplementation "io.eventuate.tram.springwolf:eventuate-tram-springwolf-support-testing"
+    testImplementation "io.eventuate.tram.core:eventuate-tram-spring-in-memory"
+    testRuntimeOnly "com.h2database:h2"
 
     // TODO shouldn't need to do this too
     testImplementation "org.testcontainers:testcontainers"

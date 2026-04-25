@@ -215,17 +215,17 @@ Add a domain event consumer for `CustomerCreditReservedEvent` following the `@Ev
 
 Add Springwolf async API documentation and API docs generation test to `customer-service-main`.
 
-- [ ] **Task 5.1: Add Springwolf and springdoc-openapi dependencies**
+- [x] **Task 5.1: Add Springwolf and springdoc-openapi dependencies**
   - TaskType: OUTCOME
   - Entrypoint: `cat customer-service-main/build.gradle`
   - Observable: Build.gradle includes `springdoc-openapi-starter-webmvc-ui`, `eventuate-tram-springwolf-support-starter`, and test dependencies for in-memory API docs test
   - Evidence: `./gradlew compileAll`
   - Steps:
-    - [ ] Add `springdoc-openapi-starter-webmvc-ui` implementation dependency
-    - [ ] Add `eventuate-tram-springwolf-support-starter` implementation dependency
-    - [ ] Add `eventuate-tram-springwolf-support-testing` and `eventuate-tram-spring-in-memory` test dependencies
-    - [ ] Add `h2` testRuntimeOnly dependency
-    - [ ] Add event-publishing and event-subscribers module dependencies
+    - [x] Add `springdoc-openapi-starter-webmvc-ui` implementation dependency
+    - [x] Add `eventuate-tram-springwolf-support-starter` implementation dependency
+    - [x] Add `eventuate-tram-springwolf-support-testing` and `eventuate-tram-spring-in-memory` test dependencies
+    - [x] Add `h2` testRuntimeOnly dependency
+    - [x] Add event-publishing and event-subscribers module dependencies
 
 - [ ] **Task 5.2: Add API docs generation test**
   - TaskType: OUTCOME
@@ -333,3 +333,6 @@ Integration test already exists and passes with TestContainers
 
 ### 2026-04-25 12:17 - mark-task-complete
 Integration test passes with real Kafka and PostgreSQL via TestContainers - BUILD SUCCESSFUL
+
+### 2026-04-25 12:23 - mark-task-complete
+Added springdoc-openapi, Springwolf, in-memory test deps, h2, and event-subscribers module dependency
