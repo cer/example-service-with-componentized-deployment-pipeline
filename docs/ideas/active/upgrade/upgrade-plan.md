@@ -178,17 +178,17 @@ Add domain event publishing to the customer-management domain following the `Dom
 
 Add a domain event consumer for `CustomerCreditReservedEvent` following the `@EventuateDomainEventHandler` pattern.
 
-- [ ] **Task 4.1: Create event-subscribers adapter module**
+- [x] **Task 4.1: Create event-subscribers adapter module**
   - TaskType: OUTCOME
   - Entrypoint: `cat settings.gradle`
   - Observable: `customer-management:customer-management-event-subscribers` module exists with consumer and configuration
   - Evidence: `./gradlew compileAll`
   - Steps:
-    - [ ] Create `customer-management/customer-management-event-subscribers/` directory structure
-    - [ ] Add `customer-management:customer-management-event-subscribers` to `settings.gradle`
-    - [ ] Create `build.gradle` with dependencies on domain, `eventuate-tram-spring-events-subscriber-starter`
-    - [ ] Create `CustomerCreditReservedEventConsumer` with `@EventuateDomainEventHandler` method
-    - [ ] Create `CustomerEventSubscribersConfiguration` with `@Bean` for the consumer
+    - [x] Create `customer-management/customer-management-event-subscribers/` directory structure
+    - [x] Add `customer-management:customer-management-event-subscribers` to `settings.gradle`
+    - [x] Create `build.gradle` with dependencies on domain, `eventuate-tram-spring-events-subscriber-starter`
+    - [x] Create `CustomerCreditReservedEventConsumer` with `@EventuateDomainEventHandler` method
+    - [x] Create `CustomerEventSubscribersConfiguration` with `@Bean` for the consumer
 
 - [ ] **Task 4.2: Add unit test for event consumer**
   - TaskType: OUTCOME
@@ -294,3 +294,21 @@ Added CustomerEvent, CustomerCreditReservedEvent, CustomerEventPublisher, and ev
 
 ### 2026-04-25 08:38 - mark-task-complete
 Created event-publishing adapter module with CustomerEventPublisherImpl and CustomerEventPublishingConfiguration, compileAll passes
+
+### 2026-04-25 09:02 - mark-step-complete
+Created directory structure
+
+### 2026-04-25 09:02 - mark-step-complete
+Added to settings.gradle
+
+### 2026-04-25 09:02 - mark-step-complete
+Created build.gradle with domain and subscriber-starter deps
+
+### 2026-04-25 09:02 - mark-step-complete
+Created CustomerCreditReservedEventConsumer with @EventuateDomainEventHandler
+
+### 2026-04-25 09:02 - mark-step-complete
+Created CustomerEventSubscribersConfiguration with @Bean
+
+### 2026-04-25 09:02 - mark-task-complete
+Created event-subscribers adapter module with consumer and configuration, compileAll passes

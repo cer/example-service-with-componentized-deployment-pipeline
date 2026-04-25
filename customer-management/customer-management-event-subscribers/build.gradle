@@ -1,0 +1,4 @@
+dependencies {
+    implementation project(':customer-management:customer-management-domain')
+    implementation 'io.eventuate.tram.core:eventuate-tram-spring-events-subscriber-starter'
+}
