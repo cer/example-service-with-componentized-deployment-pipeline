@@ -11,9 +11,11 @@ import java.util.stream.StreamSupport;
 public class CustomerService {
 
   private CustomerRepository customerRepository;
+  private CustomerEventPublisher customerEventPublisher;
 
-  public CustomerService(CustomerRepository customerRepository) {
+  public CustomerService(CustomerRepository customerRepository, CustomerEventPublisher customerEventPublisher) {
     this.customerRepository = customerRepository;
+    this.customerEventPublisher = customerEventPublisher;
   }
 
   @Transactional
@@ -25,6 +27,7 @@ public class CustomerService {
   public void reserveCredit(long customerId, long orderId, Money orderTotal) throws CustomerCreditLimitExceededException {
     Customer customer = customerRepository.findById(customerId).orElseThrow(CustomerNotFoundException::new);
     customer.reserveCredit(orderId, orderTotal);
+    customerEventPublisher.publish(customer, new CustomerCreditReservedEvent(orderId));
   }
 
   public List<Customer> findAll() {

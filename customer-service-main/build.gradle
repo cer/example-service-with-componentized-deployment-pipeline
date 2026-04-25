@@ -8,6 +8,7 @@ dependencies {
     implementation project(":customer-management:customer-management-web-api")
     implementation project(":customer-management:customer-management-persistence")
     implementation project(":customer-management:customer-management-command-api")
+    implementation project(":customer-management:customer-management-event-publishing")
     implementation "io.eventuate.tram.core:eventuate-tram-spring-logging"
 
     implementation "org.springframework.boot:spring-boot-starter-actuator"

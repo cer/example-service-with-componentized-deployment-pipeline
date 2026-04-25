@@ -161,16 +161,16 @@ Add domain event publishing to the customer-management domain following the `Dom
     - [x] Create `CustomerEventPublisherImpl` extending `AbstractDomainEventPublisherForAggregateImpl`
     - [x] Create `CustomerEventPublishingConfiguration` with `@Bean` for the publisher
 
-- [ ] **Task 3.3: Inject publisher into CustomerService**
+- [x] **Task 3.3: Inject publisher into CustomerService**
   - TaskType: OUTCOME
   - Entrypoint: `cat customer-management/customer-management-domain/src/main/java/**/CustomerService.java`
   - Observable: `CustomerService.reserveCredit()` publishes `CustomerCreditReservedEvent` after reserving credit
   - Evidence: `./gradlew compileAll`
   - Steps:
-    - [ ] Add `CustomerEventPublisher` as constructor parameter in `CustomerService`
-    - [ ] Update `CustomerDomainConfiguration` to pass publisher to `CustomerService`
-    - [ ] Add `customerEventPublisher.publish(customer, new CustomerCreditReservedEvent(orderId))` after `customer.reserveCredit()`
-    - [ ] Update existing tests that construct `CustomerService` to pass a mock publisher
+    - [x] Add `CustomerEventPublisher` as constructor parameter in `CustomerService`
+    - [x] Update `CustomerDomainConfiguration` to pass publisher to `CustomerService`
+    - [x] Add `customerEventPublisher.publish(customer, new CustomerCreditReservedEvent(orderId))` after `customer.reserveCredit()`
+    - [x] Update existing tests that construct `CustomerService` to pass a mock publisher
 
 ---
 

@@ -3,7 +3,7 @@ package io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain;
 import io.eventuate.examples.common.money.Money;
 
 import jakarta.persistence.*;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 @Entity
@@ -35,7 +35,7 @@ public class Customer {
   public Customer(String name, Money creditLimit) {
     this.name = name;
     this.creditLimit = creditLimit;
-    this.creditReservations = Collections.emptyMap();
+    this.creditReservations = new HashMap<>();
   }
 
   public Long getId() {
