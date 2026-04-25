@@ -15,6 +15,7 @@ helm upgrade --install authorization-server eventuate/authorization-server \
   $HELM_INFRASTRUCTURE_OPTS --wait
 
 kubectl set env deployment/authorization-server \
+  SPRING_PROFILES_ACTIVE=UserDatabase \
   USERS_INITIAL_0_USERNAME=user \
   USERS_INITIAL_0_PASSWORD=password \
   "USERS_INITIAL_0_ROLES_0_=USER" \
