@@ -22,3 +22,9 @@ kubectl set env deployment/authorization-server \
   USERS_INITIAL_0_ENABLED=true
 
 kubectl rollout status deployment/authorization-server --timeout=90s
+
+# Wait for any terminating pods from the previous rollout to be fully removed
+while [ "$(kubectl get pods -l 'app.kubernetes.io/name=authorization-server,app.kubernetes.io/instance=authorization-server' --no-headers | wc -l)" -gt 1 ]; do
+  echo "Waiting for old authorization-server pods to terminate..."
+  sleep 2
+done
