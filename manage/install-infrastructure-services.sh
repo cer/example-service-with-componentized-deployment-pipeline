@@ -12,8 +12,12 @@ helm upgrade --install kafka eventuate/kafka \
 
 helm upgrade --install authorization-server eventuate/authorization-server \
   --set image.tag=0.2.0.BUILD-SNAPSHOT \
-  --set users.initial[0].username=user \
-  --set users.initial[0].password=password \
-  --set users.initial[0].roles[0]=USER \
-  --set users.initial[0].enabled=true \
   $HELM_INFRASTRUCTURE_OPTS --wait
+
+kubectl set env deployment/authorization-server \
+  USERS_INITIAL_0_USERNAME=user \
+  USERS_INITIAL_0_PASSWORD=password \
+  "USERS_INITIAL_0_ROLES_0_=USER" \
+  USERS_INITIAL_0_ENABLED=true
+
+kubectl rollout status deployment/authorization-server --timeout=90s
