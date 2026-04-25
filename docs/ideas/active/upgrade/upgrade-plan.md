@@ -60,15 +60,15 @@ Align root build.gradle with the Eventuate Gradle setup pattern and remove vesti
   - Steps:
     - [x] Update `eventuatePlatformVersion` in `gradle.properties` from `2025.1.BUILD-SNAPSHOT` to `2026.1.BUILD-SNAPSHOT`
 
-- [ ] **Task 1.3: Remove Spring Cloud Contract configuration**
+- [x] **Task 1.3: Remove Spring Cloud Contract configuration**
   - TaskType: OUTCOME
   - Entrypoint: `grep -r spring-cloud-contract . --include='*.gradle' || echo not found`
   - Observable: No Spring Cloud Contract references remain in any build.gradle
   - Evidence: `./gradlew compileAll`
   - Steps:
-    - [ ] Remove `spring-cloud-contract-gradle-plugin` buildscript dependency from root `build.gradle`
-    - [ ] Remove conditional `spring-cloud-contract` block from `customer-service-web/build.gradle`
-    - [ ] Remove conditional `spring-cloud-contract` block from `customer-service-messaging/build.gradle`
+    - [x] Remove `spring-cloud-contract-gradle-plugin` buildscript dependency from root `build.gradle`
+    - [x] Remove conditional `spring-cloud-contract` block from `customer-service-web/build.gradle`
+    - [x] Remove conditional `spring-cloud-contract` block from `customer-service-messaging/build.gradle`
 
 - [ ] **Task 1.4: Remove maven-publish plugin and stub publication config**
   - TaskType: OUTCOME
