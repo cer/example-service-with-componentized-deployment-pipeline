@@ -1,44 +1,40 @@
 package io.eventuate.examples.tram.sagas.ordersandcustomers.customers.eventsubscribers;
 
-import io.eventuate.common.testcontainers.DatabaseContainerFactory;
 import io.eventuate.common.testcontainers.EventuateDatabaseContainer;
+import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain.CustomerCreditReservedEvent;
-import io.eventuate.messaging.kafka.producer.EventuateKafkaProducer;
-import io.eventuate.messaging.kafka.producer.EventuateKafkaProducerConfigurationProperties;
+import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain.CustomerService;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaCluster;
-import io.eventuate.tram.events.publisher.DomainEventPublisher;
-import io.eventuate.common.json.mapper.JSonMapper;
-import io.eventuate.tram.messaging.common.Message;
-import io.eventuate.tram.messaging.producer.common.MessageProducerImplementation;
 import io.eventuate.tram.spring.flyway.EventuateTramFlywayMigrationConfiguration;
-import io.eventuate.util.test.async.Eventually;
+import io.eventuate.tram.testing.producer.kafka.events.DirectToKafkaDomainEventPublisher;
+import io.eventuate.tram.testing.producer.kafka.events.EnableDirectToKafkaDomainEventPublisher;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.testcontainers.lifecycle.Startables;
 
-import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.spy;
+import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-    properties = "spring.main.allow-bean-definition-overriding=true")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class CustomerCreditReservedEventConsumerIntegrationTest {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public static EventuateKafkaCluster eventuateKafkaCluster = new EventuateKafkaCluster();
 
-    private static final EventuateDatabaseContainer database = DatabaseContainerFactory.makeVanillaDatabaseContainer();
+//    private static final EventuateDatabaseContainer database = DatabaseContainerFactory.makeVanillaDatabaseContainer();
+    private static EventuateDatabaseContainer database = new EventuateVanillaPostgresContainer();
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
@@ -54,50 +50,42 @@ public class CustomerCreditReservedEventConsumerIntegrationTest {
     @EnableAutoConfiguration
     @Import({CustomerEventSubscribersConfiguration.class,
             EventuateTramFlywayMigrationConfiguration.class})
+    @EnableDirectToKafkaDomainEventPublisher
     static class Config {
 
-        @Bean
-        @Primary
-        public CustomerCreditReservedEventConsumer customerCreditReservedEventConsumer() {
-            return spy(new CustomerCreditReservedEventConsumer());
-        }
-
-        @Bean
-        public EventuateKafkaProducer eventuateKafkaProducer(@Value("${eventuatelocal.kafka.bootstrap.servers}") String bootstrapServers) {
-            return new EventuateKafkaProducer(bootstrapServers, EventuateKafkaProducerConfigurationProperties.empty());
-        }
-
-        @Bean
-        @Primary
-        public MessageProducerImplementation messageProducerImplementation(EventuateKafkaProducer eventuateKafkaProducer) {
-            return new MessageProducerImplementation() {
-                @Override
-                public void send(Message message) {
-                    String destination = message.getRequiredHeader(Message.DESTINATION);
-                    eventuateKafkaProducer.send(destination, message.getId(), JSonMapper.toJson(message));
-                }
-            };
-        }
     }
 
     @Autowired
-    private DomainEventPublisher domainEventPublisher;
+    private DirectToKafkaDomainEventPublisher domainEventPublisher;
 
     @Autowired
     private CustomerCreditReservedEventConsumer customerCreditReservedEventConsumer;
 
+    // What about this:
+    // This is required because of testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-events-publisher-starter'
+    //    @MockitoBean
+    //    private MessageProducer messageProducer;
+
+
+    @MockitoBean
+    private CustomerService customerService;
+
     @Test
-    public void shouldConsumeCustomerCreditReservedEvent() {
+    public void shouldConsumeCustomerCreditReservedEvent() throws InterruptedException {
 
-        Eventually.eventually(() -> {
-            CustomerCreditReservedEvent event = new CustomerCreditReservedEvent(99L);
+        CustomerCreditReservedEvent event = new CustomerCreditReservedEvent(99L);
 
-            domainEventPublisher.publish(
+        logger.info("Publishing CustomerCreditReservedEvent for customer 1 with amount 99");
+
+        domainEventPublisher.publish(
                 "io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain.Customer",
                 "1",
-                Collections.singletonList(event));
+                event);
 
-            verify(customerCreditReservedEventConsumer).handleCustomerCreditReserved(any());
-        });
+        logger.info("Published CustomerCreditReservedEvent for customer 1 with amount 99");
+
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() ->
+                verify(customerService).noteCreditReserved("1", 99L)
+        );
     }
 }

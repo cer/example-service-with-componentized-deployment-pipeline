@@ -1,5 +1,6 @@
 package io.eventuate.examples.tram.sagas.ordersandcustomers.customers.eventsubscribers;
 
+import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain.CustomerService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -7,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class CustomerEventSubscribersConfiguration {
 
     @Bean
-    public CustomerCreditReservedEventConsumer customerCreditReservedEventConsumer() {
-        return new CustomerCreditReservedEventConsumer();
+    public CustomerCreditReservedEventConsumer customerCreditReservedEventConsumer(CustomerService customerService) {
+        return new CustomerCreditReservedEventConsumer(customerService);
     }
 }

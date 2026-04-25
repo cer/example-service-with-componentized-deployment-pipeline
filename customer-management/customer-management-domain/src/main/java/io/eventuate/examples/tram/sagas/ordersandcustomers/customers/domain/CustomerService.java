@@ -2,6 +2,8 @@ package io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain;
 
 import io.eventuate.examples.common.money.Money;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +12,7 @@ import java.util.stream.StreamSupport;
 
 public class CustomerService {
 
+  private final Logger logger = LoggerFactory.getLogger(getClass());
   private CustomerRepository customerRepository;
   private CustomerEventPublisher customerEventPublisher;
 
@@ -37,4 +40,8 @@ public class CustomerService {
   public Optional<Customer> findById(long customerId) {
     return customerRepository.findById(customerId);
   }
+
+    public void noteCreditReserved(String customerId, Long orderId) {
+      logger.info("noteCreditReserved: customerId={}, orderId={}", customerId, orderId);
+    }
 }

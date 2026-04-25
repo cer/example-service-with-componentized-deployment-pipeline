@@ -13,14 +13,16 @@ dependencies {
 
     integrationTestImplementation 'io.eventuate.common:eventuate-common-testcontainers'
     integrationTestImplementation 'io.eventuate.messaging.kafka:eventuate-messaging-kafka-testcontainers'
+    integrationTestImplementation 'io.eventuate.messaging.kafka:eventuate-messaging-kafka-producer'
+    integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-producer-kafka"
     integrationTestImplementation 'io.eventuate.util:eventuate-util-test'
     integrationTestImplementation 'org.awaitility:awaitility'
     integrationTestImplementation 'org.testcontainers:postgresql'
-    integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka'
-    integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-events-publisher-starter'
-    integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-jdbc-kafka'
-    integrationTestImplementation 'io.eventuate.messaging.kafka:eventuate-messaging-kafka-spring-producer'
-    integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-flyway'
+    integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka"
+    integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc'
+
     integrationTestRuntimeOnly 'org.postgresql:postgresql'
-    integrationTestRuntimeOnly 'org.flywaydb:flyway-database-postgresql'
+    integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-flyway'
+    integrationTestRuntimeOnly 'org.flywaydb:flyway-database-postgresql:11.8.2'
+
 }

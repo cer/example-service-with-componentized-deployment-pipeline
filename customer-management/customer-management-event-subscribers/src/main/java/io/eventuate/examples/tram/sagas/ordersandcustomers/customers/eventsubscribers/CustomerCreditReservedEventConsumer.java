@@ -1,6 +1,7 @@
 package io.eventuate.examples.tram.sagas.ordersandcustomers.customers.eventsubscribers;
 
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain.CustomerCreditReservedEvent;
+import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain.CustomerService;
 import io.eventuate.tram.events.subscriber.DomainEventEnvelope;
 import io.eventuate.tram.events.subscriber.annotations.EventuateDomainEventHandler;
 import org.slf4j.Logger;
@@ -9,6 +10,11 @@ import org.slf4j.LoggerFactory;
 public class CustomerCreditReservedEventConsumer {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final CustomerService customerService;
+
+    public CustomerCreditReservedEventConsumer(CustomerService customerService) {
+        this.customerService = customerService;
+    }
 
     @EventuateDomainEventHandler(
         subscriberId = "customerServiceEventSubscriber",
@@ -18,5 +24,6 @@ public class CustomerCreditReservedEventConsumer {
         CustomerCreditReservedEvent event = envelope.getEvent();
         String customerId = envelope.getAggregateId();
         logger.info("Handling CustomerCreditReserved: customerId={}, orderId={}", customerId, event.orderId());
+        customerService.noteCreditReserved(customerId, event.orderId());
     }
 }

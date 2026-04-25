@@ -1,6 +1,7 @@
 package io.eventuate.examples.tram.sagas.ordersandcustomers.customers.eventsubscribers;
 
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain.CustomerCreditReservedEvent;
+import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain.CustomerService;
 import io.eventuate.tram.events.publisher.DomainEventPublisher;
 import io.eventuate.tram.spring.inmemory.TramInMemoryConfiguration;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -25,21 +27,16 @@ public class CustomerCreditReservedEventConsumerTest {
 
     @Configuration
     @EnableAutoConfiguration
-    @Import({TramInMemoryConfiguration.class})
+    @Import({CustomerEventSubscribersConfiguration.class, TramInMemoryConfiguration.class})
     static class Config {
 
-        @Bean
-        @Primary
-        public CustomerCreditReservedEventConsumer customerCreditReservedEventConsumer() {
-            return spy(new CustomerCreditReservedEventConsumer());
-        }
     }
 
     @Autowired
     private DomainEventPublisher domainEventPublisher;
 
-    @Autowired
-    private CustomerCreditReservedEventConsumer customerCreditReservedEventConsumer;
+    @MockitoBean
+    private CustomerService customerService;
 
     @Test
     public void shouldConsumeCustomerCreditReservedEvent() {
@@ -50,8 +47,8 @@ public class CustomerCreditReservedEventConsumerTest {
             "1",
             Collections.singletonList(event));
 
-        await().atMost(5, TimeUnit.SECONDS).untilAsserted(() ->
-            verify(customerCreditReservedEventConsumer).handleCustomerCreditReserved(any())
+        await().atMost(10, TimeUnit.SECONDS).untilAsserted(() ->
+                verify(customerService).noteCreditReserved("1", 99L)
         );
     }
 }
