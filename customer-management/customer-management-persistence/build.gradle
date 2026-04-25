@@ -18,6 +18,7 @@ dependencies {
     integrationTestImplementation "io.eventuate.common:eventuate-common-testcontainers"
     // TODO shouldn't need to do this too
     integrationTestImplementation "org.testcontainers:testcontainers"
+    integrationTestImplementation "org.testcontainers:junit-jupiter"
 
 }
 

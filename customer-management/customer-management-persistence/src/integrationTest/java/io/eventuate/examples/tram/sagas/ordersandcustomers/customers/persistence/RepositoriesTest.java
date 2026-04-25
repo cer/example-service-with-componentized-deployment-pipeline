@@ -17,6 +17,8 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,9 +26,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ContextConfiguration(classes=RepositoriesTest.Config.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional(propagation = Propagation.NEVER)
+@Testcontainers
 public class RepositoriesTest {
 
 
+  @Container
   public static EventuateVanillaPostgresContainer database = new EventuateVanillaPostgresContainer();
 
   @DynamicPropertySource

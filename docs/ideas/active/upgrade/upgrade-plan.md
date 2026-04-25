@@ -247,14 +247,14 @@ Add Springwolf async API documentation and API docs generation test to `customer
     - [x] Add `eventuate-tram-spring-testing-support-outbox` to componentTestImplementation
     - [x] Add `eventuate-tram-spring-testing-support-producer-kafka` to componentTestImplementation
 
-- [ ] **Task 5.4: Update TestContainers to use JUnit Jupiter lifecycle**
+- [x] **Task 5.4: Update TestContainers to use JUnit Jupiter lifecycle**
   - TaskType: OUTCOME
   - Entrypoint: `grep -r junit-jupiter . --include='*.gradle' || echo not found`
   - Observable: Persistence integration tests use `org.testcontainers:junit-jupiter`
   - Evidence: `./gradlew compileAll`
   - Steps:
-    - [ ] Add `org.testcontainers:junit-jupiter` to persistence integration test dependencies
-    - [ ] Update persistence integration tests to use `@Testcontainers` and `@Container` annotations
+    - [x] Add `org.testcontainers:junit-jupiter` to persistence integration test dependencies
+    - [x] Update persistence integration tests to use `@Testcontainers` and `@Container` annotations
 
 ---
 
@@ -339,3 +339,12 @@ Added springdoc-openapi, Springwolf, in-memory test deps, h2, and event-subscrib
 
 ### 2026-04-25 12:43 - mark-task-complete
 GenerateApiDocsIntegrationTest passes, writes openapi.json and asyncapi.json to build/api-docs/
+
+### 2026-04-25 16:24 - mark-step-complete
+Added org.testcontainers:junit-jupiter to persistence integration test dependencies
+
+### 2026-04-25 16:24 - mark-step-complete
+Updated RepositoriesTest to use @Testcontainers and @Container annotations
+
+### 2026-04-25 16:24 - mark-task-complete
+Added junit-jupiter dependency and updated RepositoriesTest with @Testcontainers/@Container annotations. compileAll passes.
