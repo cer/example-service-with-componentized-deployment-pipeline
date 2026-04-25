@@ -227,16 +227,16 @@ Add Springwolf async API documentation and API docs generation test to `customer
     - [x] Add `h2` testRuntimeOnly dependency
     - [x] Add event-publishing and event-subscribers module dependencies
 
-- [ ] **Task 5.2: Add API docs generation test**
+- [x] **Task 5.2: Add API docs generation test**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew :customer-service-main:test`
   - Observable: `GenerateApiDocsIntegrationTest` passes, writing `build/api-docs/openapi.json` and `build/api-docs/asyncapi.json`
   - Evidence: `./gradlew :customer-service-main:test`
   - Steps:
-    - [ ] Create `GenerateApiDocsIntegrationTest` in `customer-service-main/src/test/java`
-    - [ ] Configure with `TramInMemoryConfiguration`, exclude `FlywayAutoConfiguration`
-    - [ ] Add test for OpenAPI docs (`/v3/api-docs`) asserting domain-specific endpoints
-    - [ ] Add test for AsyncAPI docs (`/springwolf/docs`) asserting domain-specific channels
+    - [x] Create `GenerateApiDocsIntegrationTest` in `customer-service-main/src/test/java`
+    - [x] Configure with `TramInMemoryConfiguration`, exclude `FlywayAutoConfiguration`
+    - [x] Add test for OpenAPI docs (`/v3/api-docs`) asserting domain-specific endpoints
+    - [x] Add test for AsyncAPI docs (`/springwolf/docs`) asserting domain-specific channels
 
 - [ ] **Task 5.3: Add component test outbox verification dependencies**
   - TaskType: OUTCOME
@@ -336,3 +336,6 @@ Integration test passes with real Kafka and PostgreSQL via TestContainers - BUIL
 
 ### 2026-04-25 12:23 - mark-task-complete
 Added springdoc-openapi, Springwolf, in-memory test deps, h2, and event-subscribers module dependency
+
+### 2026-04-25 12:43 - mark-task-complete
+GenerateApiDocsIntegrationTest passes, writes openapi.json and asyncapi.json to build/api-docs/
