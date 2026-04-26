@@ -269,14 +269,14 @@ Add integration test to the event-publishing module verifying events are written
   - Steps:
     - [x] Apply `io.eventuate.plugins.gradle.testing.integration-tests` plugin
     - [x] Add integrationTestImplementation dependencies: `eventuate-common-testcontainers`, `eventuate-tram-spring-producer-jdbc`, `org.testcontainers:postgresql`, `org.flywaydb:flyway-database-postgresql`
-- [ ] **Task 6.2: Add integration test verifying events are written to outbox**
+- [x] **Task 6.2: Add integration test verifying events are written to outbox**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew :customer-management:customer-management-event-publishing:integrationTest`
   - Observable: Integration test publishes a `CustomerCreditReservedEvent` via `CustomerEventPublisher` and asserts the event appears in the Eventuate outbox table
   - Evidence: `./gradlew :customer-management:customer-management-event-publishing:integrationTest`
   - Steps:
-    - [ ] Create integration test class that boots Spring context with `CustomerEventPublishingConfiguration`, `CustomerDomainConfiguration`, persistence, and TestContainers PostgreSQL
-    - [ ] Test creates a Customer, calls `customerEventPublisher.publish()`, and verifies the event is in the outbox
+    - [x] Create integration test class that boots Spring context with `CustomerEventPublishingConfiguration`, `CustomerDomainConfiguration`, persistence, and TestContainers PostgreSQL
+    - [x] Test creates a Customer, calls `customerEventPublisher.publish()`, and verifies the event is in the outbox
 ## Steel Thread 7: Command Handler Unit Test
 Add unit test for the command-api module using in-memory Tram, per the saga-command-handler skill.
 
@@ -408,3 +408,12 @@ Missing test identified by comparing codebase against eventuate-development plug
 
 ### 2026-04-25 16:42 - insert-thread-after
 Missing test identified by comparing codebase against eventuate-development plugin testing strategy
+
+### 2026-04-25 17:02 - mark-step-complete
+Created CustomerEventPublishingIntegrationTest with Spring context, TestContainers PostgreSQL, and CustomerEventPublishingConfiguration
+
+### 2026-04-25 17:02 - mark-step-complete
+Test publishes CustomerCreditReservedEvent via customerEventPublisher.publish() and verifies event in outbox message table
+
+### 2026-04-25 17:02 - mark-task-complete
+Integration test passes - publishes CustomerCreditReservedEvent and verifies it appears in the Eventuate outbox message table
