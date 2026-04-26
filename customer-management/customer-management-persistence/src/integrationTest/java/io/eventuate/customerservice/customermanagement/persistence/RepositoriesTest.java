@@ -20,7 +20,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ContextConfiguration(classes=RepositoriesTest.Config.class)
@@ -63,16 +63,16 @@ public class RepositoriesTest {
 
     transactionTemplate.executeWithoutResult(ts -> {
       Customer c2 = customerRepository.findById(c.getId()).get();
-      assertEquals(customerName, c2.getName());
-      assertEquals(creditLimit, c2.getCreditLimit());
-      assertEquals(creditLimit, c2.availableCredit());
+      assertThat(c2.getName()).isEqualTo(customerName);
+      assertThat(c2.getCreditLimit()).isEqualTo(creditLimit);
+      assertThat(c2.availableCredit()).isEqualTo(creditLimit);
 
       c2.reserveCredit(1234L, amount);
     });
 
     transactionTemplate.executeWithoutResult(ts -> {
       Customer c2 = customerRepository.findById(c.getId()).get();
-      assertEquals(expectedAvailableCredit, c2.availableCredit());
+      assertThat(c2.availableCredit()).isEqualTo(expectedAvailableCredit);
 
     });
 

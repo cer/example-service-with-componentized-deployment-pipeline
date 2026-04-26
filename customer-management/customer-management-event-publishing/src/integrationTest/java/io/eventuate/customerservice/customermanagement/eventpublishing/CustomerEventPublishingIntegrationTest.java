@@ -20,8 +20,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = CustomerEventPublishingIntegrationTest.Config.class,
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -68,9 +67,9 @@ public class CustomerEventPublishingIntegrationTest {
                 "SELECT * FROM message WHERE destination = ? AND headers LIKE ?",
                 destination, "%" + CustomerCreditReservedEvent.class.getName() + "%");
 
-        assertFalse(messages.isEmpty(), "Expected at least one event in the outbox for destination " + destination);
+        assertThat(messages).as("Expected at least one event in the outbox for destination " + destination).isNotEmpty();
         String payload = (String) messages.get(0).get("payload");
-        assertTrue(payload.contains(String.valueOf(orderId)),
-                "Expected outbox payload to contain orderId " + orderId);
+        assertThat(payload).as("Expected outbox payload to contain orderId " + orderId)
+                .contains(String.valueOf(orderId));
     }
 }

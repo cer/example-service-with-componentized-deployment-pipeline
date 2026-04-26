@@ -11,7 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -39,13 +41,13 @@ public class CustomerServiceTest {
 
     customerService.reserveCredit(customerId, orderId, orderTotal);
 
-    assertEquals(new Money("60.00"), customer.availableCredit());
+    assertThat(customer.availableCredit()).isEqualTo(new Money("60.00"));
 
     ArgumentCaptor<CustomerCreditReservedEvent> eventCaptor = ArgumentCaptor.forClass(CustomerCreditReservedEvent.class);
     verify(customerEventPublisher).publish(eq(customer), eventCaptor.capture());
 
     CustomerCreditReservedEvent event = eventCaptor.getValue();
-    assertEquals(orderId, event.orderId());
+    assertThat(event.orderId()).isEqualTo(orderId);
   }
 
   @Test
@@ -54,9 +56,8 @@ public class CustomerServiceTest {
 
     when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 
-    assertThrows(CustomerNotFoundException.class, () ->
-        customerService.reserveCredit(customerId, 101L, new Money("50.00"))
-    );
+    assertThatThrownBy(() -> customerService.reserveCredit(customerId, 101L, new Money("50.00")))
+        .isInstanceOf(CustomerNotFoundException.class);
     verifyNoInteractions(customerEventPublisher);
   }
 
@@ -69,9 +70,8 @@ public class CustomerServiceTest {
 
     when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
 
-    assertThrows(CustomerCreditLimitExceededException.class, () ->
-        customerService.reserveCredit(customerId, orderId, orderTotal)
-    );
+    assertThatThrownBy(() -> customerService.reserveCredit(customerId, orderId, orderTotal))
+        .isInstanceOf(CustomerCreditLimitExceededException.class);
     verifyNoInteractions(customerEventPublisher);
   }
 
@@ -85,8 +85,8 @@ public class CustomerServiceTest {
 
     Customer result = customerService.createCustomer(name, creditLimit);
 
-    assertEquals(name, result.getName());
-    assertEquals(creditLimit, result.getCreditLimit());
+    assertThat(result.getName()).isEqualTo(name);
+    assertThat(result.getCreditLimit()).isEqualTo(creditLimit);
     verify(customerRepository).save(any(Customer.class));
   }
 
@@ -99,8 +99,8 @@ public class CustomerServiceTest {
 
     Optional<Customer> result = customerService.findById(customerId);
 
-    assertTrue(result.isPresent());
-    assertEquals("John", result.get().getName());
+    assertThat(result).isPresent();
+    assertThat(result.get().getName()).isEqualTo("John");
   }
 
   @Test
@@ -111,7 +111,7 @@ public class CustomerServiceTest {
 
     Optional<Customer> result = customerService.findById(customerId);
 
-    assertTrue(result.isEmpty());
+    assertThat(result).isEmpty();
   }
 
   @Test
@@ -123,6 +123,6 @@ public class CustomerServiceTest {
 
     List<Customer> result = customerService.findAll();
 
-    assertEquals(2, result.size());
+    assertThat(result).hasSize(2);
   }
 }
