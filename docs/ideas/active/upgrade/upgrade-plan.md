@@ -301,7 +301,7 @@ Expand unit test coverage for CustomerController to cover all three endpoints, p
     - [x] Add `shouldCreateCustomer` test to `CustomerControllerTest` using RestAssuredMockMvc standaloneSetup
     - [x] Mock `customerService.createCustomer()` to return a Customer with known ID
     - [x] Assert response status 200 and body contains `customerId`
-- [ ] **Task 8.2: Add unit test for GET /customers/{customerId} endpoint**
+- [x] **Task 8.2: Add unit test for GET /customers/{customerId} endpoint**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew :customer-management:customer-management-web-api:test`
   - Observable: Unit tests cover both found (200 with customer data) and not-found (404) cases
@@ -438,3 +438,6 @@ Added shouldGetCustomer test
 
 ### 2026-04-25 17:35 - mark-step-complete
 Added shouldReturn404WhenCustomerNotFound test
+
+### 2026-04-25 17:36 - mark-task-complete
+Unit tests for GET /customers/{customerId} - both 200 and 404 cases
