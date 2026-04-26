@@ -292,15 +292,15 @@ Add unit test for the command-api module using in-memory Tram, per the saga-comm
 ## Steel Thread 8: Web API Unit Test Coverage
 Expand unit test coverage for CustomerController to cover all three endpoints, per the web-api-adapter skill.
 
-- [ ] **Task 8.1: Add unit test for POST /customers endpoint**
+- [x] **Task 8.1: Add unit test for POST /customers endpoint**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew :customer-management:customer-management-web-api:test`
   - Observable: Unit test POSTs a `CreateCustomerRequest` and asserts 200 response with `customerId`
   - Evidence: `./gradlew :customer-management:customer-management-web-api:test`
   - Steps:
-    - [ ] Add `shouldCreateCustomer` test to `CustomerControllerTest` using RestAssuredMockMvc standaloneSetup
-    - [ ] Mock `customerService.createCustomer()` to return a Customer with known ID
-    - [ ] Assert response status 200 and body contains `customerId`
+    - [x] Add `shouldCreateCustomer` test to `CustomerControllerTest` using RestAssuredMockMvc standaloneSetup
+    - [x] Mock `customerService.createCustomer()` to return a Customer with known ID
+    - [x] Assert response status 200 and body contains `customerId`
 - [ ] **Task 8.2: Add unit test for GET /customers/{customerId} endpoint**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew :customer-management:customer-management-web-api:test`
@@ -429,3 +429,6 @@ Test verifies CustomerNotFound reply when CustomerService throws CustomerNotFoun
 
 ### 2026-04-25 17:19 - mark-task-complete
 Unit test for CustomerCommandHandler using in-memory Tram - success and failure cases verified
+
+### 2026-04-25 17:28 - mark-task-complete
+Unit test shouldCreateCustomer added to CustomerControllerTest using RestAssuredMockMvc, mocking customerService.createCustomer(), asserting 200 and customerId in response
