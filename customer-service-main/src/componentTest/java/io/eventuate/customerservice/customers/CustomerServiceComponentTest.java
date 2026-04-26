@@ -3,8 +3,8 @@ package io.eventuate.customerservice.customers;
 
 import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.examples.springauthorizationserver.testcontainers.AuthorizationServerContainerForServiceContainers;
-import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaCluster;
-import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaContainer;
+import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeCluster;
+import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeContainer;
 import io.eventuate.testcontainers.service.BuildArgsResolver;
 import io.eventuate.testcontainers.service.ServiceContainer;
 import io.restassured.RestAssured;
@@ -21,9 +21,11 @@ import static io.restassured.RestAssured.oauth2;
 
 public class CustomerServiceComponentTest {
 
-    public static EventuateKafkaCluster eventuateKafkaCluster = new EventuateKafkaCluster();
+    public static EventuateKafkaNativeCluster eventuateKafkaCluster = new EventuateKafkaNativeCluster("customer-service-tests");
 
-    public static EventuateKafkaContainer kafka = eventuateKafkaCluster.kafka;
+    public static EventuateKafkaNativeContainer kafka = eventuateKafkaCluster.kafka
+        .withNetworkAliases("kafka")
+        .withReuse(true);
 
     public static EventuateVanillaPostgresContainer database =
             new EventuateVanillaPostgresContainer()

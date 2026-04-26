@@ -5,9 +5,8 @@ import io.eventuate.tram.commands.common.CommandNameMapping;
 import io.eventuate.tram.commands.common.DefaultCommandNameMapping;
 import io.eventuate.tram.messaging.common.ChannelMapping;
 import io.eventuate.tram.messaging.common.DefaultChannelMapping;
-import io.eventuate.tram.sagas.spring.inmemory.TramSagaInMemoryConfiguration;
-import io.eventuate.tram.sagas.spring.participant.SagaParticipantConfiguration;
 import io.eventuate.tram.spring.cloudcontractsupport.EventuateContractVerifierConfiguration;
+import io.eventuate.tram.spring.inmemory.EnableTramInMemory;
 import io.eventuate.tram.spring.messaging.producer.jdbc.TramMessageProducerJdbcConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.autoconfigure.data.jdbc.AutoConfigureDataJdbc;
@@ -25,10 +24,9 @@ public abstract class OrderserviceBase {
 
   @Configuration
   //@EnableAutoConfiguration // (exclude = {DataSourceAutoConfiguration.class, EventuateTramKafkaMessageConsumerAutoConfiguration.class})
+  @EnableTramInMemory
   @Import({CustomerCommandHandlerConfiguration.class,
           EventuateContractVerifierConfiguration.class,
-          TramSagaInMemoryConfiguration.class,
-          SagaParticipantConfiguration.class,
           TramMessageProducerJdbcConfiguration.class})
   public static class TestConfiguration {
 

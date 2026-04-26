@@ -6,30 +6,22 @@ import io.eventuate.customerservice.customers.api.messaging.replies.CustomerCred
 import io.eventuate.customerservice.customers.api.messaging.replies.CustomerNotFound;
 import io.eventuate.customerservice.customers.domain.CustomerNotFoundException;
 import io.eventuate.customerservice.customers.domain.CustomerService;
-import io.eventuate.tram.commands.common.ReplyMessageHeaders;
 import io.eventuate.tram.commands.producer.CommandProducer;
-import io.eventuate.tram.messaging.common.Message;
-import io.eventuate.tram.messaging.consumer.MessageConsumer;
-import io.eventuate.tram.spring.inmemory.TramInMemoryConfiguration;
+import io.eventuate.tram.spring.inmemory.EnableTramInMemory;
+import io.eventuate.tram.spring.testing.consumer.EnableTestConsumer;
 import io.eventuate.tram.testutil.TestMessageConsumer;
 import io.eventuate.tram.testutil.TestMessageConsumerFactory;
-import io.eventuate.util.test.async.Eventually;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.data.jdbc.AutoConfigureDataJdbc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
@@ -41,13 +33,10 @@ public class CustomerCommandHandlerTest {
 
     @Configuration
     @EnableAutoConfiguration
-    @Import({CustomerCommandHandlerConfiguration.class, TramInMemoryConfiguration.class})
+    @EnableTramInMemory
+    @EnableTestConsumer
+    @Import(CustomerCommandHandlerConfiguration.class)
     static class Config {
-        @Bean
-        public TestMessageConsumerFactory testMessageConsumerFactory() {
-            return new TestMessageConsumerFactory();
-        }
-
     }
 
     @MockitoBean
@@ -71,15 +60,8 @@ public class CustomerCommandHandlerTest {
                 new ReserveCreditCommand(customerId, orderId, orderTotal),
                 replyConsumer.getReplyChannel(), Collections.emptyMap());
 
-        replyConsumer.assertHasReplyTo(commandId);
-        assertHasReplyToOfType(replyConsumer, commandId, CustomerCreditReserved.class);
+        replyConsumer.assertHasReplyTo(commandId, CustomerCreditReserved.class);
         verify(customerService).reserveCredit(customerId, orderId, orderTotal);
-    }
-
-    private <T> void assertHasReplyToOfType(TestMessageConsumer replyConsumer, String commandId, Class<T> replyClass) {
-        var message = replyConsumer.assertHasMessage();
-        assertThat(message.getHeaders().get(ReplyMessageHeaders.IN_REPLY_TO)).isEqualTo(commandId);
-        assertThat(message.getHeaders().get(ReplyMessageHeaders.REPLY_TYPE)).isEqualTo(replyClass.getName());
     }
 
     @Test
@@ -97,9 +79,7 @@ public class CustomerCommandHandlerTest {
                 new ReserveCreditCommand(customerId, orderId, orderTotal),
                 replyConsumer.getReplyChannel(), Collections.emptyMap());
 
-        replyConsumer.assertHasReplyTo(commandId);
-        assertHasReplyToOfType(replyConsumer, commandId, CustomerNotFound.class);
-
+        replyConsumer.assertHasReplyTo(commandId, CustomerNotFound.class);
         verify(customerService).reserveCredit(customerId, orderId, orderTotal);
     }
 }

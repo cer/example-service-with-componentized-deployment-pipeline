@@ -4,7 +4,7 @@ import io.eventuate.common.testcontainers.EventuateDatabaseContainer;
 import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.customerservice.customers.domain.CustomerCreditReservedEvent;
 import io.eventuate.customerservice.customers.domain.CustomerService;
-import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaCluster;
+import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeCluster;
 import io.eventuate.tram.spring.flyway.EventuateTramFlywayMigrationConfiguration;
 import io.eventuate.tram.testing.producer.kafka.events.DirectToKafkaDomainEventPublisher;
 import io.eventuate.tram.testing.producer.kafka.events.EnableDirectToKafkaDomainEventPublisher;
@@ -31,17 +31,15 @@ import static org.mockito.Mockito.verify;
 public class CustomerCreditReservedEventConsumerIntegrationTest {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public static EventuateKafkaCluster eventuateKafkaCluster = new EventuateKafkaCluster();
+    public static EventuateKafkaNativeCluster eventuateKafkaCluster = new EventuateKafkaNativeCluster("customer-service-tests");
 
-//    private static final EventuateDatabaseContainer database = DatabaseContainerFactory.makeVanillaDatabaseContainer();
     private static EventuateDatabaseContainer database = new EventuateVanillaPostgresContainer();
 
     @DynamicPropertySource
     static void registerProperties(DynamicPropertyRegistry registry) {
-        eventuateKafkaCluster.kafka.dependsOn(eventuateKafkaCluster.zookeeper);
         Startables.deepStart(eventuateKafkaCluster.kafka, database).join();
 
-        Stream.of(database, eventuateKafkaCluster.zookeeper, eventuateKafkaCluster.kafka).forEach(container -> {
+        Stream.of(database, eventuateKafkaCluster.kafka).forEach(container -> {
             container.registerProperties(registry::add);
         });
     }

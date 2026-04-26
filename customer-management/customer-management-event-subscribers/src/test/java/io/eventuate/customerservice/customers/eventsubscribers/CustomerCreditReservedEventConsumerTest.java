@@ -3,15 +3,13 @@ package io.eventuate.customerservice.customers.eventsubscribers;
 import io.eventuate.customerservice.customers.domain.CustomerCreditReservedEvent;
 import io.eventuate.customerservice.customers.domain.CustomerService;
 import io.eventuate.tram.events.publisher.DomainEventPublisher;
-import io.eventuate.tram.spring.inmemory.TramInMemoryConfiguration;
+import io.eventuate.tram.spring.inmemory.EnableTramInMemory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Collections;
@@ -27,7 +25,8 @@ public class CustomerCreditReservedEventConsumerTest {
 
     @Configuration
     @EnableAutoConfiguration
-    @Import({CustomerEventSubscribersConfiguration.class, TramInMemoryConfiguration.class})
+    @EnableTramInMemory
+    @Import(CustomerEventSubscribersConfiguration.class)
     static class Config {
 
     }

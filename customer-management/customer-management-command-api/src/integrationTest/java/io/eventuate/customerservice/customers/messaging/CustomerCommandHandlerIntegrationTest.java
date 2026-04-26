@@ -4,12 +4,13 @@ import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.customerservice.customers.api.messaging.commands.ReserveCreditCommand;
 import io.eventuate.customerservice.customers.domain.CustomerService;
-import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaCluster;
+import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeCluster;
 import io.eventuate.tram.commands.producer.CommandProducer;
 import io.eventuate.tram.spring.flyway.EventuateTramFlywayMigrationConfiguration;
-import io.eventuate.tram.spring.testing.kafka.producer.EventuateKafkaTestCommandProducerConfiguration;
 import io.eventuate.tram.spring.testing.outbox.commands.CommandOutboxTestSupport;
-import io.eventuate.tram.spring.testing.outbox.commands.CommandOutboxTestSupportConfiguration;
+import io.eventuate.tram.spring.testing.outbox.commands.EnableCommandOutboxTestSupport;
+import io.eventuate.tram.testing.producer.kafka.commands.DirectToKafkaCommandProducer;
+import io.eventuate.tram.testing.producer.kafka.commands.EnableDirectToKafkaCommandProducer;
 import io.eventuate.util.test.async.Eventually;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.lifecycle.Startables;
-import io.eventuate.common.testcontainers.DatabaseContainerFactory;
 import io.eventuate.common.testcontainers.EventuateDatabaseContainer;
 
 import java.util.Collections;
@@ -32,25 +32,24 @@ import static org.mockito.Mockito.verify;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class CustomerCommandHandlerIntegrationTest {
 
-  public static EventuateKafkaCluster eventuateKafkaCluster = new EventuateKafkaCluster();
+  public static EventuateKafkaNativeCluster eventuateKafkaCluster = new EventuateKafkaNativeCluster("customer-service-tests");
 
-    private static final EventuateDatabaseContainer database = DatabaseContainerFactory.makeVanillaDatabaseContainer();
+  private static final EventuateDatabaseContainer database = new EventuateVanillaPostgresContainer();
 
   @DynamicPropertySource
   static void registerDbProperties(DynamicPropertyRegistry registry) {
-    eventuateKafkaCluster.kafka.dependsOn(eventuateKafkaCluster.zookeeper);
     Startables.deepStart(eventuateKafkaCluster.kafka, database).join();
 
-    Stream.of(database, eventuateKafkaCluster.zookeeper, eventuateKafkaCluster.kafka).forEach(container -> {
+    Stream.of(database, eventuateKafkaCluster.kafka).forEach(container -> {
       container.registerProperties(registry::add);
     });
   }
 
-  // TODO - autoconfigure?? EventuateTramFlywayMigrationConfiguration
-
   @Configuration
   @EnableAutoConfiguration
-  @Import({CustomerMessagingConfiguration.class, EventuateKafkaTestCommandProducerConfiguration.class, EventuateTramFlywayMigrationConfiguration.class, CommandOutboxTestSupportConfiguration.class})
+  @EnableDirectToKafkaCommandProducer
+  @EnableCommandOutboxTestSupport
+  @Import({CustomerMessagingConfiguration.class, EventuateTramFlywayMigrationConfiguration.class})
   static public class Config {
 
   }
@@ -58,9 +57,8 @@ public class CustomerCommandHandlerIntegrationTest {
   @MockitoBean
   private CustomerService customerService;
 
-
   @Autowired
-  private CommandProducer commandProducer;
+  private DirectToKafkaCommandProducer commandProducer;
 
   @Autowired
   private CommandOutboxTestSupport commandOutboxTestSupport;

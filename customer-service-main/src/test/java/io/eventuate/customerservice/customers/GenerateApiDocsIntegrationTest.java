@@ -2,7 +2,7 @@ package io.eventuate.customerservice.customers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.eventuate.tram.spring.inmemory.TramInMemoryConfiguration;
+import io.eventuate.tram.spring.inmemory.EnableTramInMemory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -17,7 +17,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -40,7 +39,7 @@ class GenerateApiDocsIntegrationTest {
         ManagementWebSecurityAutoConfiguration.class,
         OAuth2ResourceServerAutoConfiguration.class
     })
-    @Import(TramInMemoryConfiguration.class)
+    @EnableTramInMemory
     @ComponentScan(basePackages = "io.eventuate.customerservice.customers",
         excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX,
             pattern = ".*(SecurityConfig|CustomerWebConfiguration|CustomerServiceMain)"))

@@ -25,6 +25,7 @@ dependencies {
     testImplementation "io.eventuate.messaging.kafka:eventuate-messaging-kafka-spring-producer"
     testImplementation "io.eventuate.tram.core:eventuate-tram-spring-logging"
     testImplementation 'io.eventuate.tram.core:eventuate-tram-test-util'
+    testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-testing-support-test-consumer'
 
 
     integrationTestImplementation "io.eventuate.common:eventuate-common-testcontainers"
@@ -36,8 +37,8 @@ dependencies {
     testImplementation "io.eventuate.util:eventuate-util-test"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
 
-    integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-kafka-producer"
-    integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-outbox-commands"
+    integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-producer-kafka"
+    integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-outbox"
 
 
 
