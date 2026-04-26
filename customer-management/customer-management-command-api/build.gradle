@@ -20,10 +20,11 @@ dependencies {
     }
 
 
-    testImplementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-in-memory"
+    testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-in-memory'
 
     testImplementation "io.eventuate.messaging.kafka:eventuate-messaging-kafka-spring-producer"
     testImplementation "io.eventuate.tram.core:eventuate-tram-spring-logging"
+    testImplementation 'io.eventuate.tram.core:eventuate-tram-test-util'
 
 
     integrationTestImplementation "io.eventuate.common:eventuate-common-testcontainers"

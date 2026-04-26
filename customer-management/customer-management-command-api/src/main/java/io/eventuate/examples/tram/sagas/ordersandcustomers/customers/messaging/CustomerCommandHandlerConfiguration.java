@@ -14,13 +14,5 @@ public class CustomerCommandHandlerConfiguration {
     return new CustomerCommandHandler(customerService);
   }
 
-  // TODO Exception handler for CustomerCreditLimitExceededException
-
-  @Bean
-  public CommandDispatcher consumerCommandDispatcher(CustomerCommandHandler target,
-                                                     SagaCommandDispatcherFactory sagaCommandDispatcherFactory) {
-
-    return sagaCommandDispatcherFactory.make("customerCommandDispatcher", target.commandHandlerDefinitions());
-  }
 
 }

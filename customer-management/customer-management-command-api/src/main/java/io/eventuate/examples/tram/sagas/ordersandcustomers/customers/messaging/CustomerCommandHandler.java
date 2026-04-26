@@ -7,10 +7,9 @@ import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.api.messagi
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain.CustomerCreditLimitExceededException;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain.CustomerNotFoundException;
 import io.eventuate.examples.tram.sagas.ordersandcustomers.customers.domain.CustomerService;
-import io.eventuate.tram.commands.consumer.CommandHandlers;
 import io.eventuate.tram.commands.consumer.CommandMessage;
+import io.eventuate.tram.commands.consumer.annotations.EventuateCommandHandler;
 import io.eventuate.tram.messaging.common.Message;
-import io.eventuate.tram.sagas.participant.SagaCommandHandlersBuilder;
 
 import static io.eventuate.tram.commands.consumer.CommandHandlerReplyBuilder.withFailure;
 import static io.eventuate.tram.commands.consumer.CommandHandlerReplyBuilder.withSuccess;
@@ -23,13 +22,8 @@ public class CustomerCommandHandler {
     this.customerService = customerService;
   }
 
-  public CommandHandlers commandHandlerDefinitions() {
-    return SagaCommandHandlersBuilder
-            .fromChannel("customerService")
-            .onMessage(ReserveCreditCommand.class, this::reserveCredit)
-            .build();
-  }
 
+  @EventuateCommandHandler(subscriberId="customerCommandDispatcher", channel="customerService")
   public Message reserveCredit(CommandMessage<ReserveCreditCommand> cm) {
     ReserveCreditCommand cmd = cm.getCommand();
     try {
