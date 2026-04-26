@@ -5,13 +5,26 @@ plugins {
 apply plugin: ServicePlugin
 
 dependencies {
-    implementation project(":customer-service-web")
-    implementation project(":customer-service-persistence")
-    implementation project(":customer-service-messaging")
+    implementation project(":customer-management:customer-management-web-api")
+    implementation project(":customer-management:customer-management-persistence")
+    implementation project(":customer-management:customer-management-command-api")
+    implementation project(":customer-management:customer-management-event-publishing")
+    implementation project(":customer-management:customer-management-event-subscribers")
     implementation "io.eventuate.tram.core:eventuate-tram-spring-logging"
 
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-web"
+
+    // REST API documentation
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion"
+
+    // Async API documentation
+    implementation "io.eventuate.tram.springwolf:eventuate-tram-springwolf-support-starter"
+
+    // API docs generation test (in-memory, no infra)
+    testImplementation "io.eventuate.tram.springwolf:eventuate-tram-springwolf-support-testing"
+    testImplementation "io.eventuate.tram.core:eventuate-tram-spring-in-memory"
+    testRuntimeOnly "com.h2database:h2"
 
     // TODO shouldn't need to do this too
     testImplementation "org.testcontainers:testcontainers"
@@ -22,12 +35,13 @@ dependencies {
     componentTestImplementation "io.eventuate.messaging.kafka:eventuate-messaging-kafka-testcontainers"
     componentTestImplementation "io.eventuate.cdc:eventuate-cdc-testcontainers"
     componentTestImplementation "io.rest-assured:rest-assured"
+    componentTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-outbox"
+    componentTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-producer-kafka"
     componentTestImplementation "io.eventuate.examples.spring-authorization-server:authorization-server-test-containers:$eventuateExamplesSpringAuthorizationServerVersion"
 
 }
 
 
-check.shouldRunAfter(":customer-service-web:check")
-check.shouldRunAfter(":customer-service-persistence:check")
-check.shouldRunAfter(":customer-service-messaging:check")
-check.shouldRunAfter(":customer-service-messaging:check")
+check.shouldRunAfter(":customer-management:customer-management-web-api:check")
+check.shouldRunAfter(":customer-management:customer-management-persistence:check")
+check.shouldRunAfter(":customer-management:customer-management-command-api:check")

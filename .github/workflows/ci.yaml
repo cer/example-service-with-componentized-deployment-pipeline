@@ -2,7 +2,7 @@ name: Build, test and publish
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, wip-publish ]
   pull_request:
     branches: [ main ]
 
@@ -21,3 +21,9 @@ jobs:
       uses: cer/github-build-and-test-action/k8s-test@main
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish
+      uses: cer/github-build-and-test-action/k8s-publish@main
+      with:
+        github-token: ${{ secrets.GH_TOKEN }}
+        service-name: customer-service

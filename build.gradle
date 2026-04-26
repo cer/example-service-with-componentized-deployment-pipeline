@@ -7,7 +7,6 @@ buildscript {
         eventuateMavenRepoUrl.split(',').each { repoUrl -> maven { url repoUrl } }
     }
     dependencies {
-        classpath "org.springframework.cloud:spring-cloud-contract-gradle-plugin:$springCloudContractDependenciesVersion"
     }
 }
 
@@ -36,15 +35,19 @@ subprojects {
         }
     }
 
+    tasks.withType(JavaCompile) {
+        options.compilerArgs += '-parameters'
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+
     dependencies {
 
-        testImplementation "junit:junit:4.13.2"
-
-        // constraints {
-        //     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion"
-        // }
-
         testImplementation "org.springframework.boot:spring-boot-starter-test"
+        testImplementation "org.assertj:assertj-core"
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     }
 

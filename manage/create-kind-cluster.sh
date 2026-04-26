@@ -14,7 +14,7 @@ reg_name="registry"
 if docker ps --format '{{.Names}}' | grep -E "^${reg_name}\$" ; then
   echo registry container already exists
 else
-  ./gradlew :customer-service-main:startDockerRegistry
+  ./gradlew startDockerRegistry
 fi
 
 if kind get clusters | grep -E "^$CLUSTER_NAME$" ; then
@@ -60,7 +60,7 @@ kubectl wait --namespace ingress-nginx \
 
 REGISTRY_DIR="/etc/containerd/certs.d/localhost:${reg_port}"
 for node in $(kind get nodes --name lp-cluster); do
-  echo configuring $node
+  echo configuring "$node"
   docker exec "${node}" mkdir -p "${REGISTRY_DIR}"
   cat <<EOF | docker exec -i "${node}" cp /dev/stdin "${REGISTRY_DIR}/hosts.toml"
 [host."http://${reg_name}:5000"]

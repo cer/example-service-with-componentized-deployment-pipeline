@@ -1,0 +1,46 @@
+plugins {
+    id 'io.eventuate.plugins.gradle.testing.integration-tests'
+}
+
+dependencies {
+    implementation "io.eventuate.examples.common:eventuate-examples-common-money-jakarta9:$eventuateCommonExamplesVersion"
+    implementation "io.eventuate.tram.core:eventuate-tram-spring-commands"
+    implementation project(":customer-management:customer-management-domain")
+
+    implementation "io.eventuate.tram.core:eventuate-tram-spring-flyway"
+    implementation 'org.flywaydb:flyway-database-postgresql:11.8.2'
+    implementation "org.flywaydb:flyway-core"
+    runtimeOnly "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-flyway"
+
+
+    implementation "io.eventuate.tram.core:eventuate-tram-spring-jdbc-kafka"
+    implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-participant-starter"
+    implementation("io.eventuate.tram.core:eventuate-tram-spring-optimistic-locking") {
+        exclude group: "io.micronaut"
+    }
+
+
+    testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-in-memory'
+
+    testImplementation "io.eventuate.messaging.kafka:eventuate-messaging-kafka-spring-producer"
+    testImplementation "io.eventuate.tram.core:eventuate-tram-spring-logging"
+    testImplementation 'io.eventuate.tram.core:eventuate-tram-test-util'
+    testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-testing-support-test-consumer'
+
+
+    integrationTestImplementation "io.eventuate.common:eventuate-common-testcontainers"
+    integrationTestImplementation "io.eventuate.messaging.kafka:eventuate-messaging-kafka-testcontainers"
+    integrationTestImplementation "org.testcontainers:testcontainers"
+    integrationTestImplementation "org.testcontainers:postgresql"
+
+    integrationTestImplementation project(":customer-management:customer-management-persistence")
+    testImplementation "io.eventuate.util:eventuate-util-test"
+
+
+    integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-producer-kafka"
+    integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-outbox"
+
+
+
+}
+

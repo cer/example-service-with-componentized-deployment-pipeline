@@ -23,3 +23,6 @@ bin/
 .DS_Store
 Thumbs.db
 **/charts/*.tgz
+.env.local
+logs/
+test-reports

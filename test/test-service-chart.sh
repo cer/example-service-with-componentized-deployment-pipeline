@@ -56,7 +56,7 @@ echo installing "$service_name"
 
 if [ -n "$PRIVATE_REGISTRY" ] ; then
   helmOpts=()
-  chart="oci://ghcr.io/microservices-live-projects/manning-live-project-series-kubernetes/charts/${service_name?}"
+  chart="oci://ghcr.io/cer/example-service-with-componentized-deployment-pipeline/charts/${service_name?}"
 else
   helmOpts=("--set-string" "image.repository=localhost:5002/${service_name}")
   chart="$service_name-deployment/helm-charts/$service_name"
@@ -75,7 +75,7 @@ echo running helm test "$release_name" ...
 
 SUCCESS=
 
-for i in {1..5}; do
+for _i in {1..5}; do
     if helm test "$release_name" ; then
         SUCCESS=yes
         break
@@ -98,7 +98,7 @@ echo
 if [ -n "$ingress_test_path" ] ; then
 
     if [ -n "$WITH_AUTH" ] ; then
-      POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=authorization-server,app.kubernetes.io/instance=authorization-server" -o jsonpath="{.items[0].metadata.name}")
+      POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=authorization-server,app.kubernetes.io/instance=authorization-server" --field-selector=status.phase=Running -o jsonpath="{.items[0].metadata.name}")
       JWT=$(kubectl exec "$POD_NAME" -- curl -s -X POST -u messaging-client:secret -d "client_id=messaging-client" -d "username=user" -d "password=password" \
           -d "grant_type=password" \
           http://localhost:9000/oauth2/token | jq -r .access_token)
@@ -109,7 +109,7 @@ if [ -n "$ingress_test_path" ] ; then
 
     echo accessing ingress "$ingress_test_path" with authOpts "${authOpts[@]}"
 
-    for i in {1..5}; do
+    for _i in {1..5}; do
         if curl "${authOpts[@]}" --retry-connrefused --retry 5 --retry-delay 1 --fail "localhost$ingress_test_path" > /dev/null ; then
             break
         fi
