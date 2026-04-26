@@ -280,15 +280,15 @@ Add integration test to the event-publishing module verifying events are written
 ## Steel Thread 7: Command Handler Unit Test
 Add unit test for the command-api module using in-memory Tram, per the saga-command-handler skill.
 
-- [ ] **Task 7.1: Add unit test for CustomerCommandHandler using in-memory Tram**
+- [x] **Task 7.1: Add unit test for CustomerCommandHandler using in-memory Tram**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew :customer-management:customer-management-command-api:test`
   - Observable: Unit test sends a `ReserveCreditCommand` via in-memory Tram and verifies the handler invokes `CustomerService.reserveCredit()` and returns a success reply
   - Evidence: `./gradlew :customer-management:customer-management-command-api:test`
   - Steps:
-    - [ ] Create `CustomerCommandHandlerTest` in `src/test/java` using `@SpringBootTest` with `SagaInMemoryConfiguration` and `@MockitoBean` for `CustomerService`
-    - [ ] Test sends `ReserveCreditCommand` via `CommandProducer` and verifies `CustomerService.reserveCredit()` is called
-    - [ ] Add test for failure case: when `CustomerService` throws `CustomerNotFoundException`, verify `CustomerNotFound` reply
+    - [x] Create `CustomerCommandHandlerTest` in `src/test/java` using `@SpringBootTest` with `SagaInMemoryConfiguration` and `@MockitoBean` for `CustomerService`
+    - [x] Test sends `ReserveCreditCommand` via `CommandProducer` and verifies `CustomerService.reserveCredit()` is called
+    - [x] Add test for failure case: when `CustomerService` throws `CustomerNotFoundException`, verify `CustomerNotFound` reply
 ## Steel Thread 8: Web API Unit Test Coverage
 Expand unit test coverage for CustomerController to cover all three endpoints, per the web-api-adapter skill.
 
@@ -417,3 +417,15 @@ Test publishes CustomerCreditReservedEvent via customerEventPublisher.publish() 
 
 ### 2026-04-25 17:02 - mark-task-complete
 Integration test passes - publishes CustomerCreditReservedEvent and verifies it appears in the Eventuate outbox message table
+
+### 2026-04-25 17:19 - mark-step-complete
+Created CustomerCommandHandlerTest with @SpringBootTest, TramSagaInMemoryConfiguration, @AutoConfigureDataJdbc, and @MockitoBean for CustomerService
+
+### 2026-04-25 17:19 - mark-step-complete
+Test sends ReserveCreditCommand via CommandProducer, verifies CustomerService.reserveCredit() called and CustomerCreditReserved reply type
+
+### 2026-04-25 17:19 - mark-step-complete
+Test verifies CustomerNotFound reply when CustomerService throws CustomerNotFoundException
+
+### 2026-04-25 17:19 - mark-task-complete
+Unit test for CustomerCommandHandler using in-memory Tram - success and failure cases verified
