@@ -307,8 +307,8 @@ Expand unit test coverage for CustomerController to cover all three endpoints, p
   - Observable: Unit tests cover both found (200 with customer data) and not-found (404) cases
   - Evidence: `./gradlew :customer-management:customer-management-web-api:test`
   - Steps:
-    - [ ] Add `shouldGetCustomer` test — mock `customerService.findById()` returning `Optional.of(customer)`, assert 200 with customer fields
-    - [ ] Add `shouldReturn404WhenCustomerNotFound` test — mock `customerService.findById()` returning `Optional.empty()`, assert 404
+    - [x] Add `shouldGetCustomer` test — mock `customerService.findById()` returning `Optional.of(customer)`, assert 200 with customer fields
+    - [x] Add `shouldReturn404WhenCustomerNotFound` test — mock `customerService.findById()` returning `Optional.empty()`, assert 404
 ## Change History
 ### 2026-04-24 08:37 - mark-task-complete
 Updated eventuatePlatformVersion to 2026.1.BUILD-SNAPSHOT, verified with ./gradlew compileAll - BUILD SUCCESSFUL
@@ -432,3 +432,9 @@ Unit test for CustomerCommandHandler using in-memory Tram - success and failure 
 
 ### 2026-04-25 17:28 - mark-task-complete
 Unit test shouldCreateCustomer added to CustomerControllerTest using RestAssuredMockMvc, mocking customerService.createCustomer(), asserting 200 and customerId in response
+
+### 2026-04-25 17:35 - mark-step-complete
+Added shouldGetCustomer test
+
+### 2026-04-25 17:35 - mark-step-complete
+Added shouldReturn404WhenCustomerNotFound test

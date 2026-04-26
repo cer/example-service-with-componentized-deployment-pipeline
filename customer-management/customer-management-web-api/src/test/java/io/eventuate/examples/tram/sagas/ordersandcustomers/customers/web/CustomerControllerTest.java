@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static io.restassured.http.ContentType.JSON;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
@@ -66,5 +67,44 @@ public class CustomerControllerTest {
             .statusCode(HttpStatus.OK.value())
             .contentType(JSON)
             .and().body("customers", empty());
+  }
+
+  @Test
+  public void shouldGetCustomer() {
+    Long customerId = 42L;
+    String name = "Fred";
+    Money creditLimit = new Money("15.00");
+
+    Customer customer = new Customer(name, creditLimit);
+    ReflectionTestUtils.setField(customer, "id", customerId);
+
+    when(customerService.findById(customerId)).thenReturn(Optional.of(customer));
+
+    given()
+            .standaloneSetup(customerController)
+      .when()
+            .get("/customers/{customerId}", customerId)
+            .then()
+            .log().ifValidationFails()
+            .statusCode(HttpStatus.OK.value())
+            .contentType(JSON)
+            .body("customerId", equalTo(customerId.intValue()))
+            .body("name", equalTo(name))
+            .body("creditLimit.amount", equalTo(15.0f));
+  }
+
+  @Test
+  public void shouldReturn404WhenCustomerNotFound() {
+    Long customerId = 99L;
+
+    when(customerService.findById(customerId)).thenReturn(Optional.empty());
+
+    given()
+            .standaloneSetup(customerController)
+      .when()
+            .get("/customers/{customerId}", customerId)
+            .then()
+            .log().ifValidationFails()
+            .statusCode(HttpStatus.NOT_FOUND.value());
   }
 }
