@@ -1,11 +1,12 @@
 package io.eventuate.customerservice.customermanagement.messaging;
 
+import io.eventuate.common.testcontainers.EventuateDatabaseContainer;
 import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
-import io.eventuate.examples.common.money.Money;
 import io.eventuate.customerservice.customermanagement.api.messaging.commands.ReserveCreditCommand;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
+import io.eventuate.examples.common.money.Money;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeCluster;
-import io.eventuate.tram.spring.flyway.EventuateTramFlywayMigrationConfiguration;
+import io.eventuate.tram.spring.flyway.EnableEventuateTramFlywayMigration;
 import io.eventuate.tram.spring.testing.outbox.commands.CommandOutboxTestSupport;
 import io.eventuate.tram.spring.testing.outbox.commands.EnableCommandOutboxTestSupport;
 import io.eventuate.tram.testing.producer.kafka.commands.DirectToKafkaCommandProducer;
@@ -15,13 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.testcontainers.lifecycle.Startables;
-import io.eventuate.common.testcontainers.EventuateDatabaseContainer;
 
 import java.util.Collections;
 import java.util.stream.Stream;
@@ -48,7 +48,8 @@ public class CustomerCommandHandlerIntegrationTest {
   @EnableAutoConfiguration
   @EnableDirectToKafkaCommandProducer
   @EnableCommandOutboxTestSupport
-  @Import({CustomerMessagingConfiguration.class, EventuateTramFlywayMigrationConfiguration.class})
+  @EnableEventuateTramFlywayMigration
+  @Import(CustomerMessagingConfiguration.class)
   static public class Config {
 
   }

@@ -10,7 +10,7 @@ import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerSer
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeCluster;
 import io.eventuate.tram.messaging.common.Message;
-import io.eventuate.tram.spring.flyway.EventuateTramFlywayMigrationConfiguration;
+import io.eventuate.tram.spring.flyway.EnableEventuateTramFlywayMigration;
 import io.eventuate.tram.spring.testing.outbox.commands.CommandOutboxTestSupport;
 import io.eventuate.tram.spring.testing.outbox.commands.EnableCommandOutboxTestSupport;
 import io.eventuate.tram.testing.producer.kafka.replies.DirectToKafkaCommandReplyProducer;
@@ -51,7 +51,8 @@ public class ReserveCreditSagaIntegrationTest {
     @EnableAutoConfiguration
     @EnableCommandOutboxTestSupport
     @EnableDirectToKafkaCommandReplyProducer
-    @Import({CustomerManagementSagasConfiguration.class, EventuateTramFlywayMigrationConfiguration.class})
+    @EnableEventuateTramFlywayMigration
+    @Import(CustomerManagementSagasConfiguration.class)
     static class TestConfiguration {
     }
 

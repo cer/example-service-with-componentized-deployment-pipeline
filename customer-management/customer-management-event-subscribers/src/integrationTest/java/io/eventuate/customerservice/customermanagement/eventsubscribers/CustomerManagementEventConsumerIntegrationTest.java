@@ -5,7 +5,7 @@ import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreditReservedEvent;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeCluster;
-import io.eventuate.tram.spring.flyway.EventuateTramFlywayMigrationConfiguration;
+import io.eventuate.tram.spring.flyway.EnableEventuateTramFlywayMigration;
 import io.eventuate.tram.testing.producer.kafka.events.DirectToKafkaDomainEventPublisher;
 import io.eventuate.tram.testing.producer.kafka.events.EnableDirectToKafkaDomainEventPublisher;
 import org.junit.jupiter.api.Test;
@@ -46,8 +46,8 @@ public class CustomerManagementEventConsumerIntegrationTest {
 
     @Configuration
     @EnableAutoConfiguration
-    @Import({CustomerManagementEventConsumerConfiguration.class,
-            EventuateTramFlywayMigrationConfiguration.class})
+    @EnableEventuateTramFlywayMigration
+    @Import(CustomerManagementEventConsumerConfiguration.class)
     @EnableDirectToKafkaDomainEventPublisher
     static class Config {
 
