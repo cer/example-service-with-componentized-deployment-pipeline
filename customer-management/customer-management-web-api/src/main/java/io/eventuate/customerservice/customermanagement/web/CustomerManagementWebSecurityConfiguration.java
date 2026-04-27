@@ -1,5 +1,7 @@
 package io.eventuate.customerservice.customermanagement.web;
 
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -15,10 +17,12 @@ import java.util.stream.Collectors;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class SecurityConfig  {
-
-  public SecurityConfig() {
-  }
+@SecurityScheme(
+        name = "Bearer Authentication",
+        type = SecuritySchemeType.HTTP,
+        bearerFormat = "JWT",
+        scheme = "bearer")
+public class CustomerManagementWebSecurityConfiguration {
 
   @Bean
   public JwtAuthenticationConverter jwtAuthenticationConverter() {
@@ -33,7 +37,6 @@ public class SecurityConfig  {
     return jwtConverter;
   }
 
-
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http.csrf(csrf -> csrf.disable())
@@ -47,5 +50,3 @@ public class SecurityConfig  {
     }).build();
   }
 }
-
-

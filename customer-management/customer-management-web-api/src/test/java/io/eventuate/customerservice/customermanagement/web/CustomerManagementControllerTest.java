@@ -41,7 +41,7 @@ public class CustomerManagementControllerTest {
   static class TestApp {
   }
 
-  // This class duplicates the security configuration in SecurityConfig because that's not included
+  // This class duplicates the security configuration in CustomerManagementWebSecurityConfiguration because that's not included
 
   @TestConfiguration
   @EnableWebSecurity
