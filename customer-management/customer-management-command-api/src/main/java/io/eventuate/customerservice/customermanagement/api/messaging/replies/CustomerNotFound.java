@@ -1,4 +1,4 @@
 package io.eventuate.customerservice.customermanagement.api.messaging.replies;
 
-public class CustomerNotFound implements ReserveCreditResult {
+public record CustomerNotFound() implements ReserveCreditResult {
 }

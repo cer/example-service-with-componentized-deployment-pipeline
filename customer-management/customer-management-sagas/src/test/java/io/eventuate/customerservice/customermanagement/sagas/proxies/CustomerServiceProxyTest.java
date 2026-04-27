@@ -21,8 +21,8 @@ class CustomerServiceProxyTest {
         assertThat(cmd.getDestinationChannel()).isEqualTo("customerService");
         assertThat(cmd.getCommand()).isInstanceOf(ReserveCreditCommand.class);
         ReserveCreditCommand command = (ReserveCreditCommand) cmd.getCommand();
-        assertThat(command.getCustomerId()).isEqualTo(customerId.id());
-        assertThat(command.getOrderId()).isEqualTo(102L);
-        assertThat(command.getOrderTotal()).isEqualTo(new Money("12.34"));
+        assertThat(command.customerId()).isEqualTo(customerId.id());
+        assertThat(command.orderId()).isEqualTo(102L);
+        assertThat(command.orderTotal()).isEqualTo(new Money("12.34"));
     }
 }

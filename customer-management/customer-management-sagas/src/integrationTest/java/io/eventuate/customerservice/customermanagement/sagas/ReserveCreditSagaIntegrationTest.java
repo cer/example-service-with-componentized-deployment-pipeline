@@ -79,7 +79,7 @@ public class ReserveCreditSagaIntegrationTest {
 
         Message commandMessage = commandOutboxTestSupport.assertThatCommandMessageSent(
                 ReserveCreditCommand.class, CustomerServiceProxy.CHANNEL,
-                cmd -> cmd.getCustomerId().equals(customerId.id()));
+                cmd -> cmd.customerId().equals(customerId.id()));
 
         commandReplyProducer.sendReply(commandMessage, ReserveCreditCommand.class, new CustomerCreditReserved());
 

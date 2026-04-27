@@ -28,7 +28,7 @@ public class CustomerCommandHandler {
   public Message reserveCredit(CommandMessage<ReserveCreditCommand> cm) {
     ReserveCreditCommand cmd = cm.getCommand();
     try {
-      customerManagementService.reserveCredit(new CustomerId(cmd.getCustomerId()), cmd.getOrderId(), cmd.getOrderTotal());
+      customerManagementService.reserveCredit(new CustomerId(cmd.customerId()), cmd.orderId(), cmd.orderTotal());
       return withSuccess(new CustomerCreditReserved());
     } catch (CustomerNotFoundException e) {
       return withFailure(new CustomerNotFound());

@@ -161,6 +161,6 @@ public class CustomerServiceComponentTest {
         UUID expectedCustomerId = UUID.fromString(createdCustomerId);
         commandOutboxTestSupport.assertThatCommandMessageSent(
                 ReserveCreditCommand.class, CustomerServiceProxy.CHANNEL,
-                cmd -> cmd.getCustomerId().equals(expectedCustomerId));
+                cmd -> cmd.customerId().equals(expectedCustomerId));
     }
 }
