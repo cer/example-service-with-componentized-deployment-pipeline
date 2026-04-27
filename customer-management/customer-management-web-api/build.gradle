@@ -1,18 +1,13 @@
-plugins {
-    id 'io.eventuate.plugins.gradle.testing.integration-tests'
-}
-
 dependencies {
     implementation "io.eventuate.examples.common:eventuate-examples-common-money-jakarta9:$eventuateCommonExamplesVersion"
 
     implementation project(":customer-management:customer-management-domain")
+    implementation project(":customer-management:customer-management-sagas")
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-api:$springdocVersion"
 
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
 
     testImplementation "io.rest-assured:spring-mock-mvc"
-
-    integrationTestImplementation "io.eventuate.examples.spring-authorization-server:authorization-server-test-containers:$eventuateExamplesSpringAuthorizationServerVersion"
 
 }

@@ -44,4 +44,16 @@ public class CustomerService {
   public void noteCreditReserved(String customerId, Long orderId) {
     logger.info("noteCreditReserved: customerId={}, orderId={}", customerId, orderId);
   }
+
+  public void noteCreditReservationPending(CreditReservationDetails details) {
+    logger.info("noteCreditReservationPending: customerId={}, orderId={}, orderTotal={}", details.customerId(), details.orderId(), details.orderTotal());
+  }
+
+  public void noteCreditReservationApproved(CreditReservationDetails details) {
+    logger.info("noteCreditReservationApproved: customerId={}, orderId={}", details.customerId(), details.orderId());
+  }
+
+  public void noteCreditReservationRejected(CreditReservationDetails details, RejectionReason reason) {
+    logger.info("noteCreditReservationRejected: customerId={}, orderId={}, reason={}", details.customerId(), details.orderId(), reason);
+  }
 }

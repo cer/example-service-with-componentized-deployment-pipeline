@@ -15,18 +15,19 @@ The [CI workflow](.github/workflows/ci.yaml) exercises a realistic end-to-end pi
 
 ## Application overview
 
-The application itself is a customer service built with the [Eventuate](https://eventuate.io/) platform. It exposes a REST API for managing customers, uses PostgreSQL for persistence, Kafka for messaging, and OAuth2/JWT for security.
+The application itself is a customer service built with the [Eventuate](https://eventuate.io/) platform. It exposes a REST API for managing customers, uses PostgreSQL for persistence, Kafka for messaging, and OAuth2/JWT for security. It uses the Eventuate Tram Saga framework to orchestrate credit reservation via a saga with local and participant steps.
 
 ### Project modules
 
 | Module | Purpose |
 |---|---|
-| `customer-service-api-web` | REST API request/response types |
-| `customer-service-api-messaging` | Messaging API types |
-| `customer-service-domain` | Domain model and business logic |
-| `customer-service-persistence` | Database persistence |
-| `customer-service-web` | REST controllers and security configuration |
-| `customer-service-messaging` | Message handlers |
+| `customer-management/customer-management-domain` | Domain model and business logic (`Customer`, `CustomerService`) |
+| `customer-management/customer-management-persistence` | JPA persistence configuration |
+| `customer-management/customer-management-web-api` | REST controllers, security configuration, and API DTOs |
+| `customer-management/customer-management-command-api` | Saga participant command handler (`ReserveCreditCommand`) |
+| `customer-management/customer-management-sagas` | `ReserveCreditSaga` orchestration with local and participant steps |
+| `customer-management/customer-management-event-publishing` | Domain event publishing |
+| `customer-management/customer-management-event-subscribers` | Domain event consumers |
 | `customer-service-main` | Spring Boot application entry point and Dockerfile |
 
 ### Kubernetes deployment

@@ -1,11 +1,14 @@
 package io.eventuate.customerservice.customermanagement.web;
 
+import io.eventuate.customerservice.customermanagement.api.web.ReserveCreditRequest;
+import io.eventuate.customerservice.customermanagement.api.web.ReserveCreditResponse;
 import io.eventuate.customerservice.customermanagement.api.web.CreateCustomerRequest;
 import io.eventuate.customerservice.customermanagement.api.web.CreateCustomerResponse;
 import io.eventuate.customerservice.customermanagement.api.web.GetCustomerResponse;
 import io.eventuate.customerservice.customermanagement.api.web.GetCustomersResponse;
 import io.eventuate.customerservice.customermanagement.domain.Customer;
 import io.eventuate.customerservice.customermanagement.domain.CustomerService;
+import io.eventuate.customerservice.customermanagement.sagas.CustomerManagementSagaService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,10 +27,13 @@ import java.util.stream.Collectors;
 public class CustomerController {
 
   private final CustomerService customerService;
+  private final CustomerManagementSagaService customerManagementSagaService;
 
   @Autowired
-  public CustomerController(CustomerService customerService) {
+  public CustomerController(CustomerService customerService,
+                            CustomerManagementSagaService customerManagementSagaService) {
     this.customerService = customerService;
+    this.customerManagementSagaService = customerManagementSagaService;
   }
 
   @RequestMapping(value = "/customers", method = RequestMethod.POST)
@@ -42,6 +48,14 @@ public class CustomerController {
   public ResponseEntity<GetCustomersResponse> getAll() {
     return ResponseEntity.ok(new GetCustomersResponse(customerService.findAll().stream()
             .map(c -> new GetCustomerResponse(c.getId(), c.getName(), c.getCreditLimit())).collect(Collectors.toList())));
+  }
+
+  @RequestMapping(value = "/customers/{customerId}/creditreservations", method = RequestMethod.POST)
+  @PreAuthorize("hasRole('USER')")
+  public ReserveCreditResponse createCreditReservation(@PathVariable Long customerId,
+                                                                  @RequestBody ReserveCreditRequest request) {
+    customerManagementSagaService.reserveCredit(customerId, request.getOrderId(), request.getOrderTotal());
+    return new ReserveCreditResponse("PENDING");
   }
 
   @RequestMapping(value="/customers/{customerId}", method= RequestMethod.GET)

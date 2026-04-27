@@ -8,6 +8,7 @@ dependencies {
     implementation project(":customer-management:customer-management-web-api")
     implementation project(":customer-management:customer-management-persistence")
     implementation project(":customer-management:customer-management-command-api")
+    implementation project(":customer-management:customer-management-sagas")
     implementation project(":customer-management:customer-management-event-publishing")
     implementation project(":customer-management:customer-management-event-subscribers")
     implementation "io.eventuate.tram.core:eventuate-tram-spring-logging"
@@ -35,8 +36,11 @@ dependencies {
     componentTestImplementation "io.eventuate.messaging.kafka:eventuate-messaging-kafka-testcontainers"
     componentTestImplementation "io.eventuate.cdc:eventuate-cdc-testcontainers"
     componentTestImplementation "io.rest-assured:rest-assured"
+    componentTestImplementation project(":customer-management:customer-management-sagas")
+    componentTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-commands"
     componentTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-outbox"
     componentTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-producer-kafka"
+    componentTestImplementation "io.eventuate.tram.core:eventuate-tram-test-util"
     componentTestImplementation "io.eventuate.examples.spring-authorization-server:authorization-server-test-containers:$eventuateExamplesSpringAuthorizationServerVersion"
 
 }

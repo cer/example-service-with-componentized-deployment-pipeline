@@ -1,0 +1,33 @@
+plugins {
+    id 'io.eventuate.plugins.gradle.testing.integration-tests'
+}
+
+dependencies {
+    implementation project(":customer-management:customer-management-domain")
+
+    implementation "io.eventuate.examples.common:eventuate-examples-common-money-jakarta9:$eventuateCommonExamplesVersion"
+    implementation "io.eventuate.tram.core:eventuate-tram-spring-commands"
+    implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl-starter"
+    implementation "io.eventuate.tram.core:eventuate-tram-spring-jdbc-kafka"
+    implementation "io.eventuate.tram.core:eventuate-tram-spring-flyway"
+    runtimeOnly "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-flyway"
+    implementation 'org.flywaydb:flyway-database-postgresql:11.8.2'
+
+    testImplementation "org.mockito:mockito-core"
+    testImplementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-testing-support"
+    testImplementation "io.eventuate.tram.core:eventuate-tram-spring-in-memory"
+
+    integrationTestImplementation project(":customer-management:customer-management-domain")
+    integrationTestImplementation project(":customer-management:customer-management-persistence")
+    integrationTestRuntimeOnly "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-flyway"
+    integrationTestRuntimeOnly 'org.flywaydb:flyway-database-postgresql:11.8.2'
+    integrationTestImplementation "io.eventuate.common:eventuate-common-testcontainers"
+    integrationTestImplementation "io.eventuate.messaging.kafka:eventuate-messaging-kafka-testcontainers"
+    integrationTestImplementation "org.testcontainers:testcontainers"
+    integrationTestImplementation "org.testcontainers:postgresql"
+    integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-producer-kafka"
+    integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-outbox"
+    integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-commands"
+    integrationTestImplementation "io.eventuate.util:eventuate-util-test"
+    integrationTestImplementation "org.mockito:mockito-core"
+}

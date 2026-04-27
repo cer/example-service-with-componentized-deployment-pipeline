@@ -2,8 +2,10 @@ package io.eventuate.customerservice.customermanagement.web;
 
 
 import io.eventuate.examples.common.money.Money;
+import io.eventuate.customerservice.customermanagement.api.web.ReserveCreditRequest;
 import io.eventuate.customerservice.customermanagement.domain.Customer;
 import io.eventuate.customerservice.customermanagement.domain.CustomerService;
+import io.eventuate.customerservice.customermanagement.sagas.CustomerManagementSagaService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +21,7 @@ import static io.restassured.http.ContentType.JSON;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +29,9 @@ public class CustomerControllerTest {
 
   @Mock
   private CustomerService customerService;
+
+  @Mock
+  private CustomerManagementSagaService customerManagementSagaService;
 
   @InjectMocks
   private CustomerController customerController;
@@ -106,5 +112,26 @@ public class CustomerControllerTest {
             .then()
             .log().ifValidationFails()
             .statusCode(HttpStatus.NOT_FOUND.value());
+  }
+
+  @Test
+  public void shouldReserveCredit() {
+    Long customerId = 42L;
+    Long orderId = 99L;
+    Money orderTotal = new Money("12.34");
+
+    given()
+            .standaloneSetup(customerController)
+            .contentType(JSON)
+            .body(new ReserveCreditRequest(orderId, orderTotal))
+      .when()
+            .post("/customers/{customerId}/creditreservations", customerId)
+            .then()
+            .log().ifValidationFails()
+            .statusCode(HttpStatus.OK.value())
+            .contentType(JSON)
+            .body("status", equalTo("PENDING"));
+
+    verify(customerManagementSagaService).reserveCredit(customerId, orderId, orderTotal);
   }
 }
