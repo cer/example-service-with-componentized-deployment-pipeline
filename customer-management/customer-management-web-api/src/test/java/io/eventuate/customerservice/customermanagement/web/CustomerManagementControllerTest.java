@@ -3,7 +3,7 @@ package io.eventuate.customerservice.customermanagement.web;
 
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.customerservice.customermanagement.domain.Customer;
-import io.eventuate.customerservice.customermanagement.domain.CustomerService;
+import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.customerservice.customermanagement.sagas.CustomerManagementSagaService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +32,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(CustomerController.class)
+@WebMvcTest(CustomerManagementController.class)
 @WithMockUser(roles = "USER")
-public class CustomerControllerTest {
+public class CustomerManagementControllerTest {
 
   @SpringBootApplication
   static class TestApp {
@@ -58,7 +58,7 @@ public class CustomerControllerTest {
   private MockMvc mockMvc;
 
   @MockitoBean
-  private CustomerService customerService;
+  private CustomerManagementService customerManagementService;
 
   @MockitoBean
   private CustomerManagementSagaService customerManagementSagaService;
@@ -72,7 +72,7 @@ public class CustomerControllerTest {
     Customer customer = new Customer(name, creditLimit);
     ReflectionTestUtils.setField(customer, "id", customerId);
 
-    when(customerService.createCustomer(name, creditLimit)).thenReturn(customer);
+    when(customerManagementService.createCustomer(name, creditLimit)).thenReturn(customer);
 
     mockMvc.perform(post("/customers")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -83,7 +83,7 @@ public class CustomerControllerTest {
 
   @Test
   public void shouldGetCustomers() throws Exception {
-    when(customerService.findAll()).thenReturn(Collections.emptyList());
+    when(customerManagementService.findAll()).thenReturn(Collections.emptyList());
 
     mockMvc.perform(get("/customers"))
             .andExpect(status().isOk())
@@ -99,7 +99,7 @@ public class CustomerControllerTest {
     Customer customer = new Customer(name, creditLimit);
     ReflectionTestUtils.setField(customer, "id", customerId);
 
-    when(customerService.findById(customerId)).thenReturn(Optional.of(customer));
+    when(customerManagementService.findById(customerId)).thenReturn(Optional.of(customer));
 
     mockMvc.perform(get("/customers/{customerId}", customerId))
             .andExpect(status().isOk())
@@ -112,7 +112,7 @@ public class CustomerControllerTest {
   public void shouldReturn404WhenCustomerNotFound() throws Exception {
     Long customerId = 99L;
 
-    when(customerService.findById(customerId)).thenReturn(Optional.empty());
+    when(customerManagementService.findById(customerId)).thenReturn(Optional.empty());
 
     mockMvc.perform(get("/customers/{customerId}", customerId))
             .andExpect(status().isNotFound());

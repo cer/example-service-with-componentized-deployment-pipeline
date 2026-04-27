@@ -5,7 +5,7 @@ import io.eventuate.customerservice.customermanagement.api.messaging.commands.Re
 import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerCreditReserved;
 import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerNotFound;
 import io.eventuate.customerservice.customermanagement.domain.CustomerNotFoundException;
-import io.eventuate.customerservice.customermanagement.domain.CustomerService;
+import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.tram.commands.producer.CommandProducer;
 import io.eventuate.tram.spring.inmemory.EnableTramInMemory;
 import io.eventuate.tram.spring.testing.consumer.EnableTestConsumer;
@@ -40,7 +40,7 @@ public class CustomerCommandHandlerTest {
     }
 
     @MockitoBean
-    private CustomerService customerService;
+    private CustomerManagementService customerManagementService;
 
     @Autowired
     private CommandProducer commandProducer;
@@ -61,7 +61,7 @@ public class CustomerCommandHandlerTest {
                 replyConsumer.getReplyChannel(), Collections.emptyMap());
 
         replyConsumer.assertHasReplyTo(commandId, CustomerCreditReserved.class);
-        verify(customerService).reserveCredit(customerId, orderId, orderTotal);
+        verify(customerManagementService).reserveCredit(customerId, orderId, orderTotal);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class CustomerCommandHandlerTest {
         Money orderTotal = new Money("56.78");
 
         doThrow(new CustomerNotFoundException())
-                .when(customerService).reserveCredit(customerId, orderId, orderTotal);
+                .when(customerManagementService).reserveCredit(customerId, orderId, orderTotal);
 
         TestMessageConsumer replyConsumer = testMessageConsumerFactory.make();
 
@@ -80,6 +80,6 @@ public class CustomerCommandHandlerTest {
                 replyConsumer.getReplyChannel(), Collections.emptyMap());
 
         replyConsumer.assertHasReplyTo(commandId, CustomerNotFound.class);
-        verify(customerService).reserveCredit(customerId, orderId, orderTotal);
+        verify(customerManagementService).reserveCredit(customerId, orderId, orderTotal);
     }
 }

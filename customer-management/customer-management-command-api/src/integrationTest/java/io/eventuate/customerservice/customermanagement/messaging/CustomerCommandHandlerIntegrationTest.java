@@ -3,9 +3,8 @@ package io.eventuate.customerservice.customermanagement.messaging;
 import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.customerservice.customermanagement.api.messaging.commands.ReserveCreditCommand;
-import io.eventuate.customerservice.customermanagement.domain.CustomerService;
+import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeCluster;
-import io.eventuate.tram.commands.producer.CommandProducer;
 import io.eventuate.tram.spring.flyway.EventuateTramFlywayMigrationConfiguration;
 import io.eventuate.tram.spring.testing.outbox.commands.CommandOutboxTestSupport;
 import io.eventuate.tram.spring.testing.outbox.commands.EnableCommandOutboxTestSupport;
@@ -55,7 +54,7 @@ public class CustomerCommandHandlerIntegrationTest {
   }
 
   @MockitoBean
-  private CustomerService customerService;
+  private CustomerManagementService customerManagementService;
 
   @Autowired
   private DirectToKafkaCommandProducer commandProducer;
@@ -76,7 +75,7 @@ public class CustomerCommandHandlerIntegrationTest {
 
     Eventually.eventually(() -> {
 
-      verify(customerService).reserveCredit(customerId, orderId, orderTotal);
+      verify(customerManagementService).reserveCredit(customerId, orderId, orderTotal);
 
       commandOutboxTestSupport.assertCommandReplyMessageSent(replyTo);
     });

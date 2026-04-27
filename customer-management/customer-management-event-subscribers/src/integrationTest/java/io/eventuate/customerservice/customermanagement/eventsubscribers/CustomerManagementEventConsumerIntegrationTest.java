@@ -3,7 +3,7 @@ package io.eventuate.customerservice.customermanagement.eventsubscribers;
 import io.eventuate.common.testcontainers.EventuateDatabaseContainer;
 import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreditReservedEvent;
-import io.eventuate.customerservice.customermanagement.domain.CustomerService;
+import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeCluster;
 import io.eventuate.tram.spring.flyway.EventuateTramFlywayMigrationConfiguration;
 import io.eventuate.tram.testing.producer.kafka.events.DirectToKafkaDomainEventPublisher;
@@ -28,7 +28,7 @@ import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-public class CustomerCreditReservedEventConsumerIntegrationTest {
+public class CustomerManagementEventConsumerIntegrationTest {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public static EventuateKafkaNativeCluster eventuateKafkaCluster = new EventuateKafkaNativeCluster("customer-service-tests");
@@ -46,7 +46,7 @@ public class CustomerCreditReservedEventConsumerIntegrationTest {
 
     @Configuration
     @EnableAutoConfiguration
-    @Import({CustomerEventSubscribersConfiguration.class,
+    @Import({CustomerManagementEventConsumerConfiguration.class,
             EventuateTramFlywayMigrationConfiguration.class})
     @EnableDirectToKafkaDomainEventPublisher
     static class Config {
@@ -57,7 +57,7 @@ public class CustomerCreditReservedEventConsumerIntegrationTest {
     private DirectToKafkaDomainEventPublisher domainEventPublisher;
 
     @Autowired
-    private CustomerCreditReservedEventConsumer customerCreditReservedEventConsumer;
+    private CustomerManagementEventConsumer customerManagementEventConsumer;
 
     // What about this:
     // This is required because of testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-events-publisher-starter'
@@ -66,7 +66,7 @@ public class CustomerCreditReservedEventConsumerIntegrationTest {
 
 
     @MockitoBean
-    private CustomerService customerService;
+    private CustomerManagementService customerManagementService;
 
     @Test
     public void shouldConsumeCustomerCreditReservedEvent() throws InterruptedException {
@@ -83,7 +83,7 @@ public class CustomerCreditReservedEventConsumerIntegrationTest {
         logger.info("Published CustomerCreditReservedEvent for customer 1 with amount 99");
 
         await().atMost(10, TimeUnit.SECONDS).untilAsserted(() ->
-                verify(customerService).noteCreditReserved("1", 99L)
+                verify(customerManagementService).noteCreditReserved("1", 99L)
         );
     }
 }

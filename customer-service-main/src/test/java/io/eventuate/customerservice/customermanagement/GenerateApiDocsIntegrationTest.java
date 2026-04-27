@@ -42,7 +42,7 @@ class GenerateApiDocsIntegrationTest {
     @EnableTramInMemory
     @ComponentScan(basePackages = "io.eventuate.customerservice.customermanagement",
         excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX,
-            pattern = ".*(SecurityConfig|CustomerWebConfiguration|CustomerServiceMain)"))
+            pattern = ".*(SecurityConfig|CustomerManagementWebConfiguration|CustomerServiceMain)"))
     public static class Config {
     }
 

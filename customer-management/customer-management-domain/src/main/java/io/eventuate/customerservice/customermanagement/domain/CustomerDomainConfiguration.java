@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration;
 public class CustomerDomainConfiguration {
 
   @Bean
-  public CustomerService customerService(CustomerRepository customerRepository, CustomerEventPublisher customerEventPublisher) {
-    return new CustomerService(customerRepository, customerEventPublisher);
+  public CustomerManagementService customerService(CustomerRepository customerRepository, CustomerEventPublisher customerEventPublisher) {
+    return new CustomerManagementService(customerRepository, customerEventPublisher);
   }
 
 }

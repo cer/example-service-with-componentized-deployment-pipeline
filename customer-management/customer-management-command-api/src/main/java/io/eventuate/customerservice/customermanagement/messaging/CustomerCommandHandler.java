@@ -6,7 +6,7 @@ import io.eventuate.customerservice.customermanagement.api.messaging.replies.Cus
 import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerNotFound;
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreditLimitExceededException;
 import io.eventuate.customerservice.customermanagement.domain.CustomerNotFoundException;
-import io.eventuate.customerservice.customermanagement.domain.CustomerService;
+import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.tram.commands.consumer.CommandMessage;
 import io.eventuate.tram.commands.consumer.annotations.EventuateCommandHandler;
 import io.eventuate.tram.messaging.common.Message;
@@ -16,10 +16,10 @@ import static io.eventuate.tram.commands.consumer.CommandHandlerReplyBuilder.wit
 
 public class CustomerCommandHandler {
 
-  private CustomerService customerService;
+  private CustomerManagementService customerManagementService;
 
-  public CustomerCommandHandler(CustomerService customerService) {
-    this.customerService = customerService;
+  public CustomerCommandHandler(CustomerManagementService customerManagementService) {
+    this.customerManagementService = customerManagementService;
   }
 
 
@@ -27,7 +27,7 @@ public class CustomerCommandHandler {
   public Message reserveCredit(CommandMessage<ReserveCreditCommand> cm) {
     ReserveCreditCommand cmd = cm.getCommand();
     try {
-      customerService.reserveCredit(cmd.getCustomerId(), cmd.getOrderId(), cmd.getOrderTotal());
+      customerManagementService.reserveCredit(cmd.getCustomerId(), cmd.getOrderId(), cmd.getOrderTotal());
       return withSuccess(new CustomerCreditReserved());
     } catch (CustomerNotFoundException e) {
       return withFailure(new CustomerNotFound());

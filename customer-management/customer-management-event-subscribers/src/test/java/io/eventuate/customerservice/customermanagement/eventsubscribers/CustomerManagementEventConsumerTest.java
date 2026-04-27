@@ -1,7 +1,7 @@
 package io.eventuate.customerservice.customermanagement.eventsubscribers;
 
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreditReservedEvent;
-import io.eventuate.customerservice.customermanagement.domain.CustomerService;
+import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.tram.events.publisher.DomainEventPublisher;
 import io.eventuate.tram.spring.inmemory.EnableTramInMemory;
 import org.junit.jupiter.api.Test;
@@ -21,12 +21,12 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest
-public class CustomerCreditReservedEventConsumerTest {
+public class CustomerManagementEventConsumerTest {
 
     @Configuration
     @EnableAutoConfiguration
     @EnableTramInMemory
-    @Import(CustomerEventSubscribersConfiguration.class)
+    @Import(CustomerManagementEventConsumerConfiguration.class)
     static class Config {
 
     }
@@ -35,7 +35,7 @@ public class CustomerCreditReservedEventConsumerTest {
     private DomainEventPublisher domainEventPublisher;
 
     @MockitoBean
-    private CustomerService customerService;
+    private CustomerManagementService customerManagementService;
 
     @Test
     public void shouldConsumeCustomerCreditReservedEvent() {
@@ -47,7 +47,7 @@ public class CustomerCreditReservedEventConsumerTest {
             Collections.singletonList(event));
 
         await().atMost(10, TimeUnit.SECONDS).untilAsserted(() ->
-                verify(customerService).noteCreditReserved("1", 99L)
+                verify(customerManagementService).noteCreditReserved("1", 99L)
         );
     }
 }

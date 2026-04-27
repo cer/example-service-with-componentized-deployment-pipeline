@@ -5,7 +5,7 @@ import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.customerservice.customermanagement.api.messaging.commands.ReserveCreditCommand;
 import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerCreditReserved;
 import io.eventuate.customerservice.customermanagement.domain.CreditReservationDetails;
-import io.eventuate.customerservice.customermanagement.domain.CustomerService;
+import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerServiceProxy;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeCluster;
@@ -56,7 +56,7 @@ public class ReserveCreditSagaIntegrationTest {
     }
 
     @MockitoBean
-    private CustomerService customerService;
+    private CustomerManagementService customerManagementService;
 
     @Autowired
     private CustomerManagementSagaService customerManagementSagaService;
@@ -83,8 +83,8 @@ public class ReserveCreditSagaIntegrationTest {
 
         Eventually.eventually(() -> {
             CreditReservationDetails expectedDetails = new CreditReservationDetails(customerId, orderId, orderTotal);
-            verify(customerService).noteCreditReservationPending(expectedDetails);
-            verify(customerService).noteCreditReservationApproved(expectedDetails);
+            verify(customerManagementService).noteCreditReservationPending(expectedDetails);
+            verify(customerManagementService).noteCreditReservationApproved(expectedDetails);
         });
     }
 }

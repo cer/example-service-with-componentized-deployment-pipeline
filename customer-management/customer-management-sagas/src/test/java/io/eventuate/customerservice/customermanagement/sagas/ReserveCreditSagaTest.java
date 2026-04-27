@@ -4,7 +4,7 @@ import io.eventuate.customerservice.customermanagement.api.messaging.commands.Re
 import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerCreditLimitExceeded;
 import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerNotFound;
 import io.eventuate.customerservice.customermanagement.domain.CreditReservationDetails;
-import io.eventuate.customerservice.customermanagement.domain.CustomerService;
+import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.customerservice.customermanagement.domain.RejectionReason;
 import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerServiceProxy;
 import io.eventuate.examples.common.money.Money;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verify;
 
 public class ReserveCreditSagaTest {
 
-    private CustomerService customerService;
+    private CustomerManagementService customerManagementService;
     private CustomerServiceProxy customerServiceProxy;
 
     private Long customerId = 101L;
@@ -27,12 +27,12 @@ public class ReserveCreditSagaTest {
 
     @BeforeEach
     public void setUp() {
-        customerService = mock(CustomerService.class);
+        customerManagementService = mock(CustomerManagementService.class);
         customerServiceProxy = new CustomerServiceProxy();
     }
 
     private ReserveCreditSaga makeSaga() {
-        return new ReserveCreditSaga(customerService, customerServiceProxy);
+        return new ReserveCreditSaga(customerManagementService, customerServiceProxy);
     }
 
     @Test
@@ -49,8 +49,8 @@ public class ReserveCreditSagaTest {
             .expectCompletedSuccessfully();
 
         CreditReservationDetails expectedDetails = new CreditReservationDetails(customerId, orderId, orderTotal);
-        verify(customerService).noteCreditReservationPending(expectedDetails);
-        verify(customerService).noteCreditReservationApproved(expectedDetails);
+        verify(customerManagementService).noteCreditReservationPending(expectedDetails);
+        verify(customerManagementService).noteCreditReservationApproved(expectedDetails);
     }
 
     @Test
@@ -69,8 +69,8 @@ public class ReserveCreditSagaTest {
                 assertThat(data.getRejectionReason()).isEqualTo(RejectionReason.UNKNOWN_CUSTOMER));
 
         CreditReservationDetails expectedDetails = new CreditReservationDetails(customerId, orderId, orderTotal);
-        verify(customerService).noteCreditReservationPending(expectedDetails);
-        verify(customerService).noteCreditReservationRejected(expectedDetails, RejectionReason.UNKNOWN_CUSTOMER);
+        verify(customerManagementService).noteCreditReservationPending(expectedDetails);
+        verify(customerManagementService).noteCreditReservationRejected(expectedDetails, RejectionReason.UNKNOWN_CUSTOMER);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class ReserveCreditSagaTest {
                 assertThat(data.getRejectionReason()).isEqualTo(RejectionReason.INSUFFICIENT_CREDIT));
 
         CreditReservationDetails expectedDetails = new CreditReservationDetails(customerId, orderId, orderTotal);
-        verify(customerService).noteCreditReservationPending(expectedDetails);
-        verify(customerService).noteCreditReservationRejected(expectedDetails, RejectionReason.INSUFFICIENT_CREDIT);
+        verify(customerManagementService).noteCreditReservationPending(expectedDetails);
+        verify(customerManagementService).noteCreditReservationRejected(expectedDetails, RejectionReason.INSUFFICIENT_CREDIT);
     }
 }

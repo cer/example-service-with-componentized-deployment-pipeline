@@ -1,6 +1,6 @@
 package io.eventuate.customerservice.customermanagement.messaging;
 
-import io.eventuate.customerservice.customermanagement.domain.CustomerService;
+import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.tram.commands.common.CommandNameMapping;
 import io.eventuate.tram.commands.common.DefaultCommandNameMapping;
 import io.eventuate.tram.messaging.common.ChannelMapping;
@@ -44,7 +44,7 @@ public abstract class OrderserviceBase {
   }
 
   @MockBean
-  private CustomerService customerService;
+  private CustomerManagementService customerService;
 
   @BeforeEach
   public void setUp() {

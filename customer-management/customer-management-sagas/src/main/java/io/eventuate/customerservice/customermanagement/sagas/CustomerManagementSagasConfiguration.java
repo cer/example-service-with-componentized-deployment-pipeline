@@ -1,6 +1,6 @@
 package io.eventuate.customerservice.customermanagement.sagas;
 
-import io.eventuate.customerservice.customermanagement.domain.CustomerService;
+import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerServiceProxy;
 import io.eventuate.tram.sagas.orchestration.SagaInstanceFactory;
 import io.eventuate.tram.spring.flyway.EventuateTramFlywayMigrationConfiguration;
@@ -18,9 +18,9 @@ public class CustomerManagementSagasConfiguration {
     }
 
     @Bean
-    public ReserveCreditSaga reserveCreditSaga(CustomerService customerService,
-                                                                    CustomerServiceProxy customerServiceProxy) {
-        return new ReserveCreditSaga(customerService, customerServiceProxy);
+    public ReserveCreditSaga reserveCreditSaga(CustomerManagementService customerManagementService,
+                                               CustomerServiceProxy customerServiceProxy) {
+        return new ReserveCreditSaga(customerManagementService, customerServiceProxy);
     }
 
     @Bean

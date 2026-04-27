@@ -3,7 +3,7 @@ package io.eventuate.customerservice.customermanagement.web;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.customerservice.customermanagement.domain.Customer;
 import io.eventuate.customerservice.customermanagement.domain.CustomerRepository;
-import io.eventuate.customerservice.customermanagement.domain.CustomerService;
+import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -18,9 +18,9 @@ public abstract class ApigatewayBase {
 
   @BeforeEach
   public void setup() {
-    CustomerService customerService = mock(CustomerService.class);
+    CustomerManagementService customerService = mock(CustomerManagementService.class);
     CustomerRepository customerRepository = mock(CustomerRepository.class);
-    CustomerController orderController = new CustomerController(customerService);
+    CustomerManagementController orderController = new CustomerManagementController(customerService);
 
     Customer customer = new Customer("Chris", new Money("123.45"));
     ReflectionTestUtils.setField(customer, "id", 101L);

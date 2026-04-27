@@ -10,13 +10,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class CustomerService {
+public class CustomerManagementService {
 
   private final Logger logger = LoggerFactory.getLogger(getClass());
   private final CustomerRepository customerRepository;
   private final CustomerEventPublisher customerEventPublisher;
 
-  public CustomerService(CustomerRepository customerRepository, CustomerEventPublisher customerEventPublisher) {
+  public CustomerManagementService(CustomerRepository customerRepository, CustomerEventPublisher customerEventPublisher) {
     this.customerRepository = customerRepository;
     this.customerEventPublisher = customerEventPublisher;
   }

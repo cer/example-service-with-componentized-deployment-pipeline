@@ -2,8 +2,7 @@ package io.eventuate.customerservice.customermanagement.sagas;
 
 import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerCreditLimitExceeded;
 import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerNotFound;
-import io.eventuate.customerservice.customermanagement.domain.CreditReservationDetails;
-import io.eventuate.customerservice.customermanagement.domain.CustomerService;
+import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.customerservice.customermanagement.domain.RejectionReason;
 import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerServiceProxy;
 import io.eventuate.tram.commands.consumer.CommandWithDestination;
@@ -14,11 +13,11 @@ import java.util.List;
 
 public class ReserveCreditSaga implements SimpleSaga<ReserveCreditSagaData> {
 
-    private final CustomerService customerService;
+    private final CustomerManagementService customerManagementService;
     private final CustomerServiceProxy customerServiceProxy;
 
-    public ReserveCreditSaga(CustomerService customerService, CustomerServiceProxy customerServiceProxy) {
-        this.customerService = customerService;
+    public ReserveCreditSaga(CustomerManagementService customerManagementService, CustomerServiceProxy customerServiceProxy) {
+        this.customerManagementService = customerManagementService;
         this.customerServiceProxy = customerServiceProxy;
     }
 
@@ -45,11 +44,11 @@ public class ReserveCreditSaga implements SimpleSaga<ReserveCreditSagaData> {
     }
 
     private void create(ReserveCreditSagaData data) {
-        customerService.noteCreditReservationPending(data.toCreditReservationDetails());
+        customerManagementService.noteCreditReservationPending(data.toCreditReservationDetails());
     }
 
     private void reject(ReserveCreditSagaData data) {
-        customerService.noteCreditReservationRejected(data.toCreditReservationDetails(), data.getRejectionReason());
+        customerManagementService.noteCreditReservationRejected(data.toCreditReservationDetails(), data.getRejectionReason());
     }
 
     private CommandWithDestination reserveCredit(ReserveCreditSagaData data) {
@@ -65,6 +64,6 @@ public class ReserveCreditSaga implements SimpleSaga<ReserveCreditSagaData> {
     }
 
     private void approve(ReserveCreditSagaData data) {
-        customerService.noteCreditReservationApproved(data.toCreditReservationDetails());
+        customerManagementService.noteCreditReservationApproved(data.toCreditReservationDetails());
     }
 }

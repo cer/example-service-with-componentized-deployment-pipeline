@@ -28,7 +28,7 @@ public class CustomerServiceTest {
   private CustomerEventPublisher customerEventPublisher;
 
   @InjectMocks
-  private CustomerService customerService;
+  private CustomerManagementService customerManagementService;
 
   @Test
   void reserveCreditShouldPublishCustomerCreditReservedEvent() {
@@ -39,7 +39,7 @@ public class CustomerServiceTest {
 
     when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
 
-    customerService.reserveCredit(customerId, orderId, orderTotal);
+    customerManagementService.reserveCredit(customerId, orderId, orderTotal);
 
     assertThat(customer.availableCredit()).isEqualTo(new Money("60.00"));
 
@@ -56,7 +56,7 @@ public class CustomerServiceTest {
 
     when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 
-    assertThatThrownBy(() -> customerService.reserveCredit(customerId, 101L, new Money("50.00")))
+    assertThatThrownBy(() -> customerManagementService.reserveCredit(customerId, 101L, new Money("50.00")))
         .isInstanceOf(CustomerNotFoundException.class);
     verifyNoInteractions(customerEventPublisher);
   }
@@ -70,7 +70,7 @@ public class CustomerServiceTest {
 
     when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
 
-    assertThatThrownBy(() -> customerService.reserveCredit(customerId, orderId, orderTotal))
+    assertThatThrownBy(() -> customerManagementService.reserveCredit(customerId, orderId, orderTotal))
         .isInstanceOf(CustomerCreditLimitExceededException.class);
     verifyNoInteractions(customerEventPublisher);
   }
@@ -83,7 +83,7 @@ public class CustomerServiceTest {
 
     when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
-    Customer result = customerService.createCustomer(name, creditLimit);
+    Customer result = customerManagementService.createCustomer(name, creditLimit);
 
     assertThat(result.getName()).isEqualTo(name);
     assertThat(result.getCreditLimit()).isEqualTo(creditLimit);
@@ -97,7 +97,7 @@ public class CustomerServiceTest {
 
     when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
 
-    Optional<Customer> result = customerService.findById(customerId);
+    Optional<Customer> result = customerManagementService.findById(customerId);
 
     assertThat(result).isPresent();
     assertThat(result.get().getName()).isEqualTo("John");
@@ -109,7 +109,7 @@ public class CustomerServiceTest {
 
     when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 
-    Optional<Customer> result = customerService.findById(customerId);
+    Optional<Customer> result = customerManagementService.findById(customerId);
 
     assertThat(result).isEmpty();
   }
@@ -121,7 +121,7 @@ public class CustomerServiceTest {
 
     when(customerRepository.findAll()).thenReturn(List.of(customer1, customer2));
 
-    List<Customer> result = customerService.findAll();
+    List<Customer> result = customerManagementService.findAll();
 
     assertThat(result).hasSize(2);
   }
