@@ -3,27 +3,22 @@ package io.eventuate.customerservice.customermanagement;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.eventuate.tram.spring.inmemory.EnableTramInMemory;
+import io.restassured.RestAssured;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = GenerateApiDocsIntegrationTest.Config.class,
@@ -32,58 +27,54 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GenerateApiDocsIntegrationTest {
 
     @Configuration
-    @EnableAutoConfiguration(exclude = {
-        FlywayAutoConfiguration.class,
-        SecurityAutoConfiguration.class,
-        SecurityFilterAutoConfiguration.class,
-        ManagementWebSecurityAutoConfiguration.class,
-        OAuth2ResourceServerAutoConfiguration.class
-    })
+    @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class})
     @EnableTramInMemory
-    @ComponentScan(basePackages = "io.eventuate.customerservice.customermanagement",
-        excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX,
-            pattern = ".*(SecurityConfig|CustomerManagementWebConfiguration|CustomerServiceMain)"))
+    @ComponentScan
     public static class Config {
     }
 
     @LocalServerPort
     private int port;
 
-    @Autowired
-    private TestRestTemplate restTemplate;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @Test
     void shouldGenerateOpenApiDocs() throws IOException {
-        ResponseEntity<String> response = restTemplate.getForEntity(
-            "http://localhost:" + port + "/v3/api-docs", String.class);
+        String body = given()
+            .when()
+                .get("/v3/api-docs")
+            .then()
+                .statusCode(200)
+                .extract().asString();
 
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(response.getBody()).isNotBlank();
-
-        JsonNode paths = objectMapper.readTree(response.getBody()).path("paths");
+        JsonNode paths = objectMapper.readTree(body).path("paths");
         assertThat(paths.has("/customers")).isTrue();
 
         Path outputDir = Path.of("build/api-docs");
         Files.createDirectories(outputDir);
-        Files.writeString(outputDir.resolve("openapi.json"), response.getBody());
+        Files.writeString(outputDir.resolve("openapi.json"), body);
     }
 
     @Test
     void shouldGenerateAsyncApiDocs() throws IOException {
-        ResponseEntity<String> response = restTemplate.getForEntity(
-            "http://localhost:" + port + "/springwolf/docs", String.class);
+        String body = given()
+            .when()
+                .get("/springwolf/docs")
+            .then()
+                .statusCode(200)
+                .extract().asString();
 
-        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        assertThat(response.getBody()).isNotBlank();
-
-        JsonNode root = objectMapper.readTree(response.getBody());
+        JsonNode root = objectMapper.readTree(body);
         assertThat(root.path("channels").has(
             "io.eventuate.customerservice.customermanagement.domain.Customer")).isTrue();
 
         Path outputDir = Path.of("build/api-docs");
         Files.createDirectories(outputDir);
-        Files.writeString(outputDir.resolve("asyncapi.json"), response.getBody());
+        Files.writeString(outputDir.resolve("asyncapi.json"), body);
     }
 }

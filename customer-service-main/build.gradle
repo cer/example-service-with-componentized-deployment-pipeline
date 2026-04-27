@@ -25,6 +25,7 @@ dependencies {
     // API docs generation test (in-memory, no infra)
     testImplementation "io.eventuate.tram.springwolf:eventuate-tram-springwolf-support-testing"
     testImplementation "io.eventuate.tram.core:eventuate-tram-spring-in-memory"
+    testImplementation "io.rest-assured:rest-assured"
     testRuntimeOnly "com.h2database:h2"
 
     // TODO shouldn't need to do this too

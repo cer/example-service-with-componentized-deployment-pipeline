@@ -39,7 +39,7 @@ public class SecurityConfig  {
     return http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authz -> {
       authz.requestMatchers("/actuator/**").permitAll()
-              .requestMatchers("/swagger**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+              .requestMatchers("/swagger**", "/swagger-ui/**", "/v3/api-docs/**", "/springwolf/docs").permitAll()
               .anyRequest().authenticated();
 
     }).oauth2ResourceServer(configurer -> {
