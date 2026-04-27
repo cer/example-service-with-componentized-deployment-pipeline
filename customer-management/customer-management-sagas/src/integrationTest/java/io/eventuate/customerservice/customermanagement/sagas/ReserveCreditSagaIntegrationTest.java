@@ -5,6 +5,7 @@ import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.customerservice.customermanagement.api.messaging.commands.ReserveCreditCommand;
 import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerCreditReserved;
 import io.eventuate.customerservice.customermanagement.domain.CreditReservationDetails;
+import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerServiceProxy;
 import io.eventuate.examples.common.money.Money;
@@ -70,7 +71,7 @@ public class ReserveCreditSagaIntegrationTest {
 
     @Test
     void shouldReserveCreditSuccessfully() {
-        long customerId = System.currentTimeMillis();
+        CustomerId customerId = CustomerId.generate();
         long orderId = 102L;
         Money orderTotal = new Money("12.34");
 
@@ -78,7 +79,7 @@ public class ReserveCreditSagaIntegrationTest {
 
         Message commandMessage = commandOutboxTestSupport.assertThatCommandMessageSent(
                 ReserveCreditCommand.class, CustomerServiceProxy.CHANNEL,
-                cmd -> cmd.getCustomerId() == customerId);
+                cmd -> cmd.getCustomerId().equals(customerId.id()));
 
         commandReplyProducer.sendReply(commandMessage, ReserveCreditCommand.class, new CustomerCreditReserved());
 

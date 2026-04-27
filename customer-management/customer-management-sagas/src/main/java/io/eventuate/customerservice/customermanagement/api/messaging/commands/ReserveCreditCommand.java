@@ -3,15 +3,17 @@ package io.eventuate.customerservice.customermanagement.api.messaging.commands;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.tram.commands.common.Command;
 
+import java.util.UUID;
+
 public class ReserveCreditCommand implements Command {
   private Long orderId;
   private Money orderTotal;
-  private long customerId;
+  private UUID customerId;
 
   public ReserveCreditCommand() {
   }
 
-  public ReserveCreditCommand(Long customerId, Long orderId, Money orderTotal) {
+  public ReserveCreditCommand(UUID customerId, Long orderId, Money orderTotal) {
     this.customerId = customerId;
     this.orderId = orderId;
     this.orderTotal = orderTotal;
@@ -35,11 +37,11 @@ public class ReserveCreditCommand implements Command {
     this.orderId = orderId;
   }
 
-  public long getCustomerId() {
+  public UUID getCustomerId() {
     return customerId;
   }
 
-  public void setCustomerId(long customerId) {
+  public void setCustomerId(UUID customerId) {
     this.customerId = customerId;
   }
 }

@@ -25,6 +25,7 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.lifecycle.Startables;
 
 import java.nio.file.Paths;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 
@@ -129,7 +130,7 @@ public class CustomerServiceComponentTest {
             }
             """.formatted("1000.00");
 
-        Number createdCustomerId = given()
+        String createdCustomerId = given()
                 .contentType(ContentType.JSON)
                 .body(createCustomerJson)
                 .when()
@@ -157,8 +158,9 @@ public class CustomerServiceComponentTest {
                 .statusCode(200);
 
         // Verify the saga sent a ReserveCreditCommand
+        UUID expectedCustomerId = UUID.fromString(createdCustomerId);
         commandOutboxTestSupport.assertThatCommandMessageSent(
                 ReserveCreditCommand.class, CustomerServiceProxy.CHANNEL,
-                cmd -> cmd.getCustomerId() == createdCustomerId.longValue());
+                cmd -> cmd.getCustomerId().equals(expectedCustomerId));
     }
 }

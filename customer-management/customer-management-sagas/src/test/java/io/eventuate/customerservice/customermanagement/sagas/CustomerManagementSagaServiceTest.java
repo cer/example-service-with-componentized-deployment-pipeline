@@ -1,5 +1,6 @@
 package io.eventuate.customerservice.customermanagement.sagas;
 
+import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.tram.sagas.orchestration.SagaInstanceFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +28,7 @@ class CustomerManagementSagaServiceTest {
 
     @Test
     void shouldStartSagaWhenCreatingCreditReservation() {
-        Long customerId = 101L;
+        CustomerId customerId = CustomerId.generate();
         Long orderId = 102L;
         Money orderTotal = new Money("12.34");
 

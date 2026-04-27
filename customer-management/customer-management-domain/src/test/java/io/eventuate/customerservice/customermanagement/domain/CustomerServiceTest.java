@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +33,7 @@ public class CustomerServiceTest {
 
   @Test
   void reserveCreditShouldPublishCustomerCreditReservedEvent() {
-    long customerId = 1L;
+    CustomerId customerId = CustomerId.generate();
     long orderId = 101L;
     Money orderTotal = new Money("40.00");
     Customer customer = new Customer("John", new Money("100.00"));
@@ -52,7 +53,7 @@ public class CustomerServiceTest {
 
   @Test
   void reserveCreditShouldThrowWhenCustomerNotFound() {
-    long customerId = 1L;
+    CustomerId customerId = CustomerId.generate();
 
     when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 
@@ -63,7 +64,7 @@ public class CustomerServiceTest {
 
   @Test
   void reserveCreditShouldNotPublishEventWhenCreditLimitExceeded() {
-    long customerId = 1L;
+    CustomerId customerId = CustomerId.generate();
     long orderId = 101L;
     Money orderTotal = new Money("150.00");
     Customer customer = new Customer("John", new Money("100.00"));
@@ -92,7 +93,7 @@ public class CustomerServiceTest {
 
   @Test
   void findByIdShouldReturnCustomerWhenExists() {
-    long customerId = 1L;
+    CustomerId customerId = CustomerId.generate();
     Customer customer = new Customer("John", new Money("100.00"));
 
     when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
@@ -105,7 +106,7 @@ public class CustomerServiceTest {
 
   @Test
   void findByIdShouldReturnEmptyWhenNotExists() {
-    long customerId = 1L;
+    CustomerId customerId = CustomerId.generate();
 
     when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 

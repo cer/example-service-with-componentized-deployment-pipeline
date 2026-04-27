@@ -27,7 +27,7 @@ public class CustomerManagementService {
     return customerRepository.save(customer);
   }
 
-  public void reserveCredit(long customerId, long orderId, Money orderTotal) throws CustomerCreditLimitExceededException {
+  public void reserveCredit(CustomerId customerId, long orderId, Money orderTotal) throws CustomerCreditLimitExceededException {
     Customer customer = customerRepository.findById(customerId).orElseThrow(CustomerNotFoundException::new);
     customer.reserveCredit(orderId, orderTotal);
     customerEventPublisher.publish(customer, new CustomerCreditReservedEvent(orderId));
@@ -37,7 +37,7 @@ public class CustomerManagementService {
     return StreamSupport.stream(customerRepository.findAll().spliterator(), false).collect(Collectors.toList());
   }
 
-  public Optional<Customer> findById(long customerId) {
+  public Optional<Customer> findById(CustomerId customerId) {
     return customerRepository.findById(customerId);
   }
 

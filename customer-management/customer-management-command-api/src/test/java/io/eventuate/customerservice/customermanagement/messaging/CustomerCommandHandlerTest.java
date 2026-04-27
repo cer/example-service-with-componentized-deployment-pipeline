@@ -21,6 +21,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Collections;
+import java.util.UUID;
+
+import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -50,14 +53,14 @@ public class CustomerCommandHandlerTest {
 
     @Test
     void shouldHandleReserveCreditCommand() {
-        long customerId = System.currentTimeMillis();
+        CustomerId customerId = CustomerId.generate();
         long orderId = 102L;
         Money orderTotal = new Money("12.34");
 
         TestMessageConsumer replyConsumer = testMessageConsumerFactory.make();
 
         var commandId = commandProducer.send("customerService",
-                new ReserveCreditCommand(customerId, orderId, orderTotal),
+                new ReserveCreditCommand(customerId.id(), orderId, orderTotal),
                 replyConsumer.getReplyChannel(), Collections.emptyMap());
 
         replyConsumer.assertHasReplyTo(commandId, CustomerCreditReserved.class);
@@ -66,7 +69,7 @@ public class CustomerCommandHandlerTest {
 
     @Test
     void shouldReturnCustomerNotFoundWhenCustomerDoesNotExist() {
-        long customerId = System.currentTimeMillis();
+        CustomerId customerId = CustomerId.generate();
         long orderId = 103L;
         Money orderTotal = new Money("56.78");
 
@@ -76,7 +79,7 @@ public class CustomerCommandHandlerTest {
         TestMessageConsumer replyConsumer = testMessageConsumerFactory.make();
 
         var commandId = commandProducer.send("customerService",
-                new ReserveCreditCommand(customerId, orderId, orderTotal),
+                new ReserveCreditCommand(customerId.id(), orderId, orderTotal),
                 replyConsumer.getReplyChannel(), Collections.emptyMap());
 
         replyConsumer.assertHasReplyTo(commandId, CustomerNotFound.class);

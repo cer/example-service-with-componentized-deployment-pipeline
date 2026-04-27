@@ -5,15 +5,19 @@ import io.eventuate.examples.common.money.Money;
 import jakarta.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Entity
 @Table(name="Customer")
 @Access(AccessType.FIELD)
+@IdClass(CustomerId.class)
 public class Customer {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(name = "id")
+  private UUID id;
+
   private String name;
 
   @Embedded
@@ -38,8 +42,8 @@ public class Customer {
     this.creditReservations = new HashMap<>();
   }
 
-  public Long getId() {
-    return id;
+  public CustomerId getId() {
+    return new CustomerId(id);
   }
 
   public String getName() {

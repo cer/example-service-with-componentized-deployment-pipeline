@@ -4,6 +4,7 @@ import io.eventuate.customerservice.customermanagement.api.messaging.commands.Re
 import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerCreditLimitExceeded;
 import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerNotFound;
 import io.eventuate.customerservice.customermanagement.domain.CreditReservationDetails;
+import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.customerservice.customermanagement.domain.RejectionReason;
 import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerServiceProxy;
@@ -21,7 +22,7 @@ public class ReserveCreditSagaTest {
     private CustomerManagementService customerManagementService;
     private CustomerServiceProxy customerServiceProxy;
 
-    private Long customerId = 101L;
+    private CustomerId customerId = CustomerId.generate();
     private Long orderId = 102L;
     private Money orderTotal = new Money("12.34");
 
@@ -42,7 +43,7 @@ public class ReserveCreditSagaTest {
         given()
             .saga(makeSaga(), sagaData)
             .expect()
-            .command(new ReserveCreditCommand(customerId, orderId, orderTotal))
+            .command(new ReserveCreditCommand(customerId.id(), orderId, orderTotal))
             .to("customerService")
             .andGiven()
             .successReply()
@@ -60,7 +61,7 @@ public class ReserveCreditSagaTest {
         given()
             .saga(makeSaga(), sagaData)
             .expect()
-            .command(new ReserveCreditCommand(customerId, orderId, orderTotal))
+            .command(new ReserveCreditCommand(customerId.id(), orderId, orderTotal))
             .to("customerService")
             .andGiven()
             .failureReply(new CustomerNotFound())
@@ -80,7 +81,7 @@ public class ReserveCreditSagaTest {
         given()
             .saga(makeSaga(), sagaData)
             .expect()
-            .command(new ReserveCreditCommand(customerId, orderId, orderTotal))
+            .command(new ReserveCreditCommand(customerId.id(), orderId, orderTotal))
             .to("customerService")
             .andGiven()
             .failureReply(new CustomerCreditLimitExceeded())

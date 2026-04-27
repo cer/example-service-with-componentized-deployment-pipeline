@@ -19,6 +19,7 @@ import org.testcontainers.lifecycle.Startables;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,7 +55,7 @@ public class CustomerEventPublishingIntegrationTest {
 
     @Test
     public void shouldPublishCustomerCreditReservedEventToOutbox() throws Exception {
-        long customerId = System.currentTimeMillis();
+        UUID customerId = UUID.randomUUID();
         long orderId = 99L;
 
         Customer customer = new Customer("John Doe", new Money("500.00"));

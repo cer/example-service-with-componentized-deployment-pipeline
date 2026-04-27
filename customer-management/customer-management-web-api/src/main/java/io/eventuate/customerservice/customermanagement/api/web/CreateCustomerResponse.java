@@ -2,20 +2,20 @@ package io.eventuate.customerservice.customermanagement.api.web;
 
 
 public class CreateCustomerResponse {
-  private Long customerId;
+  private String customerId;
 
   public CreateCustomerResponse() {
   }
 
-  public CreateCustomerResponse(Long customerId) {
+  public CreateCustomerResponse(String customerId) {
     this.customerId = customerId;
   }
 
-  public Long getCustomerId() {
+  public String getCustomerId() {
     return customerId;
   }
 
-  public void setCustomerId(Long customerId) {
+  public void setCustomerId(String customerId) {
     this.customerId = customerId;
   }
 }

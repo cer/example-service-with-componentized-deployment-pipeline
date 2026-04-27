@@ -4,6 +4,7 @@ import io.eventuate.customerservice.customermanagement.api.messaging.commands.Re
 import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerCreditLimitExceeded;
 import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerNotFound;
 import io.eventuate.customerservice.customermanagement.api.messaging.replies.ReserveCreditResult;
+import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.tram.commands.consumer.CommandWithDestination;
 import io.eventuate.tram.commands.consumer.CommandWithDestinationBuilder;
@@ -19,8 +20,8 @@ public class CustomerServiceProxy {
     public static final Class<CustomerCreditLimitExceeded> creditLimitExceededReply = CustomerCreditLimitExceeded.class;
 
     @SagaParticipantOperation(commandClass = ReserveCreditCommand.class, replyClasses = ReserveCreditResult.class)
-    public CommandWithDestination reserveCredit(Long customerId, Long orderId, Money orderTotal) {
-        return CommandWithDestinationBuilder.send(new ReserveCreditCommand(customerId, orderId, orderTotal))
+    public CommandWithDestination reserveCredit(CustomerId customerId, Long orderId, Money orderTotal) {
+        return CommandWithDestinationBuilder.send(new ReserveCreditCommand(customerId.id(), orderId, orderTotal))
                 .to(CHANNEL)
                 .build();
     }

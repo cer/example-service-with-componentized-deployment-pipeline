@@ -3,6 +3,7 @@ package io.eventuate.customerservice.customermanagement.web;
 
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.customerservice.customermanagement.domain.Customer;
+import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.customerservice.customermanagement.sagas.CustomerManagementSagaService;
 import org.junit.jupiter.api.Test;
@@ -67,10 +68,10 @@ public class CustomerManagementControllerTest {
   public void shouldCreateCustomer() throws Exception {
     String name = "Fred";
     Money creditLimit = new Money("15.00");
-    Long customerId = 42L;
+    CustomerId customerId = CustomerId.generate();
 
     Customer customer = new Customer(name, creditLimit);
-    ReflectionTestUtils.setField(customer, "id", customerId);
+    ReflectionTestUtils.setField(customer, "id", customerId.id());
 
     when(customerManagementService.createCustomer(name, creditLimit)).thenReturn(customer);
 
@@ -78,7 +79,7 @@ public class CustomerManagementControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"name\":\"Fred\",\"creditLimit\":{\"amount\":15.00}}"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.customerId").value(42));
+            .andExpect(jsonPath("$.customerId").value(customerId.id().toString()));
   }
 
   @Test
@@ -92,39 +93,39 @@ public class CustomerManagementControllerTest {
 
   @Test
   public void shouldGetCustomer() throws Exception {
-    Long customerId = 42L;
+    CustomerId customerId = CustomerId.generate();
     String name = "Fred";
     Money creditLimit = new Money("15.00");
 
     Customer customer = new Customer(name, creditLimit);
-    ReflectionTestUtils.setField(customer, "id", customerId);
+    ReflectionTestUtils.setField(customer, "id", customerId.id());
 
     when(customerManagementService.findById(customerId)).thenReturn(Optional.of(customer));
 
-    mockMvc.perform(get("/customers/{customerId}", customerId))
+    mockMvc.perform(get("/customers/{customerId}", customerId.id()))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.customerId").value(42))
+            .andExpect(jsonPath("$.customerId").value(customerId.id().toString()))
             .andExpect(jsonPath("$.name").value("Fred"))
             .andExpect(jsonPath("$.creditLimit.amount").value(15.0));
   }
 
   @Test
   public void shouldReturn404WhenCustomerNotFound() throws Exception {
-    Long customerId = 99L;
+    CustomerId customerId = CustomerId.generate();
 
     when(customerManagementService.findById(customerId)).thenReturn(Optional.empty());
 
-    mockMvc.perform(get("/customers/{customerId}", customerId))
+    mockMvc.perform(get("/customers/{customerId}", customerId.id()))
             .andExpect(status().isNotFound());
   }
 
   @Test
   public void shouldReserveCredit() throws Exception {
-    Long customerId = 42L;
+    CustomerId customerId = CustomerId.generate();
     Long orderId = 99L;
     Money orderTotal = new Money("12.34");
 
-    mockMvc.perform(post("/customers/{customerId}/creditreservations", customerId)
+    mockMvc.perform(post("/customers/{customerId}/creditreservations", customerId.id())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"orderId\":99,\"orderTotal\":{\"amount\":12.34}}"))
             .andExpect(status().isOk())

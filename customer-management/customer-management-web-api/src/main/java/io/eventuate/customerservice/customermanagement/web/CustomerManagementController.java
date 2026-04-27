@@ -7,6 +7,7 @@ import io.eventuate.customerservice.customermanagement.api.web.CreateCustomerRes
 import io.eventuate.customerservice.customermanagement.api.web.GetCustomerResponse;
 import io.eventuate.customerservice.customermanagement.api.web.GetCustomersResponse;
 import io.eventuate.customerservice.customermanagement.domain.Customer;
+import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.customerservice.customermanagement.sagas.CustomerManagementSagaService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -40,30 +42,30 @@ public class CustomerManagementController {
   @PreAuthorize("hasRole('USER')")
   public CreateCustomerResponse createCustomer(@RequestBody CreateCustomerRequest createCustomerRequest) {
     Customer customer = customerManagementService.createCustomer(createCustomerRequest.getName(), createCustomerRequest.getCreditLimit());
-    return new CreateCustomerResponse(customer.getId());
+    return new CreateCustomerResponse(customer.getId().toString());
   }
 
   @RequestMapping(value="/customers", method= RequestMethod.GET)
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<GetCustomersResponse> getAll() {
     return ResponseEntity.ok(new GetCustomersResponse(customerManagementService.findAll().stream()
-            .map(c -> new GetCustomerResponse(c.getId(), c.getName(), c.getCreditLimit())).collect(Collectors.toList())));
+            .map(c -> new GetCustomerResponse(c.getId().toString(), c.getName(), c.getCreditLimit())).collect(Collectors.toList())));
   }
 
   @RequestMapping(value = "/customers/{customerId}/creditreservations", method = RequestMethod.POST)
   @PreAuthorize("hasRole('USER')")
-  public ReserveCreditResponse createCreditReservation(@PathVariable Long customerId,
+  public ReserveCreditResponse createCreditReservation(@PathVariable String customerId,
                                                                   @RequestBody ReserveCreditRequest request) {
-    customerManagementSagaService.reserveCredit(customerId, request.getOrderId(), request.getOrderTotal());
+    customerManagementSagaService.reserveCredit(new CustomerId(UUID.fromString(customerId)), request.getOrderId(), request.getOrderTotal());
     return new ReserveCreditResponse("PENDING");
   }
 
   @RequestMapping(value="/customers/{customerId}", method= RequestMethod.GET)
   @PreAuthorize("hasRole('USER')")
-  public ResponseEntity<GetCustomerResponse> getCustomer(@PathVariable Long customerId) {
+  public ResponseEntity<GetCustomerResponse> getCustomer(@PathVariable String customerId) {
     return customerManagementService
-            .findById(customerId)
-            .map(c -> new ResponseEntity<>(new GetCustomerResponse(c.getId(), c.getName(), c.getCreditLimit()), HttpStatus.OK))
+            .findById(new CustomerId(UUID.fromString(customerId)))
+            .map(c -> new ResponseEntity<>(new GetCustomerResponse(c.getId().toString(), c.getName(), c.getCreditLimit()), HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 }

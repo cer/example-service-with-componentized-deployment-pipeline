@@ -24,7 +24,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.testcontainers.lifecycle.Startables;
 
 import java.util.Collections;
+import java.util.UUID;
 import java.util.stream.Stream;
+
+import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 
 import static org.mockito.Mockito.verify;
 
@@ -68,7 +71,7 @@ public class CustomerCommandHandlerIntegrationTest {
 
     String replyTo = "my-reply-to-channel-" + System.currentTimeMillis();
 
-    long customerId = System.currentTimeMillis();
+    CustomerId customerId = CustomerId.generate();
     long orderId = 102L;
     Money orderTotal = new Money("12.34");
 
@@ -82,8 +85,8 @@ public class CustomerCommandHandlerIntegrationTest {
     });
   }
 
-  private void sendCommand(long customerId, long orderId, Money orderTotal, String replyTo) {
-    commandProducer.send("customerService", new ReserveCreditCommand(customerId, orderId, orderTotal), replyTo, Collections.emptyMap());
+  private void sendCommand(CustomerId customerId, long orderId, Money orderTotal, String replyTo) {
+    commandProducer.send("customerService", new ReserveCreditCommand(customerId.id(), orderId, orderTotal), replyTo, Collections.emptyMap());
   }
 
 

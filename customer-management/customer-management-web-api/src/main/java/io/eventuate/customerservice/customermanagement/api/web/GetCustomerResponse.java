@@ -4,24 +4,24 @@ package io.eventuate.customerservice.customermanagement.api.web;
 import io.eventuate.examples.common.money.Money;
 
 public class GetCustomerResponse {
-  private Long customerId;
+  private String customerId;
   private String name;
   private Money creditLimit;
 
   public GetCustomerResponse() {
   }
 
-  public GetCustomerResponse(Long customerId, String name, Money creditLimit) {
+  public GetCustomerResponse(String customerId, String name, Money creditLimit) {
     this.customerId = customerId;
     this.name = name;
     this.creditLimit = creditLimit;
   }
 
-  public Long getCustomerId() {
+  public String getCustomerId() {
     return customerId;
   }
 
-  public void setCustomerId(Long customerId) {
+  public void setCustomerId(String customerId) {
     this.customerId = customerId;
   }
 
