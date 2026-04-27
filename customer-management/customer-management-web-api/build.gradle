@@ -9,5 +9,6 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
 
     testImplementation "io.rest-assured:spring-mock-mvc"
+    testImplementation "org.springframework.security:spring-security-test"
 
 }

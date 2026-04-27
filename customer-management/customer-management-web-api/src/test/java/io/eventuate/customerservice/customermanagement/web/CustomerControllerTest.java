@@ -2,42 +2,69 @@ package io.eventuate.customerservice.customermanagement.web;
 
 
 import io.eventuate.examples.common.money.Money;
-import io.eventuate.customerservice.customermanagement.api.web.ReserveCreditRequest;
 import io.eventuate.customerservice.customermanagement.domain.Customer;
 import io.eventuate.customerservice.customermanagement.domain.CustomerService;
 import io.eventuate.customerservice.customermanagement.sagas.CustomerManagementSagaService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.MediaType;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 import java.util.Optional;
 
-import static io.restassured.http.ContentType.JSON;
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(CustomerController.class)
+@WithMockUser(roles = "USER")
 public class CustomerControllerTest {
 
-  @Mock
+  @SpringBootApplication
+  static class TestApp {
+  }
+
+  // This class duplicates the security configuration in SecurityConfig because that's not included
+
+  @TestConfiguration
+  @EnableWebSecurity
+  @EnableMethodSecurity
+  static class TestSecurityConfig {
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+      return http
+              .csrf(AbstractHttpConfigurer::disable)
+              .build();
+    }
+  }
+
+  @Autowired
+  private MockMvc mockMvc;
+
+  @MockitoBean
   private CustomerService customerService;
 
-  @Mock
+  @MockitoBean
   private CustomerManagementSagaService customerManagementSagaService;
 
-  @InjectMocks
-  private CustomerController customerController;
-
   @Test
-  public void shouldCreateCustomer() {
+  public void shouldCreateCustomer() throws Exception {
     String name = "Fred";
     Money creditLimit = new Money("15.00");
     Long customerId = 42L;
@@ -47,36 +74,24 @@ public class CustomerControllerTest {
 
     when(customerService.createCustomer(name, creditLimit)).thenReturn(customer);
 
-    given()
-            .standaloneSetup(customerController)
-            .contentType(JSON)
-            .body(new io.eventuate.customerservice.customermanagement.api.web.CreateCustomerRequest(name, creditLimit))
-      .when()
-            .post("/customers")
-            .then()
-            .log().ifValidationFails()
-            .statusCode(HttpStatus.OK.value())
-            .contentType(JSON)
-            .body("customerId", equalTo(customerId.intValue()));
+    mockMvc.perform(post("/customers")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"name\":\"Fred\",\"creditLimit\":{\"amount\":15.00}}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.customerId").value(42));
   }
 
   @Test
-  public void shouldGetCustomers() {
+  public void shouldGetCustomers() throws Exception {
     when(customerService.findAll()).thenReturn(Collections.emptyList());
 
-    given()
-            .standaloneSetup(customerController)
-      .when()
-            .get("/customers")
-            .then()
-            .log().ifValidationFails()
-            .statusCode(HttpStatus.OK.value())
-            .contentType(JSON)
-            .and().body("customers", empty());
+    mockMvc.perform(get("/customers"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.customers").isEmpty());
   }
 
   @Test
-  public void shouldGetCustomer() {
+  public void shouldGetCustomer() throws Exception {
     Long customerId = 42L;
     String name = "Fred";
     Money creditLimit = new Money("15.00");
@@ -86,51 +101,34 @@ public class CustomerControllerTest {
 
     when(customerService.findById(customerId)).thenReturn(Optional.of(customer));
 
-    given()
-            .standaloneSetup(customerController)
-      .when()
-            .get("/customers/{customerId}", customerId)
-            .then()
-            .log().ifValidationFails()
-            .statusCode(HttpStatus.OK.value())
-            .contentType(JSON)
-            .body("customerId", equalTo(customerId.intValue()))
-            .body("name", equalTo(name))
-            .body("creditLimit.amount", equalTo(15.0f));
+    mockMvc.perform(get("/customers/{customerId}", customerId))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.customerId").value(42))
+            .andExpect(jsonPath("$.name").value("Fred"))
+            .andExpect(jsonPath("$.creditLimit.amount").value(15.0));
   }
 
   @Test
-  public void shouldReturn404WhenCustomerNotFound() {
+  public void shouldReturn404WhenCustomerNotFound() throws Exception {
     Long customerId = 99L;
 
     when(customerService.findById(customerId)).thenReturn(Optional.empty());
 
-    given()
-            .standaloneSetup(customerController)
-      .when()
-            .get("/customers/{customerId}", customerId)
-            .then()
-            .log().ifValidationFails()
-            .statusCode(HttpStatus.NOT_FOUND.value());
+    mockMvc.perform(get("/customers/{customerId}", customerId))
+            .andExpect(status().isNotFound());
   }
 
   @Test
-  public void shouldReserveCredit() {
+  public void shouldReserveCredit() throws Exception {
     Long customerId = 42L;
     Long orderId = 99L;
     Money orderTotal = new Money("12.34");
 
-    given()
-            .standaloneSetup(customerController)
-            .contentType(JSON)
-            .body(new ReserveCreditRequest(orderId, orderTotal))
-      .when()
-            .post("/customers/{customerId}/creditreservations", customerId)
-            .then()
-            .log().ifValidationFails()
-            .statusCode(HttpStatus.OK.value())
-            .contentType(JSON)
-            .body("status", equalTo("PENDING"));
+    mockMvc.perform(post("/customers/{customerId}/creditreservations", customerId)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"orderId\":99,\"orderTotal\":{\"amount\":12.34}}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("PENDING"));
 
     verify(customerManagementSagaService).reserveCredit(customerId, orderId, orderTotal);
   }
