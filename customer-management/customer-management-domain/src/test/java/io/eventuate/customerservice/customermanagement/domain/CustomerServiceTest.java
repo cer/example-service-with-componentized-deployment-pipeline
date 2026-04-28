@@ -77,6 +77,24 @@ public class CustomerServiceTest {
   }
 
   @Test
+  void createCustomerShouldPublishCustomerCreatedEvent() {
+    String name = "Jane";
+    Money creditLimit = new Money("200.00");
+    Customer customer = new Customer(name, creditLimit);
+
+    when(customerRepository.save(any(Customer.class))).thenReturn(customer);
+
+    customerManagementService.createCustomer(name, creditLimit);
+
+    ArgumentCaptor<CustomerCreatedEvent> eventCaptor = ArgumentCaptor.forClass(CustomerCreatedEvent.class);
+    verify(customerEventPublisher).publish(eq(customer), eventCaptor.capture());
+
+    CustomerCreatedEvent event = eventCaptor.getValue();
+    assertThat(event.name()).isEqualTo(name);
+    assertThat(event.creditLimit()).isEqualTo(creditLimit);
+  }
+
+  @Test
   void createCustomerShouldSaveAndReturnCustomer() {
     String name = "Jane";
     Money creditLimit = new Money("200.00");

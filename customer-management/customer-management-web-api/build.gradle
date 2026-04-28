@@ -1,6 +1,4 @@
 dependencies {
-    implementation "io.eventuate.examples.common:eventuate-examples-common-money-jakarta9:$eventuateCommonExamplesVersion"
-
     implementation project(":customer-management:customer-management-domain")
     implementation project(":customer-management:customer-management-sagas")
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-api:$springdocVersion"

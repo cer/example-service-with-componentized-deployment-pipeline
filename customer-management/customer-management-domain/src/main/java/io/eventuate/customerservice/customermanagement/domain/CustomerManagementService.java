@@ -24,7 +24,9 @@ public class CustomerManagementService {
   @Transactional
   public Customer createCustomer(String name, Money creditLimit) {
     Customer customer  = new Customer(name, creditLimit);
-    return customerRepository.save(customer);
+    Customer savedCustomer = customerRepository.save(customer);
+    customerEventPublisher.publish(savedCustomer, new CustomerCreatedEvent(name, creditLimit));
+    return savedCustomer;
   }
 
   public void reserveCredit(CustomerId customerId, long orderId, Money orderTotal) throws CustomerCreditLimitExceededException {

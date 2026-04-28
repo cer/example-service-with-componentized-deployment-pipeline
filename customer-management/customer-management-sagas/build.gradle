@@ -5,8 +5,6 @@ plugins {
 dependencies {
     implementation project(":customer-management:customer-management-domain")
 
-    implementation "io.eventuate.examples.common:eventuate-examples-common-money-jakarta9:$eventuateCommonExamplesVersion"
-    implementation "io.eventuate.tram.core:eventuate-tram-spring-commands"
     implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl-starter"
     implementation "io.eventuate.tram.core:eventuate-tram-spring-jdbc-kafka"
     implementation "io.eventuate.tram.core:eventuate-tram-spring-flyway"
