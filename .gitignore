@@ -26,3 +26,4 @@ Thumbs.db
 .env.local
 logs/
 test-reports
+.claude/worktrees
