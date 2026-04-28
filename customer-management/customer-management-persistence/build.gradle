@@ -13,11 +13,9 @@ dependencies {
     implementation "org.flywaydb:flyway-core"
     implementation 'org.flywaydb:flyway-database-postgresql:11.8.2'
 
-    testImplementation "org.mockito:mockito-core"
 
     integrationTestImplementation "io.eventuate.common:eventuate-common-testcontainers"
-    // TODO shouldn't need to do this too
-    integrationTestImplementation "org.testcontainers:testcontainers"
+    // TODO eventuate-common-testcontainers should also depend on junit-jupiter so this isn't needed
     integrationTestImplementation "org.testcontainers:junit-jupiter"
 
 }

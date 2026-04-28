@@ -23,22 +23,12 @@ dependencies {
     implementation "io.eventuate.tram.springwolf:eventuate-tram-springwolf-support-starter"
 
     // API docs generation test (in-memory, no infra)
-    testImplementation "io.eventuate.tram.springwolf:eventuate-tram-springwolf-support-testing"
     testImplementation "io.eventuate.tram.core:eventuate-tram-spring-in-memory"
     testImplementation "io.rest-assured:rest-assured"
-    testRuntimeOnly "com.h2database:h2"
-
-    // TODO shouldn't need to do this too
-    testImplementation "org.testcontainers:testcontainers"
 
     componentTestImplementation "io.eventuate.platform.testcontainer.support:eventuate-platform-testcontainer-support-service:$eventuatePlatformTestContainerSupportVersion"
 
-    componentTestImplementation "io.eventuate.common:eventuate-common-testcontainers"
     componentTestImplementation "io.eventuate.messaging.kafka:eventuate-messaging-kafka-testcontainers"
-    componentTestImplementation "io.eventuate.cdc:eventuate-cdc-testcontainers"
-    componentTestImplementation "io.rest-assured:rest-assured"
-    componentTestImplementation project(":customer-management:customer-management-sagas")
-    componentTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-commands"
     componentTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-outbox"
     componentTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-producer-kafka"
     componentTestImplementation "io.eventuate.tram.core:eventuate-tram-test-util"

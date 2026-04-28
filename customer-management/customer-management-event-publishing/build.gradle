@@ -9,6 +9,5 @@ dependencies {
 
     integrationTestImplementation 'io.eventuate.common:eventuate-common-testcontainers'
     integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc'
-    integrationTestImplementation 'org.testcontainers:postgresql'
     integrationTestRuntimeOnly 'org.flywaydb:flyway-database-postgresql:11.8.2'
 }
