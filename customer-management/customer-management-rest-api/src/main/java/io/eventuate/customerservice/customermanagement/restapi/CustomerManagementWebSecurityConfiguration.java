@@ -1,4 +1,4 @@
-package io.eventuate.customerservice.customermanagement.web;
+package io.eventuate.customerservice.customermanagement.restapi;
 
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;

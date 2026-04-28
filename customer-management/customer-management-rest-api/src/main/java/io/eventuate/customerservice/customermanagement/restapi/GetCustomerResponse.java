@@ -1,4 +1,4 @@
-package io.eventuate.customerservice.customermanagement.api.web;
+package io.eventuate.customerservice.customermanagement.restapi;
 
 
 import io.eventuate.examples.common.money.Money;

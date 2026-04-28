@@ -1,6 +1,4 @@
-package io.eventuate.customerservice.customermanagement.web;
-
-
+package io.eventuate.customerservice.customermanagement.restapi;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.customerservice.customermanagement.domain.Customer;
 import io.eventuate.customerservice.customermanagement.domain.CustomerId;

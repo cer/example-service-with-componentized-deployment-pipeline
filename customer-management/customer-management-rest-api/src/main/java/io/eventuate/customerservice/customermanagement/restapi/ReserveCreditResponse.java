@@ -1,4 +1,4 @@
-package io.eventuate.customerservice.customermanagement.api.web;
+package io.eventuate.customerservice.customermanagement.restapi;
 
 public class ReserveCreditResponse {
 

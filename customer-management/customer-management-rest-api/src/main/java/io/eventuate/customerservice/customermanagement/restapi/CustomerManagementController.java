@@ -1,11 +1,5 @@
-package io.eventuate.customerservice.customermanagement.web;
+package io.eventuate.customerservice.customermanagement.restapi;
 
-import io.eventuate.customerservice.customermanagement.api.web.ReserveCreditRequest;
-import io.eventuate.customerservice.customermanagement.api.web.ReserveCreditResponse;
-import io.eventuate.customerservice.customermanagement.api.web.CreateCustomerRequest;
-import io.eventuate.customerservice.customermanagement.api.web.CreateCustomerResponse;
-import io.eventuate.customerservice.customermanagement.api.web.GetCustomerResponse;
-import io.eventuate.customerservice.customermanagement.api.web.GetCustomersResponse;
 import io.eventuate.customerservice.customermanagement.domain.Customer;
 import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;

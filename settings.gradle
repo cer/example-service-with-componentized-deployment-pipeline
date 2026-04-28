@@ -12,7 +12,7 @@ pluginManagement {
 rootProject.name = "example-service"
 
 include 'customer-management:customer-management-domain'
-include 'customer-management:customer-management-web-api'
+include 'customer-management:customer-management-rest-api'
 include 'customer-management:customer-management-command-api'
 include 'customer-management:customer-management-persistence'
 include 'customer-management:customer-management-event-publishing'

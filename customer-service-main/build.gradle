@@ -8,7 +8,7 @@ dependencies {
     implementation project(":customer-management:customer-management-domain")
     implementation project(":customer-management:customer-management-command-api")
     implementation project(":customer-management:customer-management-sagas")
-    runtimeOnly project(":customer-management:customer-management-web-api")
+    runtimeOnly project(":customer-management:customer-management-rest-api")
     runtimeOnly project(":customer-management:customer-management-persistence")
     runtimeOnly project(":customer-management:customer-management-event-publishing")
     runtimeOnly project(":customer-management:customer-management-event-subscribers")
@@ -38,6 +38,6 @@ dependencies {
 }
 
 
-check.shouldRunAfter(":customer-management:customer-management-web-api:check")
+check.shouldRunAfter(":customer-management:customer-management-rest-api:check")
 check.shouldRunAfter(":customer-management:customer-management-persistence:check")
 check.shouldRunAfter(":customer-management:customer-management-command-api:check")
