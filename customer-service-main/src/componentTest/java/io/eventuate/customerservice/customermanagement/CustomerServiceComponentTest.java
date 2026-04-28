@@ -1,7 +1,7 @@
 package io.eventuate.customerservice.customermanagement;
 
 import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
-import io.eventuate.customerservice.customermanagement.api.messaging.commands.ReserveCreditCommand;
+import io.eventuate.customerservice.customermanagement.commandapi.ReserveCreditCommand;
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreatedEvent;
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreditReservedEvent;
 import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerServiceProxy;

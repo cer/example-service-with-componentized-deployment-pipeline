@@ -1,9 +1,9 @@
 package io.eventuate.customerservice.customermanagement.sagas.proxies;
 
-import io.eventuate.customerservice.customermanagement.api.messaging.commands.ReserveCreditCommand;
-import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerCreditLimitExceeded;
-import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerNotFound;
-import io.eventuate.customerservice.customermanagement.api.messaging.replies.ReserveCreditResult;
+import io.eventuate.customerservice.customermanagement.commandapi.ReserveCreditCommand;
+import io.eventuate.customerservice.customermanagement.commandapi.CustomerCreditLimitExceeded;
+import io.eventuate.customerservice.customermanagement.commandapi.CustomerNotFound;
+import io.eventuate.customerservice.customermanagement.commandapi.ReserveCreditResult;
 import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.tram.commands.consumer.CommandWithDestination;

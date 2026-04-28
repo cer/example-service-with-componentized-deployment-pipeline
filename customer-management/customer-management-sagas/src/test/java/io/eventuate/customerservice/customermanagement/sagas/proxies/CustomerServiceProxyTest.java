@@ -1,6 +1,6 @@
 package io.eventuate.customerservice.customermanagement.sagas.proxies;
 
-import io.eventuate.customerservice.customermanagement.api.messaging.commands.ReserveCreditCommand;
+import io.eventuate.customerservice.customermanagement.commandapi.ReserveCreditCommand;
 import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.tram.commands.consumer.CommandWithDestination;

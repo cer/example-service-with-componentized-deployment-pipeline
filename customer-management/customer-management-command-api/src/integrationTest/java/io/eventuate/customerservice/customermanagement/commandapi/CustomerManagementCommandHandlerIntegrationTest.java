@@ -1,8 +1,7 @@
-package io.eventuate.customerservice.customermanagement.messaging;
+package io.eventuate.customerservice.customermanagement.commandapi;
 
 import io.eventuate.common.testcontainers.EventuateDatabaseContainer;
 import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
-import io.eventuate.customerservice.customermanagement.api.messaging.commands.ReserveCreditCommand;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeCluster;
@@ -24,7 +23,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.testcontainers.lifecycle.Startables;
 
 import java.util.Collections;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 import io.eventuate.customerservice.customermanagement.domain.CustomerId;
@@ -32,7 +30,7 @@ import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-public class CustomerCommandHandlerIntegrationTest {
+public class CustomerManagementCommandHandlerIntegrationTest {
 
   public static EventuateKafkaNativeCluster eventuateKafkaCluster = new EventuateKafkaNativeCluster("customer-service-tests");
 
@@ -51,8 +49,7 @@ public class CustomerCommandHandlerIntegrationTest {
   @EnableAutoConfiguration
   @EnableDirectToKafkaCommandProducer
   @EnableCommandOutboxTestSupport
-  @EnableEventuateTramFlywayMigration
-  @Import(CustomerMessagingConfiguration.class)
+  @Import(CustomerManagementCommandHandlerWithFlywayConfiguration.class)
   static public class Config {
 
   }

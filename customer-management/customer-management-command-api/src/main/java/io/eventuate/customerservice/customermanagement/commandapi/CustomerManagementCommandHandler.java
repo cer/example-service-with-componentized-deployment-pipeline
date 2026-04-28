@@ -1,9 +1,5 @@
-package io.eventuate.customerservice.customermanagement.messaging;
+package io.eventuate.customerservice.customermanagement.commandapi;
 
-import io.eventuate.customerservice.customermanagement.api.messaging.commands.ReserveCreditCommand;
-import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerCreditLimitExceeded;
-import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerCreditReserved;
-import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerNotFound;
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreditLimitExceededException;
 import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import io.eventuate.customerservice.customermanagement.domain.CustomerNotFoundException;
@@ -15,11 +11,11 @@ import io.eventuate.tram.messaging.common.Message;
 import static io.eventuate.tram.commands.consumer.CommandHandlerReplyBuilder.withFailure;
 import static io.eventuate.tram.commands.consumer.CommandHandlerReplyBuilder.withSuccess;
 
-public class CustomerCommandHandler {
+public class CustomerManagementCommandHandler {
 
   private CustomerManagementService customerManagementService;
 
-  public CustomerCommandHandler(CustomerManagementService customerManagementService) {
+  public CustomerManagementCommandHandler(CustomerManagementService customerManagementService) {
     this.customerManagementService = customerManagementService;
   }
 

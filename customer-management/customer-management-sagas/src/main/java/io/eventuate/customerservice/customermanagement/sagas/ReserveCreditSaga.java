@@ -1,7 +1,7 @@
 package io.eventuate.customerservice.customermanagement.sagas;
 
-import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerCreditLimitExceeded;
-import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerNotFound;
+import io.eventuate.customerservice.customermanagement.commandapi.CustomerCreditLimitExceeded;
+import io.eventuate.customerservice.customermanagement.commandapi.CustomerNotFound;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.customerservice.customermanagement.domain.RejectionReason;
 import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerServiceProxy;

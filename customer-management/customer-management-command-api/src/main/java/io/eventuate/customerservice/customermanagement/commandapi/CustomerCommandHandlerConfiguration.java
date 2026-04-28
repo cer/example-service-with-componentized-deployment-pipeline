@@ -1,4 +1,4 @@
-package io.eventuate.customerservice.customermanagement.messaging;
+package io.eventuate.customerservice.customermanagement.commandapi;
 
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import org.springframework.context.annotation.Bean;
@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration;
 public class CustomerCommandHandlerConfiguration {
 
   @Bean
-  public CustomerCommandHandler customerCommandHandler(CustomerManagementService customerManagementService) {
-    return new CustomerCommandHandler(customerManagementService);
+  public CustomerManagementCommandHandler customerCommandHandler(CustomerManagementService customerManagementService) {
+    return new CustomerManagementCommandHandler(customerManagementService);
   }
 
 

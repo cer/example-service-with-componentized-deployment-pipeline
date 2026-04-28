@@ -1,9 +1,9 @@
-package io.eventuate.customerservice.customermanagement.messaging;
+package io.eventuate.customerservice.customermanagement.commandapi;
 
 import io.eventuate.examples.common.money.Money;
-import io.eventuate.customerservice.customermanagement.api.messaging.commands.ReserveCreditCommand;
-import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerCreditReserved;
-import io.eventuate.customerservice.customermanagement.api.messaging.replies.CustomerNotFound;
+import io.eventuate.customerservice.customermanagement.commandapi.ReserveCreditCommand;
+import io.eventuate.customerservice.customermanagement.commandapi.CustomerCreditReserved;
+import io.eventuate.customerservice.customermanagement.commandapi.CustomerNotFound;
 import io.eventuate.customerservice.customermanagement.domain.CustomerNotFoundException;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.tram.commands.producer.CommandProducer;
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 @TestPropertySource(properties = {
         "spring.datasource.driver-class-name=" // Otherwise, Error creating bean with name 'eventuateCommonJdbcOperations' ould not resolve placeholder 'spring.datasource.driver-class-name'
 })
-public class CustomerCommandHandlerTest {
+public class CustomerManagementCommandHandlerTest {
 
     @Configuration
     @EnableAutoConfiguration

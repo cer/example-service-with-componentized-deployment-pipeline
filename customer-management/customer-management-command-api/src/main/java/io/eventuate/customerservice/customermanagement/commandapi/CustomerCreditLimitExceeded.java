@@ -1,4 +1,4 @@
-package io.eventuate.customerservice.customermanagement.api.messaging.replies;
+package io.eventuate.customerservice.customermanagement.commandapi;
 
 public record CustomerCreditLimitExceeded() implements ReserveCreditResult {
 }
