@@ -4,10 +4,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class CustomerDomainConfiguration {
+public class CustomerManagementDomainConfiguration {
 
   @Bean
-  public CustomerManagementService customerService(CustomerRepository customerRepository, CustomerEventPublisher customerEventPublisher) {
+  public CustomerManagementService customerManagementService(CustomerRepository customerRepository, CustomerEventPublisher customerEventPublisher) {
     return new CustomerManagementService(customerRepository, customerEventPublisher);
   }
 
