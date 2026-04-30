@@ -4,6 +4,7 @@ import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.customerservice.customermanagement.commandapi.ReserveCreditCommand;
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreatedEvent;
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreditReservedEvent;
+import io.eventuate.otherservice.othersubdomain.domain.OtherEvent;
 import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerServiceProxy;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.examples.springauthorizationserver.testcontainers.AuthorizationServerContainerForServiceContainers;
@@ -297,11 +298,11 @@ public class CustomerServiceComponentTest {
     }
 
     @Test
-    public void shouldConsumeCustomerCreditReservedEvent() {
-        CustomerCreditReservedEvent event = new CustomerCreditReservedEvent(99L);
+    public void shouldConsumeOtherEvent() {
+        OtherEvent event = new OtherEvent(99L);
 
         domainEventPublisher.publish(
-                "io.eventuate.customerservice.customermanagement.domain.Customer",
+                "io.eventuate.otherservice.othersubdomain.domain.OtherAggregate",
                 "1",
                 event);
 

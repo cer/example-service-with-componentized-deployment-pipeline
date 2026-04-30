@@ -2,8 +2,8 @@ package io.eventuate.customerservice.customermanagement.eventsubscribers;
 
 import io.eventuate.common.testcontainers.EventuateDatabaseContainer;
 import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
-import io.eventuate.customerservice.customermanagement.domain.CustomerCreditReservedEvent;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
+import io.eventuate.otherservice.othersubdomain.domain.OtherEvent;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeCluster;
 import io.eventuate.tram.spring.flyway.EnableEventuateTramFlywayMigration;
 import io.eventuate.tram.testing.producer.kafka.events.DirectToKafkaDomainEventPublisher;
@@ -69,18 +69,18 @@ public class CustomerManagementEventConsumerIntegrationTest {
     private CustomerManagementService customerManagementService;
 
     @Test
-    public void shouldConsumeCustomerCreditReservedEvent() throws InterruptedException {
+    public void shouldConsumeOtherEvent() throws InterruptedException {
 
-        CustomerCreditReservedEvent event = new CustomerCreditReservedEvent(99L);
+        OtherEvent event = new OtherEvent(99L);
 
-        logger.info("Publishing CustomerCreditReservedEvent for customer 1 with amount 99");
+        logger.info("Publishing OtherEvent with orderId 99");
 
         domainEventPublisher.publish(
-                "io.eventuate.customerservice.customermanagement.domain.Customer",
+                "io.eventuate.otherservice.othersubdomain.domain.OtherAggregate",
                 "1",
                 event);
 
-        logger.info("Published CustomerCreditReservedEvent for customer 1 with amount 99");
+        logger.info("Published OtherEvent with orderId 99");
 
         await().atMost(10, TimeUnit.SECONDS).untilAsserted(() ->
                 verify(customerManagementService).noteCreditReserved("1", 99L)

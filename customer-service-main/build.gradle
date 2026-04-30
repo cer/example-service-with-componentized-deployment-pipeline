@@ -12,6 +12,7 @@ dependencies {
     runtimeOnly project(":customer-management:customer-management-persistence")
     runtimeOnly project(":customer-management:customer-management-event-publishing")
     runtimeOnly project(":customer-management:customer-management-event-subscribers")
+    componentTestImplementation project(":customer-management:customer-management-event-subscribers")
 
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-web"

@@ -1,7 +1,7 @@
 package io.eventuate.customerservice.customermanagement.eventsubscribers;
 
-import io.eventuate.customerservice.customermanagement.domain.CustomerCreditReservedEvent;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
+import io.eventuate.otherservice.othersubdomain.domain.OtherEvent;
 import io.eventuate.tram.events.publisher.DomainEventPublisher;
 import io.eventuate.tram.spring.inmemory.EnableTramInMemory;
 import org.junit.jupiter.api.Test;
@@ -38,11 +38,11 @@ public class CustomerManagementEventConsumerTest {
     private CustomerManagementService customerManagementService;
 
     @Test
-    public void shouldConsumeCustomerCreditReservedEvent() {
-        CustomerCreditReservedEvent event = new CustomerCreditReservedEvent(99L);
+    public void shouldConsumeOtherEvent() {
+        OtherEvent event = new OtherEvent(99L);
 
         domainEventPublisher.publish(
-            "io.eventuate.customerservice.customermanagement.domain.Customer",
+            "io.eventuate.otherservice.othersubdomain.domain.OtherAggregate",
             "1",
             Collections.singletonList(event));
 
