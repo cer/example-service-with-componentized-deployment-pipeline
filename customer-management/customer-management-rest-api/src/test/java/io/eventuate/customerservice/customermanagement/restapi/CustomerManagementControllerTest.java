@@ -82,7 +82,7 @@ public class CustomerManagementControllerTest {
 
   @Test
   public void shouldGetCustomers() throws Exception {
-    when(customerManagementService.findAll()).thenReturn(Collections.emptyList());
+    when(customerManagementService.findAllCustomers()).thenReturn(Collections.emptyList());
 
     mockMvc.perform(get("/customers"))
             .andExpect(status().isOk())
@@ -98,7 +98,7 @@ public class CustomerManagementControllerTest {
     Customer customer = new Customer(name, creditLimit);
     ReflectionTestUtils.setField(customer, "id", customerId.id());
 
-    when(customerManagementService.findById(customerId)).thenReturn(Optional.of(customer));
+    when(customerManagementService.findCustomerById(customerId)).thenReturn(Optional.of(customer));
 
     mockMvc.perform(get("/customers/{customerId}", customerId.id()))
             .andExpect(status().isOk())
@@ -111,7 +111,7 @@ public class CustomerManagementControllerTest {
   public void shouldReturn404WhenCustomerNotFound() throws Exception {
     CustomerId customerId = CustomerId.generate();
 
-    when(customerManagementService.findById(customerId)).thenReturn(Optional.empty());
+    when(customerManagementService.findCustomerById(customerId)).thenReturn(Optional.empty());
 
     mockMvc.perform(get("/customers/{customerId}", customerId.id()))
             .andExpect(status().isNotFound());

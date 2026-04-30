@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableEventuateTramFlywayMigration
-public class CustomerEventPublishingConfiguration {
+public class CustomerManagementEventPublishingConfiguration {
 
     @Bean
     public CustomerEventPublisher customerEventPublisher(DomainEventPublisher domainEventPublisher) {

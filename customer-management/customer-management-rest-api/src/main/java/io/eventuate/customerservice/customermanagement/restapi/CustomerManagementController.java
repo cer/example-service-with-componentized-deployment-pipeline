@@ -35,31 +35,31 @@ public class CustomerManagementController {
   @RequestMapping(value = "/customers", method = RequestMethod.POST)
   @PreAuthorize("hasRole('USER')")
   public CreateCustomerResponse createCustomer(@RequestBody CreateCustomerRequest createCustomerRequest) {
-    Customer customer = customerManagementService.createCustomer(createCustomerRequest.getName(), createCustomerRequest.getCreditLimit());
+    Customer customer = customerManagementService.createCustomer(createCustomerRequest.name(), createCustomerRequest.creditLimit());
     return new CreateCustomerResponse(customer.getId().toString());
   }
 
   @RequestMapping(value="/customers", method= RequestMethod.GET)
   @PreAuthorize("hasRole('USER')")
-  public ResponseEntity<GetCustomersResponse> getAll() {
-    return ResponseEntity.ok(new GetCustomersResponse(customerManagementService.findAll().stream()
-            .map(c -> new GetCustomerResponse(c.getId().toString(), c.getName(), c.getCreditLimit())).collect(Collectors.toList())));
+  public ResponseEntity<FindCustomersResponse> findAllCustomers() {
+    return ResponseEntity.ok(new FindCustomersResponse(customerManagementService.findAllCustomers().stream()
+            .map(c -> new FindCustomerResponse(c.getId().toString(), c.getName(), c.getCreditLimit())).collect(Collectors.toList())));
   }
 
   @RequestMapping(value = "/customers/{customerId}/creditreservations", method = RequestMethod.POST)
   @PreAuthorize("hasRole('USER')")
   public ReserveCreditResponse createCreditReservation(@PathVariable String customerId,
                                                                   @RequestBody ReserveCreditRequest request) {
-    customerManagementSagaService.reserveCredit(new CustomerId(UUID.fromString(customerId)), request.getOrderId(), request.getOrderTotal());
+    customerManagementSagaService.reserveCredit(new CustomerId(UUID.fromString(customerId)), request.orderId(), request.orderTotal());
     return new ReserveCreditResponse("PENDING");
   }
 
   @RequestMapping(value="/customers/{customerId}", method= RequestMethod.GET)
   @PreAuthorize("hasRole('USER')")
-  public ResponseEntity<GetCustomerResponse> getCustomer(@PathVariable String customerId) {
+  public ResponseEntity<FindCustomerResponse> findCustomerById(@PathVariable String customerId) {
     return customerManagementService
-            .findById(new CustomerId(UUID.fromString(customerId)))
-            .map(c -> new ResponseEntity<>(new GetCustomerResponse(c.getId().toString(), c.getName(), c.getCreditLimit()), HttpStatus.OK))
+            .findCustomerById(new CustomerId(UUID.fromString(customerId)))
+            .map(c -> new ResponseEntity<>(new FindCustomerResponse(c.getId().toString(), c.getName(), c.getCreditLimit()), HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 }

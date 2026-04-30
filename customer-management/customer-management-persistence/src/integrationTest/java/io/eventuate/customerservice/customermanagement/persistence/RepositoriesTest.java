@@ -41,7 +41,7 @@ public class RepositoriesTest {
   public static final String customerName = "Chris";
 
   @Configuration
-  @Import(CustomerPersistenceConfiguration.class)
+  @Import(CustomerManagementPersistenceConfiguration.class)
   static public class Config {
   }
 

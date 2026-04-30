@@ -116,7 +116,7 @@ public class CustomerServiceTest {
 
     when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
 
-    Optional<Customer> result = customerManagementService.findById(customerId);
+    Optional<Customer> result = customerManagementService.findCustomerById(customerId);
 
     assertThat(result).isPresent();
     assertThat(result.get().getName()).isEqualTo("John");
@@ -128,7 +128,7 @@ public class CustomerServiceTest {
 
     when(customerRepository.findById(customerId)).thenReturn(Optional.empty());
 
-    Optional<Customer> result = customerManagementService.findById(customerId);
+    Optional<Customer> result = customerManagementService.findCustomerById(customerId);
 
     assertThat(result).isEmpty();
   }
@@ -140,7 +140,7 @@ public class CustomerServiceTest {
 
     when(customerRepository.findAll()).thenReturn(List.of(customer1, customer2));
 
-    List<Customer> result = customerManagementService.findAll();
+    List<Customer> result = customerManagementService.findAllCustomers();
 
     assertThat(result).hasSize(2);
   }

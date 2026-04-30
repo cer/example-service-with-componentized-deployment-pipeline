@@ -29,7 +29,7 @@ public class CustomerEventPublishingIntegrationTest {
 
     @Configuration
     @EnableAutoConfiguration
-    @Import({CustomerEventPublishingConfiguration.class})
+    @Import({CustomerManagementEventPublishingConfiguration.class})
     static class Config {
     }
 

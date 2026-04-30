@@ -35,11 +35,11 @@ public class CustomerManagementService {
     customerEventPublisher.publish(customer, new CustomerCreditReservedEvent(orderId));
   }
 
-  public List<Customer> findAll() {
+  public List<Customer> findAllCustomers() {
     return StreamSupport.stream(customerRepository.findAll().spliterator(), false).collect(Collectors.toList());
   }
 
-  public Optional<Customer> findById(CustomerId customerId) {
+  public Optional<Customer> findCustomerById(CustomerId customerId) {
     return customerRepository.findById(customerId);
   }
 
