@@ -2,9 +2,9 @@ package io.eventuate.customerservice.customermanagement.persistence;
 
 import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.common.testcontainers.PropertyProvidingContainer;
-import io.eventuate.examples.common.money.Money;
 import io.eventuate.customerservice.customermanagement.domain.Customer;
 import io.eventuate.customerservice.customermanagement.domain.CustomerRepository;
+import io.eventuate.examples.common.money.Money;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -38,8 +38,6 @@ public class RepositoriesTest {
     PropertyProvidingContainer.startAndProvideProperties(registry, database);
   }
 
-  public static final String customerName = "Chris";
-
   @Configuration
   @Import(CustomerManagementPersistenceConfiguration.class)
   static public class Config {
@@ -54,16 +52,30 @@ public class RepositoriesTest {
   @Test
   public void shouldSaveAndLoadCustomer() {
     Money creditLimit = new Money("12.34");
-    Money amount = new Money("10");
-    Money expectedAvailableCredit = creditLimit.subtract(amount);
-
-    Customer c = new Customer(customerName, creditLimit);
+    Customer c = new Customer("Chris", creditLimit);
 
     transactionTemplate.executeWithoutResult( ts -> customerRepository.save(c) );
 
     transactionTemplate.executeWithoutResult(ts -> {
       Customer c2 = customerRepository.findById(c.getId()).get();
-      assertThat(c2.getName()).isEqualTo(customerName);
+      assertThat(c2.getName()).isEqualTo("Chris");
+      assertThat(c2.getCreditLimit()).isEqualTo(creditLimit);
+    });
+  }
+
+  @Test
+  public void shouldSaveAndLoadCustomerWithAvailableCredit() {
+    Money creditLimit = new Money("12.34");
+    Money amount = new Money("10");
+    Money expectedAvailableCredit = creditLimit.subtract(amount);
+
+    Customer c = new Customer("Chris", creditLimit);
+
+    transactionTemplate.executeWithoutResult( ts -> customerRepository.save(c) );
+
+    transactionTemplate.executeWithoutResult(ts -> {
+      Customer c2 = customerRepository.findById(c.getId()).get();
+      assertThat(c2.getName()).isEqualTo("Chris");
       assertThat(c2.getCreditLimit()).isEqualTo(creditLimit);
       assertThat(c2.availableCredit()).isEqualTo(creditLimit);
 

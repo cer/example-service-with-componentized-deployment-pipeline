@@ -1,11 +1,9 @@
 package io.eventuate.customerservice.customermanagement.commandapi;
 
-import io.eventuate.examples.common.money.Money;
-import io.eventuate.customerservice.customermanagement.commandapi.ReserveCreditCommand;
-import io.eventuate.customerservice.customermanagement.commandapi.CustomerCreditReserved;
-import io.eventuate.customerservice.customermanagement.commandapi.CustomerNotFound;
-import io.eventuate.customerservice.customermanagement.domain.CustomerNotFoundException;
+import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
+import io.eventuate.customerservice.customermanagement.domain.CustomerNotFoundException;
+import io.eventuate.examples.common.money.Money;
 import io.eventuate.tram.commands.producer.CommandProducer;
 import io.eventuate.tram.spring.inmemory.EnableTramInMemory;
 import io.eventuate.tram.spring.testing.consumer.EnableTestConsumer;
@@ -21,16 +19,13 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Collections;
-import java.util.UUID;
-
-import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @TestPropertySource(properties = {
-        "spring.datasource.driver-class-name=" // Otherwise, Error creating bean with name 'eventuateCommonJdbcOperations' ould not resolve placeholder 'spring.datasource.driver-class-name'
+        "spring.datasource.driver-class-name=" // Otherwise, Error creating bean with name 'eventuateCommonJdbcOperations' could not resolve placeholder 'spring.datasource.driver-class-name'
 })
 public class CustomerManagementCommandHandlerTest {
 

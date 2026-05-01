@@ -9,6 +9,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class CustomerTest {
 
   @Test
+  void shouldCreateCustomer() {
+    Customer customer = new Customer("John", new Money("100.00"));
+
+    assertThat(customer.getName()).isEqualTo("John");
+    assertThat(customer.getCreditLimit()).isEqualTo(new Money("100.00"));
+  }
+
+  @Test
   void reserveCreditShouldReduceAvailableCredit() {
     Customer customer = new Customer("John", new Money("100.00"));
 

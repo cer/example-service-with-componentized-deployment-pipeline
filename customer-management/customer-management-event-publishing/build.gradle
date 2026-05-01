@@ -7,7 +7,10 @@ dependencies {
     implementation 'io.eventuate.tram.core:eventuate-tram-spring-events-publisher-starter'
     implementation 'io.eventuate.tram.core:eventuate-tram-spring-flyway'
 
+    // OutboxPartitioningSpec partitioning
+    runtimeOnly 'io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc'
+
     integrationTestImplementation 'io.eventuate.common:eventuate-common-testcontainers'
-    integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc'
+    integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-testing-support-outbox'
     integrationTestRuntimeOnly 'org.flywaydb:flyway-database-postgresql:11.8.2'
 }

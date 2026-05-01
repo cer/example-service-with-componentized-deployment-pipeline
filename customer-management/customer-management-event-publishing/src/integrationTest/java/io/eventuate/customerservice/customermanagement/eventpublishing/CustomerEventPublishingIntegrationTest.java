@@ -3,25 +3,24 @@ package io.eventuate.customerservice.customermanagement.eventpublishing;
 import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.customerservice.customermanagement.domain.Customer;
+import io.eventuate.customerservice.customermanagement.domain.CustomerCreatedEvent;
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreditReservedEvent;
 import io.eventuate.customerservice.customermanagement.domain.CustomerEventPublisher;
+import io.eventuate.tram.spring.testing.outbox.events.DomainEventOutboxTestSupport;
+import io.eventuate.tram.spring.testing.outbox.events.EnableDomainEventOutboxTestSupport;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.lifecycle.Startables;
 
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static io.eventuate.customerservice.customermanagement.eventpublishing.EntityIdSetter.setId;
 
 @SpringBootTest(classes = CustomerEventPublishingIntegrationTest.Config.class,
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -29,6 +28,7 @@ public class CustomerEventPublishingIntegrationTest {
 
     @Configuration
     @EnableAutoConfiguration
+    @EnableDomainEventOutboxTestSupport
     @Import({CustomerManagementEventPublishingConfiguration.class})
     static class Config {
     }
@@ -45,16 +45,10 @@ public class CustomerEventPublishingIntegrationTest {
     private CustomerEventPublisher customerEventPublisher;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    private void setId(Object entity, Object id) throws Exception {
-        Field idField = entity.getClass().getDeclaredField("id");
-        idField.setAccessible(true);
-        idField.set(entity, id);
-    }
+    private DomainEventOutboxTestSupport domainEventOutboxTestSupport;
 
     @Test
-    public void shouldPublishCustomerCreditReservedEventToOutbox() throws Exception {
+    public void shouldPublishCustomerCreditReservedEventToOutbox() {
         UUID customerId = UUID.randomUUID();
         long orderId = 99L;
 
@@ -63,14 +57,24 @@ public class CustomerEventPublishingIntegrationTest {
 
         customerEventPublisher.publish(customer, new CustomerCreditReservedEvent(orderId));
 
-        String destination = Customer.class.getName();
-        List<Map<String, Object>> messages = jdbcTemplate.queryForList(
-                "SELECT * FROM message WHERE destination = ? AND headers LIKE ?",
-                destination, "%" + CustomerCreditReservedEvent.class.getName() + "%");
+        domainEventOutboxTestSupport.assertDomainEventInOutbox(
+                Customer.class.getName(),
+                customerId.toString(),
+                CustomerCreditReservedEvent.class.getName());
+    }
 
-        assertThat(messages).as("Expected at least one event in the outbox for destination " + destination).isNotEmpty();
-        String payload = (String) messages.get(0).get("payload");
-        assertThat(payload).as("Expected outbox payload to contain orderId " + orderId)
-                .contains(String.valueOf(orderId));
+    @Test
+    public void shouldPublishCustomerCreatedEvent() {
+        UUID customerId = UUID.randomUUID();
+
+        Customer customer = new Customer("John Doe", new Money("500.00"));
+        setId(customer, customerId);
+
+        customerEventPublisher.publish(customer, new CustomerCreatedEvent("John Doe", new Money("500.00")));
+
+        domainEventOutboxTestSupport.assertDomainEventInOutbox(
+                Customer.class.getName(),
+                customerId.toString(),
+                CustomerCreatedEvent.class.getName());
     }
 }

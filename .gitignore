@@ -27,3 +27,4 @@ Thumbs.db
 logs/
 test-reports
 .claude/worktrees
+docs/ideas/active/skeleton-generator

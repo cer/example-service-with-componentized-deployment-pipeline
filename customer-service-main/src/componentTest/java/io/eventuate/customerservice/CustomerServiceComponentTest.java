@@ -1,15 +1,15 @@
-package io.eventuate.customerservice.customermanagement;
+package io.eventuate.customerservice;
 
 import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.customerservice.customermanagement.commandapi.ReserveCreditCommand;
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreatedEvent;
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreditReservedEvent;
-import io.eventuate.otherservice.othersubdomain.domain.OtherEvent;
 import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerServiceProxy;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.examples.springauthorizationserver.testcontainers.AuthorizationServerContainerForServiceContainers;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeCluster;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeContainer;
+import io.eventuate.otherservice.othersubdomain.domain.OtherEvent;
 import io.eventuate.testcontainers.service.BuildArgsResolver;
 import io.eventuate.testcontainers.service.ServiceContainer;
 import io.eventuate.tram.spring.testing.outbox.commands.CommandOutboxTestSupport;
@@ -91,7 +91,7 @@ public class CustomerServiceComponentTest {
                     .withDatabase(database)
                     .withKafka(kafka)
                     .withEnv(authorizationServer.resourceServerEnv())
-                    .withLogConsumer(new Slf4jLogConsumer(logger).withPrefix("SVC security-system-service:"))
+                    .withLogConsumer(new Slf4jLogConsumer(logger).withPrefix("SVC customer-service:"))
                     .withReuse(false)
             ;
 

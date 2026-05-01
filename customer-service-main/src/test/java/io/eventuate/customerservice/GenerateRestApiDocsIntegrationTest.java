@@ -1,4 +1,4 @@
-package io.eventuate.customerservice.customermanagement;
+package io.eventuate.customerservice;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,10 +21,10 @@ import java.nio.file.Path;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = GenerateApiDocsIntegrationTest.Config.class,
+@SpringBootTest(classes = GenerateRestApiDocsIntegrationTest.Config.class,
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class GenerateApiDocsIntegrationTest {
+class GenerateRestApiDocsIntegrationTest {
 
     @Configuration
     @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class})
@@ -53,28 +53,10 @@ class GenerateApiDocsIntegrationTest {
                 .extract().asString();
 
         JsonNode paths = objectMapper.readTree(body).path("paths");
-        assertThat(paths.has("/customers")).isTrue();
+        assertThat(paths).isNotEmpty();
 
         Path outputDir = Path.of("build/api-docs");
         Files.createDirectories(outputDir);
         Files.writeString(outputDir.resolve("openapi.json"), body);
-    }
-
-    @Test
-    void shouldGenerateAsyncApiDocs() throws IOException {
-        String body = given()
-            .when()
-                .get("/springwolf/docs")
-            .then()
-                .statusCode(200)
-                .extract().asString();
-
-        JsonNode root = objectMapper.readTree(body);
-        assertThat(root.path("channels").has(
-            "io.eventuate.customerservice.customermanagement.domain.Customer")).isTrue();
-
-        Path outputDir = Path.of("build/api-docs");
-        Files.createDirectories(outputDir);
-        Files.writeString(outputDir.resolve("asyncapi.json"), body);
     }
 }

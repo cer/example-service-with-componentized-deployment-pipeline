@@ -6,14 +6,19 @@ dependencies {
     implementation project(':customer-management:customer-management-domain')
     implementation 'io.eventuate.tram.core:eventuate-tram-spring-events-subscriber-starter'
 
+    // For MessageConsumer
+     runtimeOnly "io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka"
+    // For Idempotency
+    runtimeOnly "io.eventuate.tram.core:eventuate-tram-spring-consumer-jdbc"
+    // OutboxPartitioningSpec partitioning
+    runtimeOnly 'io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc'
+
     testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-in-memory'
     testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-events-publisher-starter'
 
     integrationTestImplementation 'io.eventuate.common:eventuate-common-testcontainers'
     integrationTestImplementation 'io.eventuate.messaging.kafka:eventuate-messaging-kafka-testcontainers'
     integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-producer-kafka"
-    integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka"
-    integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc'
 
     integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-flyway'
     integrationTestRuntimeOnly 'org.flywaydb:flyway-database-postgresql:11.8.2'

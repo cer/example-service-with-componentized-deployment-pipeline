@@ -25,6 +25,9 @@ dependencies {
 
     // API docs generation test (in-memory, no infra)
     testImplementation "io.eventuate.tram.core:eventuate-tram-spring-in-memory"
+
+    // TODO This is needed to avoid OutboxSpec problem in consumer only service
+    testImplementation "io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc"
     testImplementation "io.rest-assured:rest-assured"
 
     componentTestImplementation "io.eventuate.examples.common:eventuate-examples-common-money-jakarta9:$eventuateCommonExamplesVersion"
