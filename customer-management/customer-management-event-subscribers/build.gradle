@@ -8,10 +8,12 @@ dependencies {
 
     // For MessageConsumer
      runtimeOnly "io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka"
+
     // For Idempotency
     runtimeOnly "io.eventuate.tram.core:eventuate-tram-spring-consumer-jdbc"
+
     // OutboxPartitioningSpec partitioning
-    runtimeOnly 'io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc'
+    integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc'
 
     testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-in-memory'
     testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-events-publisher-starter'

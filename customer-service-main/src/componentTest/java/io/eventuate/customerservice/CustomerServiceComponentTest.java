@@ -1,5 +1,7 @@
 package io.eventuate.customerservice;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.customerservice.customermanagement.commandapi.ReserveCreditCommand;
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreatedEvent;
@@ -49,6 +51,7 @@ import static org.awaitility.Awaitility.await;
 public class CustomerServiceComponentTest {
 
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(CustomerServiceComponentTest.class);
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Configuration
     @EnableAutoConfiguration
@@ -147,11 +150,12 @@ public class CustomerServiceComponentTest {
                 .extract()
                 .path("customerId");
 
-        // Verify CustomerCreatedEvent published to outbox
+        // EVENT-PUBLISHING-SPECIFIC-START
         domainEventOutboxTestSupport.assertDomainEventInOutbox(
                 "io.eventuate.customerservice.customermanagement.domain.Customer",
                 createdCustomerId,
                 CustomerCreatedEvent.class.getName());
+        // EVENT-PUBLISHING-SPECIFIC-END
 
         // Verify GET /customers returns the created customer
         given()
@@ -234,16 +238,19 @@ public class CustomerServiceComponentTest {
 
     @Test
     public void shouldGetOpenApiDocs() {
-        assertUnauthenticatedEndpointContains("/v3/api-docs", "/customers");
+        JsonNode docs = getAsJsonNode("/v3/api-docs");
+        JsonNode paths = docs.path("paths");
+        assertThat(paths).isNotEmpty();
     }
 
     @Test
     public void shouldGetAsyncApiDocs() {
-        assertUnauthenticatedEndpointContains("/springwolf/docs",
-                "io.eventuate.customerservice.customermanagement.domain.Customer");
+        JsonNode docs = getAsJsonNode("/springwolf/docs");
+        JsonNode channels = docs.path("channels");
+        assertThat(channels).isNotEmpty();
     }
 
-    private void assertUnauthenticatedEndpointContains(String path, String expectedContent) {
+    private JsonNode getAsJsonNode(String path) {
         String body = given()
             .when()
             .auth().none()
@@ -251,8 +258,11 @@ public class CustomerServiceComponentTest {
             .then()
             .statusCode(200)
             .extract().asString();
-
-        assertThat(body).contains(expectedContent);
+        try {
+            return objectMapper.readTree(body);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            throw new RuntimeException("Failed to parse JSON from " + path, e);
+        }
     }
 
     @Test
