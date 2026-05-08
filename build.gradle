@@ -10,8 +10,6 @@ buildscript {
     }
 }
 
-apply plugin: GitRepositoryUrlPlugin
-
 subprojects {
 
     apply plugin: "java-library"
