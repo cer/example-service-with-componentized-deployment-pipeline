@@ -31,8 +31,14 @@ service:
     - customer-service-api-messaging
     - customer-service-api-web
   paths:
+    - .gitignore
     - build.gradle
     - gradle.properties
+    - gradle
+    - gradlew
+    - gradlew.bat
+    - buildSrc/build.gradle
+    - buildSrc/src
     - customer-service-main/src/main/resources/application.properties
     - customer-service-main/Dockerfile
     - .github
