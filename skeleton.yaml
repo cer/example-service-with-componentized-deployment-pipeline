@@ -1,0 +1,454 @@
+# Manifest describing the actual structure of example-service for skeleton generation.
+#
+# Naming conventions:
+#   transforms:   — always a list of transform names
+#   classes:      — dict keyed by module, then source-set (main/test/integrationTest/componentTest)
+#   target:       — in contributes-to, the class being contributed to
+#   with-classes:  — in contributes-to, associated classes created alongside the contribution
+#
+# Transforms (combinable):
+#   rename             — substitute subdomain/entity/service names
+#   strip-dependencies — remove all injected dependencies (constructor param + field + assignment)
+#   strip-methods      — remove all methods
+#   strip-bean-params  — remove params from @Bean methods (method itself remains)
+#   strip-non-getters  — remove all methods except getters (for entity classes)
+#   strip-event-publishing — remove event publishing calls from a method body (method-level)
+
+template-names:
+  service: "customer-service"
+  subdomain: "customer-management"
+  entity: "Customer"
+  base-package: "io.eventuate.customerservice"
+
+# ============================================================
+# Service-level structure (one per service)
+# ============================================================
+
+service:
+  modules:
+    - customer-service-main
+    - customer-service-deployment
+    - customer-service-api-messaging
+    - customer-service-api-web
+  paths:
+    - build.gradle
+    - gradle.properties
+    - customer-service-main/src/main/resources/application.properties
+    - customer-service-main/Dockerfile
+    - .github
+    - customer-service-deployment
+    - .pre-commit-config.yaml
+    - codescene-precommit.sh
+  post-generate-commands:
+    - pre-commit install
+  validate-commands:
+    - ./gradlew build
+
+  classes:
+    customer-service-main:
+      main:
+        - name: CustomerServiceMain
+          transforms: [rename]
+      componentTest:
+        - name: CustomerServiceComponentTest
+          transforms: [rename, strip-test-methods]
+          # Result: component test shell with container setup.
+
+  contributes-to:
+    - target: CustomerServiceComponentTest
+      module: customer-service-main
+      source-set: componentTest
+      methods:
+        - shouldGetActuatorHealth
+          # Entity and features contribute test methods.
+
+# ============================================================
+# Subdomain-level structure (replicated per subdomain)
+# ============================================================
+
+subdomain:
+  source-dir: customer-management
+
+  # Core modules — always present
+  core:
+    domain:
+      classes:
+        main:
+          - name: CustomerManagementService
+            transforms: [rename, strip-dependencies, strip-methods]
+            # Result: empty class with Logger
+          - name: CustomerManagementDomainConfiguration
+            transforms: [rename, strip-bean-params]
+            # Result: @Bean method remains with no params →
+            #   new OrderManagementService()
+        test:
+          - name: CustomerManagementServiceTest
+            transforms: [rename, strip-dependencies, strip-methods]
+            # Result: test shell with mocks. Entity/features contribute test methods.
+
+  # Entity definition — what gets replicated per entity
+  entity:
+    classes:
+      domain:
+        main:
+          - name: Customer
+            transforms: [rename, strip-non-getters]
+          - name: CustomerId
+            transforms: [rename]
+          - name: CustomerRepository
+            transforms: [rename]
+          - name: CustomerNotFoundException
+            transforms: [rename]
+        test:
+          - name: CustomerTest
+            transforms: [rename, strip-methods]
+            # Result: empty test class. Entity contributes placeholder test.
+
+    contributes-to:
+      - target: CustomerTest
+        module: domain
+        source-set: test
+        methods:
+          - shouldCreateCustomer
+
+      - target: CustomerManagementService
+        module: domain
+        source-set: main
+        dependencies:
+          - param: CustomerRepository customerRepository
+            wired-in:
+              target: CustomerManagementDomainConfiguration
+              bean: customerManagementService
+        methods:
+          - name: createCustomer
+            transforms: [strip-event-publishing]
+          - findAllCustomers
+          - findCustomerById
+
+      - target: CustomerManagementServiceTest
+        module: domain
+        source-set: test
+        dependencies:
+          - param: CustomerRepository customerRepository
+        methods:
+          - createCustomerShouldSaveAndReturnCustomer
+          - findByIdShouldReturnCustomerWhenExists
+          - findByIdShouldReturnEmptyWhenNotExists
+          - findAllShouldReturnAllCustomers
+
+      - target: RepositoriesTest
+        module: persistence
+        source-set: integrationTest
+        dependencies:
+          - param: CustomerRepository customerRepository
+        methods:
+          - shouldSaveAndLoadCustomer
+
+      - target: CustomerManagementController
+        module: rest-api
+        source-set: main
+        dependencies:
+          - param: CustomerManagementService customerManagementService
+        methods:
+          - createCustomer
+          - findAllCustomers
+          - findCustomerById
+        with-classes:
+          rest-api:
+            main:
+              - name: CreateCustomerRequest
+                transforms: [rename]
+              - name: CreateCustomerResponse
+                transforms: [rename]
+              - name: FindCustomerResponse
+                transforms: [rename]
+              - name: FindCustomersResponse
+                transforms: [rename]
+
+      - target: CustomerManagementControllerTest
+        module: rest-api
+        source-set: test
+        dependencies:
+          - param: CustomerManagementService customerManagementService
+        methods:
+          - shouldCreateCustomer
+          - shouldGetCustomers
+          - shouldGetCustomer
+          - shouldReturn404WhenCustomerNotFound
+
+  # Optional features
+  features:
+
+    persistence:
+      per-entity: false
+      module: persistence
+      classes:
+        persistence:
+          main:
+            - name: CustomerManagementPersistenceConfiguration
+              transforms: [rename]
+          integrationTest:
+            - name: RepositoriesTest
+              transforms: [rename, strip-test-methods, strip-dependencies]
+              # Result: test shell with TestContainers setup.
+              # Entity contributes save/load test methods.
+
+    event-publishing-support:
+      per-entity: false
+      module: event-publishing
+      classes:
+        event-publishing:
+          main:
+            - name: CustomerManagementEventPublishingConfiguration
+              transforms: [rename, strip-methods]
+              # Result: @Configuration with @EnableEventuateTramFlywayMigration,
+              # no bean methods. Each entity contributes its own @Bean method.
+          integrationTest:
+            - name: EntityIdSetter
+              transforms: []
+              # Helper class copied as-is, no renaming needed.
+        customer-service-main:
+          test:
+            - name: GenerateMessagingApiDocsIntegrationTest
+              transforms: [rename]
+      contributes-to:
+        - target: CustomerServiceComponentTest
+          module: customer-service-main
+          source-set: componentTest
+          methods:
+            - shouldGetAsyncApiDocs
+
+    event-publishing:
+      per-entity: true
+      condition: isPublishedEntity
+      module: event-publishing
+      requires: event-publishing-support
+      classes:
+        domain:
+          main:
+            - name: CustomerEventPublisher
+              transforms: [rename]
+            - name: CustomerEvent
+              transforms: [rename]
+            - name: CustomerCreatedEvent
+              transforms: [rename]
+        event-publishing:
+          main:
+            - name: CustomerEventPublisherImpl
+              transforms: [rename]
+          integrationTest:
+            - name: CustomerEventPublishingIntegrationTest
+              transforms: [rename, strip-test-methods]
+              # Result: test shell with TestContainers setup.
+              # Each entity contributes its own publish test.
+      contributes-to:
+        - target: CustomerManagementService
+          module: domain
+          source-set: main
+          dependencies:
+            - param: CustomerEventPublisher customerEventPublisher
+              wired-in:
+                target: CustomerManagementDomainConfiguration
+                bean: customerManagementService
+          method-calls:
+            createCustomer: customerEventPublisher.publish
+        - target: CustomerManagementEventPublishingConfiguration
+          module: event-publishing
+          source-set: main
+          beans:
+            - name: customerEventPublisher
+              type: CustomerEventPublisher
+              impl: CustomerEventPublisherImpl
+        - target: CustomerManagementServiceTest
+          module: domain
+          source-set: test
+          dependencies:
+            - param: CustomerEventPublisher customerEventPublisher
+          methods:
+            - createCustomerShouldPublishCustomerCreatedEvent
+        - target: CustomerEventPublishingIntegrationTest
+          module: event-publishing
+          source-set: integrationTest
+          methods:
+            - shouldPublishCustomerCreatedEvent
+
+    event-subscribers:
+      per-entity: false
+      module: event-subscribers
+      classes:
+        event-subscribers:
+          main:
+            - name: CustomerManagementEventConsumer
+              transforms: [rename]
+            - name: CustomerManagementEventConsumerConfiguration
+              transforms: [rename]
+            - name: OtherEvent
+              transforms: []
+          test:
+            - name: CustomerManagementEventConsumerTest
+              transforms: [rename]
+          integrationTest:
+            - name: CustomerManagementEventConsumerIntegrationTest
+              transforms: [rename]
+        customer-service-main:
+          test:
+            - name: GenerateMessagingApiDocsIntegrationTest
+              transforms: [rename]
+      contributes-to:
+        - target: CustomerManagementService
+          module: domain
+          source-set: main
+          methods:
+            - noteCreditReserved
+        - target: CustomerServiceComponentTest
+          module: customer-service-main
+          source-set: componentTest
+          methods:
+            - shouldGetAsyncApiDocs
+
+    command-api:
+      per-entity: false
+      module: command-api
+      classes:
+        command-api:
+          main:
+            - name: CustomerManagementCommandHandler
+              transforms: [rename]
+            - name: CustomerCommandHandlerConfiguration
+              transforms: [rename]
+            - name: CustomerManagementCommandHandlerWithFlywayConfiguration
+              transforms: [rename]
+            - name: ReserveCreditCommand
+              transforms: [rename]
+            - name: ReleaseCreditCommand
+              transforms: [rename]
+            - name: ReserveCreditResult
+              transforms: [rename]
+            - name: CustomerCreditReserved
+              transforms: [rename]
+            - name: CustomerNotFound
+              transforms: [rename]
+            - name: CustomerCreditLimitExceeded
+              transforms: [rename]
+          test:
+            - name: CustomerManagementCommandHandlerTest
+              transforms: [rename]
+          integrationTest:
+            - name: CustomerManagementCommandHandlerIntegrationTest
+              transforms: [rename]
+      contributes-to:
+        - target: CustomerManagementService
+          module: domain
+          source-set: main
+          methods:
+            - reserveCredit
+
+    sagas:
+      per-entity: false
+      module: sagas
+      classes:
+        sagas:
+          main:
+            - name: CustomerManagementSagaService
+              transforms: [rename]
+            - name: CustomerManagementSagasConfiguration
+              transforms: [rename]
+            - name: ReserveCreditSaga
+              transforms: [rename]
+            - name: ReserveCreditSagaData
+              transforms: [rename]
+            - name: CustomerServiceProxy
+              transforms: [rename]
+          test:
+            - name: ReserveCreditSagaTest
+              transforms: [rename]
+            - name: CustomerManagementSagaServiceTest
+              transforms: [rename]
+            - name: CustomerServiceProxyTest
+              transforms: [rename]
+          integrationTest:
+            - name: ReserveCreditSagaIntegrationTest
+              transforms: [rename]
+      contributes-to:
+        - target: CustomerManagementService
+          module: domain
+          source-set: main
+          methods:
+            - noteCreditReservationPending
+            - noteCreditReservationApproved
+            - noteCreditReservationRejected
+        - target: CustomerManagementController
+          module: rest-api
+          source-set: main
+          dependencies:
+            - param: CustomerManagementSagaService customerManagementSagaService
+          methods:
+            - createCreditReservation
+          with-classes:
+            rest-api:
+              main:
+                - name: ReserveCreditRequest
+                  transforms: [rename]
+                - name: ReserveCreditResponse
+                  transforms: [rename]
+        - target: CustomerManagementControllerTest
+          module: rest-api
+          source-set: test
+          methods:
+            - shouldReserveCredit
+
+    rest-api:
+      per-entity: false
+      module: rest-api
+      classes:
+        rest-api:
+          main:
+            - name: CustomerManagementController
+              transforms: [rename, strip-dependencies, strip-methods]
+              # Result: empty @RestController
+            - name: CustomerManagementWebConfiguration
+              transforms: [rename]
+            - name: CustomerManagementWebSecurityConfiguration
+              transforms: [rename]
+          test:
+            - name: CustomerManagementControllerTest
+              transforms: [rename, strip-dependencies, strip-test-methods]
+              # Result: test shell with MockMvc setup.
+              # Entity and features contribute test methods.
+        customer-service-main:
+          test:
+            - name: GenerateRestApiDocsIntegrationTest
+              transforms: [rename]
+      also-apply:
+        - rest-api-component-test
+        - rest-api-event-publishing-component-test
+      contributes-to:
+        - target: CustomerServiceComponentTest
+          module: customer-service-main
+          source-set: componentTest
+          methods:
+            - shouldGetSwaggerUi
+            - shouldGetOpenApiDocs
+
+    rest-api-component-test:
+      per-entity: true
+      condition: hasRestApiWithoutEventPublishing
+      module: rest-api
+      contributes-to:
+        - target: CustomerServiceComponentTest
+          module: customer-service-main
+          source-set: componentTest
+          methods:
+            - name: shouldCreateAndGetCustomer
+              transforms: [strip-marked-section:EVENT-PUBLISHING-SPECIFIC]
+
+    rest-api-event-publishing-component-test:
+      per-entity: true
+      condition: hasRestApiAndEventPublishing
+      module: rest-api
+      contributes-to:
+        - target: CustomerServiceComponentTest
+          module: customer-service-main
+          source-set: componentTest
+          methods:
+            - shouldCreateAndGetCustomer
