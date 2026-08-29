@@ -23,6 +23,8 @@ dependencies {
     integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-producer-kafka"
 
     integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-flyway'
-    integrationTestRuntimeOnly 'org.flywaydb:flyway-database-postgresql:11.8.2'
+    integrationTestImplementation "org.springframework.boot:spring-boot-starter-flyway"
+    integrationTestImplementation "org.springframework.boot:spring-boot-starter-jdbc-test"
+    integrationTestRuntimeOnly "org.flywaydb:flyway-database-postgresql"
 
 }

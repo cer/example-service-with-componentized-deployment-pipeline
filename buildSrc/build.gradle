@@ -2,7 +2,10 @@ repositories {
     mavenCentral()
 }
 
+def rootGradleProperties = new Properties()
+file("../gradle.properties").withInputStream { rootGradleProperties.load(it) }
+
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-gradle-plugin:3.4.5'
+    implementation "org.springframework.boot:spring-boot-gradle-plugin:${rootGradleProperties.springBootVersion}"
     implementation 'io.spring.gradle:dependency-management-plugin:1.1.7'
 }

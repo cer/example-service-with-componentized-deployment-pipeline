@@ -3,9 +3,10 @@ dependencies {
     implementation project(":customer-management:customer-management-sagas")
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-api:$springdocVersion"
 
-    implementation "org.springframework.boot:spring-boot-starter-web"
-    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
+    implementation "org.springframework.boot:spring-boot-starter-webmvc"
+    implementation "org.springframework.boot:spring-boot-starter-security-oauth2-resource-server"
 
-    testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "org.springframework.boot:spring-boot-starter-webmvc-test"
+    testImplementation "org.springframework.boot:spring-boot-starter-security-test"
 
 }

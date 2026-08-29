@@ -9,11 +9,14 @@ dependencies {
     implementation "io.eventuate.tram.core:eventuate-tram-spring-jdbc-kafka"
     implementation "io.eventuate.tram.core:eventuate-tram-spring-flyway"
     runtimeOnly "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-flyway"
-    implementation 'org.flywaydb:flyway-database-postgresql:11.8.2'
+    implementation "org.springframework.boot:spring-boot-starter-flyway"
+    implementation "org.flywaydb:flyway-database-postgresql"
 
     testImplementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-testing-support"
 
     integrationTestRuntimeOnly "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-flyway"
+    integrationTestImplementation "org.springframework.boot:spring-boot-starter-flyway-test"
+    integrationTestImplementation "org.springframework.boot:spring-boot-starter-jdbc-test"
     integrationTestImplementation "io.eventuate.common:eventuate-common-testcontainers"
     integrationTestImplementation "io.eventuate.messaging.kafka:eventuate-messaging-kafka-testcontainers"
     integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-producer-kafka"

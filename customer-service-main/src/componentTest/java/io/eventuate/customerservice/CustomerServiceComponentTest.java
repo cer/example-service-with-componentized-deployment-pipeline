@@ -1,7 +1,8 @@
 package io.eventuate.customerservice;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.customerservice.customermanagement.commandapi.ReserveCreditCommand;
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreatedEvent;
@@ -51,7 +52,7 @@ import static org.awaitility.Awaitility.await;
 public class CustomerServiceComponentTest {
 
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(CustomerServiceComponentTest.class);
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = JsonMapper.builder().build();
 
     @Configuration
     @EnableAutoConfiguration
@@ -260,7 +261,7 @@ public class CustomerServiceComponentTest {
             .extract().asString();
         try {
             return objectMapper.readTree(body);
-        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+        } catch (tools.jackson.core.JacksonException e) {
             throw new RuntimeException("Failed to parse JSON from " + path, e);
         }
     }

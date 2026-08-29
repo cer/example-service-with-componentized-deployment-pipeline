@@ -15,7 +15,7 @@ dependencies {
     componentTestImplementation project(":customer-management:customer-management-event-subscribers")
 
     implementation "org.springframework.boot:spring-boot-starter-actuator"
-    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-webmvc"
 
     // REST API documentation
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion"
@@ -24,11 +24,13 @@ dependencies {
     implementation "io.eventuate.tram.springwolf:eventuate-tram-springwolf-support-starter"
 
     // API docs generation test (in-memory, no infra)
+    testImplementation "org.springframework.boot:spring-boot-starter-flyway-test"
+    testImplementation "org.springframework.boot:spring-boot-starter-jdbc-test"
     testImplementation "io.eventuate.tram.core:eventuate-tram-spring-in-memory"
 
     // TODO This is needed to avoid OutboxSpec problem in consumer only service
     testImplementation "io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc"
-    testImplementation "io.rest-assured:rest-assured"
+    testImplementation "io.rest-assured:rest-assured:$restAssuredVersion"
 
     componentTestImplementation "io.eventuate.examples.common:eventuate-examples-common-money-jakarta9:$eventuateCommonExamplesVersion"
     componentTestImplementation "io.eventuate.platform.testcontainer.support:eventuate-platform-testcontainer-support-service:$eventuatePlatformTestContainerSupportVersion"

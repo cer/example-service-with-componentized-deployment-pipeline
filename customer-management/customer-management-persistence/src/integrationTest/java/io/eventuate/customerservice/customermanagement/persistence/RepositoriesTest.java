@@ -7,8 +7,8 @@ import io.eventuate.customerservice.customermanagement.domain.CustomerRepository
 import io.eventuate.examples.common.money.Money;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
@@ -17,8 +17,6 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,12 +24,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes=RepositoriesTest.Config.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional(propagation = Propagation.NEVER)
-@Testcontainers
 public class RepositoriesTest {
 
 
-  @Container
-  public static EventuateVanillaPostgresContainer database = new EventuateVanillaPostgresContainer();
+  private static final EventuateVanillaPostgresContainer database = new EventuateVanillaPostgresContainer();
 
   @DynamicPropertySource
   static void registerDbProperties(DynamicPropertyRegistry registry) {
