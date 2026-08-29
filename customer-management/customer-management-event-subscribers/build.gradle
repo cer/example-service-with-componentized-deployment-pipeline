@@ -18,6 +18,10 @@ dependencies {
     testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-in-memory'
     testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-events-publisher-starter'
 
+    testImplementation "io.eventuate.tram.testingsupport.springcloudcontract:eventuate-tram-spring-testing-support-cloud-contract:$eventuateTramSpringTestingSupportCloudContractVersion"
+    testImplementation "org.springframework.cloud:spring-cloud-starter-contract-stub-runner"
+    testImplementation "io.eventuate.util:eventuate-util-test:$eventuateUtilVersion"
+
     integrationTestImplementation 'io.eventuate.common:eventuate-common-testcontainers'
     integrationTestImplementation 'io.eventuate.messaging.kafka:eventuate-messaging-kafka-testcontainers'
     integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-producer-kafka"
@@ -27,4 +31,16 @@ dependencies {
     integrationTestImplementation "org.springframework.boot:spring-boot-starter-jdbc-test"
     integrationTestRuntimeOnly "org.flywaydb:flyway-database-postgresql"
 
+}
+
+tasks.register('publishOtherServiceStubs', GradleBuild) {
+    dir = rootProject.file('other-service')
+    tasks = ['publishStubsPublicationToStubsRepository']
+}
+
+test {
+    def otherServiceStubsRepo = rootProject.file("other-service/build/repos/contracts")
+    dependsOn 'publishOtherServiceStubs'
+    inputs.dir(otherServiceStubsRepo)
+    systemProperty "spring.cloud.contract.stubrunner.repositoryRoot", otherServiceStubsRepo.toURI().toString()
 }

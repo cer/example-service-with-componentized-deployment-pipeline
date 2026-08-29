@@ -1,0 +1,45 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        eventuateMavenRepoUrl.split(',').each { repoUrl -> maven { url repoUrl } }
+    }
+    dependencies {
+        classpath "org.springframework.cloud:spring-cloud-contract-gradle-plugin:$springCloudContractDependenciesVersion"
+        classpath "io.eventuate.tram.testingsupport.springcloudcontract:eventuate-tram-spring-testing-support-cloud-contract-plugins-gradle:$eventuateTramSpringTestingSupportCloudContractVersion"
+    }
+}
+
+apply plugin: io.eventuate.tram.spring.testing.cloudcontract.plugins.gradle.ConfigureContractRepoDirPlugin
+
+allprojects {
+    group = "io.eventuate.otherservice"
+}
+
+subprojects {
+
+    apply plugin: 'java-library'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+
+    repositories {
+        mavenCentral()
+        eventuateMavenRepoUrl.split(',').each { repoUrl -> maven { url repoUrl } }
+    }
+
+    dependencies {
+        implementation(platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion"))
+        implementation(platform("io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"))
+        implementation(platform("org.springframework.cloud:spring-cloud-contract-dependencies:$springCloudContractDependenciesVersion"))
+    }
+
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+    }
+}

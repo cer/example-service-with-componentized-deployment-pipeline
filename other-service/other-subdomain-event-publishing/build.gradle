@@ -1,0 +1,15 @@
+apply plugin: 'org.springframework.cloud.contract'
+apply plugin: io.eventuate.tram.spring.testing.cloudcontract.plugins.gradle.PublishStubsPlugin
+
+dependencies {
+    implementation "io.eventuate.tram.core:eventuate-tram-spring-events-publisher-starter"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-jdbc-test"
+
+    contractTestImplementation "io.eventuate.tram.testingsupport.springcloudcontract:eventuate-tram-spring-testing-support-cloud-contract:$eventuateTramSpringTestingSupportCloudContractVersion"
+}
+
+contracts {
+    testFramework = "JUNIT5"
+    baseClassForTests = "io.eventuate.otherservice.othersubdomain.eventpublishing.BaseClass"
+}

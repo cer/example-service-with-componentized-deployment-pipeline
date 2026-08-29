@@ -1,0 +1,3 @@
+rootProject.name = "other-service"
+
+include "other-subdomain-event-publishing"

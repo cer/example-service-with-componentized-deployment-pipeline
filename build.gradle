@@ -30,6 +30,8 @@ subprojects {
         imports {
             mavenBom "org.springframework.boot:spring-boot-dependencies:$springBootVersion"
             mavenBom "io.eventuate.platform:eventuate-platform-dependencies:$eventuatePlatformVersion"
+            mavenBom "org.springframework.cloud:spring-cloud-contract-dependencies:$springCloudContractDependenciesVersion"
+
         }
     }
 
