@@ -2,6 +2,9 @@ plugins {
     id 'io.eventuate.plugins.gradle.testing.integration-tests'
 }
 
+apply plugin: 'org.springframework.cloud.contract'
+apply plugin: ConsumesOtherServiceStubsPlugin
+
 dependencies {
     implementation project(":customer-management:customer-management-domain")
 
@@ -21,4 +24,48 @@ dependencies {
     integrationTestImplementation "io.eventuate.messaging.kafka:eventuate-messaging-kafka-testcontainers"
     integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-producer-kafka"
     integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-outbox"
+
+    contractTestImplementation "io.eventuate.tram.testingsupport.springcloudcontract:eventuate-tram-spring-testing-support-cloud-contract:$eventuateTramSpringTestingSupportCloudContractVersion"
+    contractTestImplementation "org.springframework.boot:spring-boot-starter-test"
+    contractTestImplementation "org.springframework.boot:spring-boot-starter-jdbc-test"
+    contractTestImplementation "org.springframework.cloud:spring-cloud-starter-contract-stub-runner"
+    contractTestImplementation "io.eventuate.util:eventuate-util-test:$eventuateUtilVersion"
 }
+
+tasks.named('contractTest') {
+    systemProperty "contractRepoUrl", rootProject.file("other-service/build/repos/contracts").toURI().toString()
+}
+
+// The contracts for the commands customer-service sends are owned by other-service, so they are
+// downloaded from its published stubs rather than kept here. See the consumer side of
+// https://github.com/eventuate-tram/eventuate-tram-spring-testing-support-cloud-contract
+ext {
+    set('contractGroupId', 'io.eventuate.otherservice')
+    set('contractArtifactId', 'other-subdomain-command-api')
+    set('contractArtifactVersion', otherServiceStubsVersion)
+}
+
+contracts {
+    contractDependency {
+        groupId = contractGroupId
+        artifactId = contractArtifactId
+        classifier = "stubs"
+        version = contractArtifactVersion
+    }
+
+    contractsMode = "REMOTE"
+
+    contractRepository {
+        repositoryUrl = rootProject.file("other-service/build/repos/contracts").toURI().toString()
+    }
+
+    contractsPath = "META-INF/${contractGroupId}/${contractArtifactId}/${contractArtifactVersion}/contracts/customer-service/commands"
+
+    testFramework = "JUNIT5"
+    basePackageForTests = "io.eventuate.customerservice.customermanagement.sagas"
+    baseClassForTests = "io.eventuate.customerservice.customermanagement.sagas.BaseForOtherServiceCommandTest"
+
+    failOnNoContracts = true
+}
+
+copyContracts.dependsOn(rootProject.tasks.named(ConsumesOtherServiceStubsPlugin.PUBLISH_STUBS_TASK_NAME))

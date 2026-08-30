@@ -1,0 +1,11 @@
+apply plugin: 'org.springframework.cloud.contract'
+apply plugin: io.eventuate.tram.spring.testing.cloudcontract.plugins.gradle.PublishStubsPlugin
+
+contracts {
+    testFramework = "JUNIT5"
+}
+
+// Contracts only: the command handler is not implemented here, so stubs are generated
+// and published for consumers but no producer-side verification tests are run.
+tasks.named('generateContractTests') { enabled = false }
+tasks.named('contractTest') { enabled = false }

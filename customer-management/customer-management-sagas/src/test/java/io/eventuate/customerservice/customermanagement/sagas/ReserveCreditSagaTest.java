@@ -8,6 +8,9 @@ import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.customerservice.customermanagement.domain.RejectionReason;
 import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerServiceProxy;
+import io.eventuate.customerservice.customermanagement.sagas.proxies.OtherServiceProxy;
+import io.eventuate.otherservice.othersubdomain.commandapi.InventoryOutOfStock;
+import io.eventuate.otherservice.othersubdomain.commandapi.ReserveInventoryCommand;
 import io.eventuate.examples.common.money.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +24,7 @@ public class ReserveCreditSagaTest {
 
     private CustomerManagementService customerManagementService;
     private CustomerServiceProxy customerServiceProxy;
+    private OtherServiceProxy otherServiceProxy;
 
     private CustomerId customerId = CustomerId.generate();
     private Long orderId = 102L;
@@ -30,10 +34,11 @@ public class ReserveCreditSagaTest {
     public void setUp() {
         customerManagementService = mock(CustomerManagementService.class);
         customerServiceProxy = new CustomerServiceProxy();
+        otherServiceProxy = new OtherServiceProxy();
     }
 
     private ReserveCreditSaga makeSaga() {
-        return new ReserveCreditSaga(customerManagementService, customerServiceProxy);
+        return new ReserveCreditSaga(customerManagementService, customerServiceProxy, otherServiceProxy);
     }
 
     @Test
@@ -45,6 +50,11 @@ public class ReserveCreditSagaTest {
             .expect()
             .command(new ReserveCreditCommand(customerId.id(), orderId, orderTotal))
             .to("customerService")
+            .andGiven()
+            .successReply()
+            .expect()
+            .command(new ReserveInventoryCommand(orderId))
+            .to("otherService")
             .andGiven()
             .successReply()
             .expectCompletedSuccessfully();
@@ -92,5 +102,30 @@ public class ReserveCreditSagaTest {
         CreditReservationDetails expectedDetails = new CreditReservationDetails(customerId, orderId, orderTotal);
         verify(customerManagementService).noteCreditReservationPending(expectedDetails);
         verify(customerManagementService).noteCreditReservationRejected(expectedDetails, RejectionReason.INSUFFICIENT_CREDIT);
+    }
+
+    @Test
+    public void shouldRejectWhenInventoryOutOfStock() {
+        ReserveCreditSagaData sagaData = new ReserveCreditSagaData(customerId, orderId, orderTotal);
+
+        given()
+            .saga(makeSaga(), sagaData)
+            .expect()
+            .command(new ReserveCreditCommand(customerId.id(), orderId, orderTotal))
+            .to("customerService")
+            .andGiven()
+            .successReply()
+            .expect()
+            .command(new ReserveInventoryCommand(orderId))
+            .to("otherService")
+            .andGiven()
+            .failureReply(new InventoryOutOfStock())
+            .expectRolledBack()
+            .assertSagaData(data ->
+                assertThat(data.getRejectionReason()).isEqualTo(RejectionReason.OUT_OF_STOCK));
+
+        CreditReservationDetails expectedDetails = new CreditReservationDetails(customerId, orderId, orderTotal);
+        verify(customerManagementService).noteCreditReservationPending(expectedDetails);
+        verify(customerManagementService).noteCreditReservationRejected(expectedDetails, RejectionReason.OUT_OF_STOCK);
     }
 }

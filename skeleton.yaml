@@ -394,6 +394,10 @@ subdomain:
               transforms: [rename]
             - name: CustomerServiceProxy
               transforms: [rename]
+            - name: OtherServiceProxy
+              transforms: [rename]
+              # Saga participant proxy for the collaborating service. Distinct from the
+              # rest-api OtherServiceProxy in the other-service-proxy module.
           test:
             - name: ReserveCreditSagaTest
               transforms: [rename]
@@ -404,6 +408,11 @@ subdomain:
           integrationTest:
             - name: ReserveCreditSagaIntegrationTest
               transforms: [rename]
+          contractTest:
+            - name: BaseForOtherServiceCommandTest
+              transforms: [rename, strip-methods]
+              # Result: base class shell for the tests that Spring Cloud Contract generates
+              # from the collaborating service's published command contracts.
       contributes-to:
         - target: CustomerManagementService
           module: domain

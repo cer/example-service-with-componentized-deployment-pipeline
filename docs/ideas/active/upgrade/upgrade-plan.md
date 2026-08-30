@@ -32,7 +32,7 @@ Use these skills by invoking them before the relevant action:
 ### Verification Requirements
 
 - Hard rule: NEVER git commit unless you have successfully run `./gradlew compileAll` and it exits 0
-- Before committing, run `./gradlew testAll` if tests exist for the changed modules
+- Before committing, run `./gradlew build`
 
 ---
 

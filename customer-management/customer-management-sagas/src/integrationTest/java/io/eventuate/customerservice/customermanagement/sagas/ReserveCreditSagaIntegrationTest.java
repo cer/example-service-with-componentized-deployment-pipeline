@@ -8,6 +8,9 @@ import io.eventuate.customerservice.customermanagement.domain.CreditReservationD
 import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerServiceProxy;
+import io.eventuate.customerservice.customermanagement.sagas.proxies.OtherServiceProxy;
+import io.eventuate.otherservice.othersubdomain.commandapi.InventoryReserved;
+import io.eventuate.otherservice.othersubdomain.commandapi.ReserveInventoryCommand;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeCluster;
 import io.eventuate.tram.messaging.common.Message;
@@ -77,11 +80,17 @@ public class ReserveCreditSagaIntegrationTest {
 
         customerManagementSagaService.reserveCredit(customerId, orderId, orderTotal);
 
-        Message commandMessage = commandOutboxTestSupport.assertThatCommandMessageSent(
+        Message reserveCreditMessage = commandOutboxTestSupport.assertThatCommandMessageSent(
                 ReserveCreditCommand.class, CustomerServiceProxy.CHANNEL,
                 cmd -> cmd.customerId().equals(customerId.id()));
 
-        commandReplyProducer.sendReply(commandMessage, ReserveCreditCommand.class, new CustomerCreditReserved());
+        commandReplyProducer.sendReply(reserveCreditMessage, ReserveCreditCommand.class, new CustomerCreditReserved());
+
+        Message reserveInventoryMessage = commandOutboxTestSupport.assertThatCommandMessageSent(
+                ReserveInventoryCommand.class, OtherServiceProxy.CHANNEL,
+                cmd -> cmd.orderId().equals(orderId));
+
+        commandReplyProducer.sendReply(reserveInventoryMessage, ReserveInventoryCommand.class, new InventoryReserved());
 
         Eventually.eventually(() -> {
             CreditReservationDetails expectedDetails = new CreditReservationDetails(customerId, orderId, orderTotal);
