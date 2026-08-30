@@ -1,3 +1,10 @@
+apply plugin: 'org.springframework.cloud.contract'
+apply plugin: io.eventuate.tram.spring.testing.cloudcontract.plugins.gradle.PublishStubsPlugin
+
+// Only this module is versioned. The rest of the build leaves version unset because
+// customer-service-main/Dockerfile copies the unversioned build/libs/customer-service-main.jar.
+version = customerManagementRestApiStubsVersion
+
 dependencies {
     implementation project(":customer-management:customer-management-domain")
     implementation project(":customer-management:customer-management-sagas")
@@ -9,4 +16,14 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-webmvc-test"
     testImplementation "org.springframework.boot:spring-boot-starter-security-test"
 
+    contractTestImplementation "org.springframework.cloud:spring-cloud-starter-contract-verifier"
+    contractTestImplementation "org.springframework.boot:spring-boot-starter-test"
+    contractTestImplementation "org.springframework.boot:spring-boot-starter-webmvc-test"
+    contractTestImplementation "org.springframework.boot:spring-boot-starter-security-test"
+}
+
+contracts {
+    testFramework = "JUNIT5"
+    basePackageForTests = "io.eventuate.customerservice.customermanagement.restapi"
+    baseClassForTests = "io.eventuate.customerservice.customermanagement.restapi.ContractVerifierBase"
 }

@@ -7,7 +7,16 @@ buildscript {
         eventuateMavenRepoUrl.split(',').each { repoUrl -> maven { url repoUrl } }
     }
     dependencies {
+        classpath "org.springframework.cloud:spring-cloud-contract-gradle-plugin:$springCloudContractDependenciesVersion"
+        classpath "io.eventuate.tram.testingsupport.springcloudcontract:eventuate-tram-spring-testing-support-cloud-contract-plugins-gradle:$eventuateTramSpringTestingSupportCloudContractVersion"
     }
+}
+
+// Defines contractRepoDir/contractRepoUrl, the local Maven repo that PublishStubsPlugin publishes stubs to
+apply plugin: io.eventuate.tram.spring.testing.cloudcontract.plugins.gradle.ConfigureContractRepoDirPlugin
+
+allprojects {
+    group = "io.eventuate.customerservice"
 }
 
 subprojects {
@@ -61,9 +70,9 @@ subprojects {
 }
 
 task compileAll(type: GradleBuild) {
-    tasks = ["componentTestClasses", "integrationTestClasses", "testClasses", "assemble"]
+    tasks = ["componentTestClasses", "integrationTestClasses", "contractTestClasses", "testClasses", "assemble"]
 }
 
 task testAll(type: GradleBuild) {
-    tasks = ["test", "integrationTest", "componentTest"]
+    tasks = ["test", "integrationTest", "componentTest", "contractTest"]
 }

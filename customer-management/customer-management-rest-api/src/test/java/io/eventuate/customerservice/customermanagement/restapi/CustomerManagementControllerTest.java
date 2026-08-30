@@ -39,7 +39,9 @@ public class CustomerManagementControllerTest {
   static class TestApp {
   }
 
-  // This class duplicates the security configuration in CustomerManagementWebSecurityConfiguration because that's not included
+  // @WebMvcTest's type filter drops CustomerManagementWebSecurityConfiguration from the component
+  // scan, so this replaces it with a minimal chain. Disabling CSRF is what lets the POST tests
+  // through; @EnableMethodSecurity is what makes the controller's @PreAuthorize apply.
 
   @TestConfiguration
   @EnableWebSecurity

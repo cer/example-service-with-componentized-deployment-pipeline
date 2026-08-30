@@ -2,7 +2,7 @@
 #
 # Naming conventions:
 #   transforms:   — always a list of transform names
-#   classes:      — dict keyed by module, then source-set (main/test/integrationTest/componentTest)
+#   classes:      — dict keyed by module, then source-set (main/test/integrationTest/componentTest/contractTest)
 #   target:       — in contributes-to, the class being contributed to
 #   with-classes:  — in contributes-to, associated classes created alongside the contribution
 #
@@ -445,6 +445,11 @@ subdomain:
               transforms: [rename, strip-dependencies, strip-test-methods]
               # Result: test shell with MockMvc setup.
               # Entity and features contribute test methods.
+          contractTest:
+            - name: ContractVerifierBase
+              transforms: [rename, strip-dependencies, strip-methods]
+              # Result: base class shell for the tests that Spring Cloud Contract
+              # generates from src/contractTest/resources/contracts.
         customer-service-main:
           test:
             - name: GenerateRestApiDocsIntegrationTest
