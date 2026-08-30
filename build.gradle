@@ -71,6 +71,10 @@ subprojects {
 
 }
 
-task compileAll(type: GradleBuild) {
-    tasks = ["componentTestClasses", "integrationTestClasses", "contractTestClasses", "testClasses", "assemble"]
+// Not a GradleBuild task: a build that uses includeBuild cannot be re-invoked via GradleBuild
+// ("Cannot include build 'other-service' ... This is not supported yet").
+// Keyed off task type rather than names, so a module gaining a source set needs no change here.
+task compileAll {
+    dependsOn allprojects.collect { it.tasks.withType(JavaCompile) }
+    dependsOn allprojects.collect { it.tasks.matching { t -> t.name == 'assemble' } }
 }

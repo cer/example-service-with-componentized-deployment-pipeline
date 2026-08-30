@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @AutoConfigureStubRunner(ids = "io.eventuate.otherservice:other-subdomain-event-publishing",
-        stubsMode = StubRunnerProperties.StubsMode.REMOTE )
+        stubsMode = StubRunnerProperties.StubsMode.CLASSPATH)
 @DirtiesContext
 public class CustomerManagementEventConsumerContractTest {
 

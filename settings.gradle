@@ -9,6 +9,8 @@ pluginManagement {
     }
 }
 
+includeBuild 'other-service'
+
 rootProject.name = "example-service"
 
 include 'customer-management:customer-management-domain'

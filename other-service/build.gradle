@@ -43,3 +43,20 @@ subprojects {
         useJUnitPlatform()
     }
 }
+
+// Expose each module's Spring Cloud Contract stubs jar on a consumable configuration.
+// Consumers in the composite build select it by name with targetConfiguration = 'contractStubs',
+// which bypasses variant matching - so no attributes or capability are needed here.
+subprojects {
+    plugins.withId('org.springframework.cloud.contract') {
+        configurations {
+            contractStubs {
+                canBeConsumed = true
+                canBeResolved = false
+            }
+        }
+        artifacts {
+            contractStubs tasks.named('verifierStubsJar')
+        }
+    }
+}

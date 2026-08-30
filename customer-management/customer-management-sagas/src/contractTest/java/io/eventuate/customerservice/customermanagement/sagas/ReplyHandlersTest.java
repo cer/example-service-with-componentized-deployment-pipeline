@@ -28,8 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
         classes = ReplyHandlersTest.TestConfiguration.class)
 @AutoConfigureStubRunner(ids = "io.eventuate.otherservice:other-subdomain-command-api",
-        stubsMode = StubRunnerProperties.StubsMode.REMOTE,
-        repositoryRoot = "${contractRepoUrl}")
+        stubsMode = StubRunnerProperties.StubsMode.CLASSPATH)
 @DirtiesContext
 public class ReplyHandlersTest {
 

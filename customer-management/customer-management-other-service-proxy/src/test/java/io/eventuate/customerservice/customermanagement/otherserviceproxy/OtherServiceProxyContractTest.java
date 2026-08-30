@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
         properties = "otherservice.url=http://localhost:${spring.cloud.contract.stubrunner.runningstubs.other-subdomain-rest-api.port}")
 @AutoConfigureStubRunner(ids = "io.eventuate.otherservice:other-subdomain-rest-api",
-        stubsMode = StubRunnerProperties.StubsMode.REMOTE)
+        stubsMode = StubRunnerProperties.StubsMode.CLASSPATH)
 public class OtherServiceProxyContractTest {
 
     @Configuration

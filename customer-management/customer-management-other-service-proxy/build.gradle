@@ -1,10 +1,13 @@
-apply plugin: ConsumesOtherServiceStubsPlugin
-
 dependencies {
     implementation project(':customer-management:customer-management-domain')
     implementation "org.springframework.boot:spring-boot-starter-restclient"
 
     testImplementation "org.springframework.boot:spring-boot-starter-restclient-test"
     testImplementation "org.springframework.cloud:spring-cloud-starter-contract-stub-runner"
-}
 
+    // other-service's stubs jar, delivered by the composite build (includeBuild in settings.gradle)
+    // and consumed by OtherServiceProxyContractTest with stubsMode = CLASSPATH
+    testRuntimeOnly('io.eventuate.otherservice:other-subdomain-rest-api:0.2.0-SNAPSHOT') {
+        targetConfiguration = 'contractStubs'
+    }
+}

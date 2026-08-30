@@ -3,7 +3,21 @@ plugins {
 }
 
 apply plugin: 'org.springframework.cloud.contract'
-apply plugin: ConsumesOtherServiceStubsPlugin
+
+// The contracts for the commands customer-service sends are owned by other-service. They are
+// delivered by the composite build (includeBuild 'other-service' in settings.gradle) as the
+// command-api module's stubs jar, selected with targetConfiguration - no Maven-layout repo involved.
+ext {
+    set('contractGroupId', 'io.eventuate.otherservice')
+    set('contractArtifactId', 'other-subdomain-command-api')
+    set('contractArtifactVersion', otherServiceStubsVersion)
+}
+
+configurations {
+    otherServiceCommandStubs {
+        canBeConsumed = false
+    }
+}
 
 dependencies {
     implementation project(":customer-management:customer-management-domain")
@@ -30,36 +44,23 @@ dependencies {
     contractTestImplementation "org.springframework.boot:spring-boot-starter-jdbc-test"
     contractTestImplementation "org.springframework.cloud:spring-cloud-starter-contract-stub-runner"
     contractTestImplementation "io.eventuate.util:eventuate-util-test:$eventuateUtilVersion"
+
+    otherServiceCommandStubs("${contractGroupId}:${contractArtifactId}:${contractArtifactVersion}") {
+        targetConfiguration = 'contractStubs'
+    }
+    // ReplyHandlersTest consumes the stubs with stubsMode = CLASSPATH
+    contractTestRuntimeOnly files(configurations.otherServiceCommandStubs)
 }
 
-tasks.named('contractTest') {
-    systemProperty "contractRepoUrl", rootProject.file("other-service/build/repos/contracts").toURI().toString()
-}
-
-// The contracts for the commands customer-service sends are owned by other-service, so they are
-// downloaded from its published stubs rather than kept here. See the consumer side of
-// https://github.com/eventuate-tram/eventuate-tram-spring-testing-support-cloud-contract
-ext {
-    set('contractGroupId', 'io.eventuate.otherservice')
-    set('contractArtifactId', 'other-subdomain-command-api')
-    set('contractArtifactVersion', otherServiceStubsVersion)
+// generateContractTests needs other-service's command contracts as a directory, so unpack the
+// composite-built stubs jar and point contractsDslDir at the commands subtree
+def unpackOtherServiceCommandStubs = tasks.register('unpackOtherServiceCommandStubs', Sync) {
+    from(configurations.otherServiceCommandStubs.elements.map { locations -> locations.collect { zipTree(it) } })
+    into(layout.buildDirectory.dir('other-service-command-stubs'))
 }
 
 contracts {
-    contractDependency {
-        groupId = contractGroupId
-        artifactId = contractArtifactId
-        classifier = "stubs"
-        version = contractArtifactVersion
-    }
-
-    contractsMode = "REMOTE"
-
-    contractRepository {
-        repositoryUrl = rootProject.file("other-service/build/repos/contracts").toURI().toString()
-    }
-
-    contractsPath = "META-INF/${contractGroupId}/${contractArtifactId}/${contractArtifactVersion}/contracts/customer-service/commands"
+    contractsDslDir = layout.buildDirectory.file("other-service-command-stubs/META-INF/${contractGroupId}/${contractArtifactId}/${contractArtifactVersion}/contracts/customer-service/commands").get().asFile
 
     testFramework = "JUNIT5"
     basePackageForTests = "io.eventuate.customerservice.customermanagement.sagas"
@@ -68,4 +69,6 @@ contracts {
     failOnNoContracts = true
 }
 
-copyContracts.dependsOn(rootProject.tasks.named(ConsumesOtherServiceStubsPlugin.PUBLISH_STUBS_TASK_NAME))
+tasks.named('copyContracts') {
+    dependsOn(unpackOtherServiceCommandStubs)
+}
