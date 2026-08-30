@@ -2,6 +2,12 @@ plugins {
     id 'io.eventuate.plugins.gradle.testing.integration-tests'
 }
 
+apply plugin: 'org.springframework.cloud.contract'
+apply plugin: io.eventuate.tram.spring.testing.cloudcontract.plugins.gradle.PublishStubsPlugin
+
+// Only the modules that publish stubs are versioned. See customer-management-rest-api/build.gradle.
+version = stubsVersion
+
 dependencies {
     implementation project(':customer-management:customer-management-domain')
     implementation 'io.eventuate.tram.core:eventuate-tram-spring-events-publisher-starter'
@@ -15,4 +21,21 @@ dependencies {
     integrationTestImplementation "org.springframework.boot:spring-boot-starter-flyway"
     integrationTestImplementation "org.springframework.boot:spring-boot-starter-jdbc-test"
     integrationTestRuntimeOnly "org.flywaydb:flyway-database-postgresql"
+
+    contractTestImplementation "io.eventuate.tram.testingsupport.springcloudcontract:eventuate-tram-spring-testing-support-cloud-contract:$eventuateTramSpringTestingSupportCloudContractVersion"
+    contractTestImplementation "org.springframework.boot:spring-boot-starter-test"
+    contractTestImplementation "org.springframework.boot:spring-boot-starter-jdbc-test"
+}
+
+// The contract verifier supplies its own in-memory message producer, so the JDBC producer and
+// Flyway migration must stay off the contractTest classpath - they would pull in Eventuate's
+// JDBC configuration and require a database.
+configurations.contractTestRuntimeClasspath {
+    exclude group: 'io.eventuate.tram.core', module: 'eventuate-tram-spring-producer-jdbc'
+}
+
+contracts {
+    testFramework = "JUNIT5"
+    basePackageForTests = "io.eventuate.customerservice.customermanagement.eventpublishing"
+    baseClassForTests = "io.eventuate.customerservice.customermanagement.eventpublishing.BaseClass"
 }

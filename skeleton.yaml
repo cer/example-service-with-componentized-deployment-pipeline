@@ -247,6 +247,11 @@ subdomain:
               transforms: [rename, strip-test-methods]
               # Result: test shell with TestContainers setup.
               # Each entity contributes its own publish test.
+          contractTest:
+            - name: BaseClass
+              transforms: [rename, strip-methods]
+              # Result: base class shell for the tests that Spring Cloud Contract
+              # generates from src/contractTest/resources/contracts.
       contributes-to:
         - target: CustomerManagementService
           module: domain

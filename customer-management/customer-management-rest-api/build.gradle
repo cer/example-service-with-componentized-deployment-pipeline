@@ -1,9 +1,9 @@
 apply plugin: 'org.springframework.cloud.contract'
 apply plugin: io.eventuate.tram.spring.testing.cloudcontract.plugins.gradle.PublishStubsPlugin
 
-// Only this module is versioned. The rest of the build leaves version unset because
-// customer-service-main/Dockerfile copies the unversioned build/libs/customer-service-main.jar.
-version = customerManagementRestApiStubsVersion
+// Only the modules that publish stubs are versioned. The rest of the build leaves version unset
+// because customer-service-main/Dockerfile copies the unversioned build/libs/customer-service-main.jar.
+version = stubsVersion
 
 dependencies {
     implementation project(":customer-management:customer-management-domain")
