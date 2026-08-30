@@ -8,8 +8,6 @@ buildscript {
     }
     dependencies {
         classpath "org.springframework.cloud:spring-cloud-contract-gradle-plugin:$springCloudContractDependenciesVersion"
-        // Required for contractsMode = REMOTE, which resolves contracts from a Maven repository
-        classpath "org.springframework.cloud:spring-cloud-contract-stub-runner:$springCloudContractDependenciesVersion"
         classpath "io.eventuate.tram.testingsupport.springcloudcontract:eventuate-tram-spring-testing-support-cloud-contract-plugins-gradle:$eventuateTramSpringTestingSupportCloudContractVersion"
     }
 }
