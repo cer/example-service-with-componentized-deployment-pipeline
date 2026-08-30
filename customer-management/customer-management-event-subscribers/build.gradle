@@ -2,6 +2,8 @@ plugins {
     id 'io.eventuate.plugins.gradle.testing.integration-tests'
 }
 
+apply plugin: ConsumesOtherServiceStubsPlugin
+
 dependencies {
     implementation project(':customer-management:customer-management-domain')
     implementation 'io.eventuate.tram.core:eventuate-tram-spring-events-subscriber-starter'
@@ -33,14 +35,3 @@ dependencies {
 
 }
 
-tasks.register('publishOtherServiceStubs', GradleBuild) {
-    dir = rootProject.file('other-service')
-    tasks = ['publishStubsPublicationToStubsRepository']
-}
-
-test {
-    def otherServiceStubsRepo = rootProject.file("other-service/build/repos/contracts")
-    dependsOn 'publishOtherServiceStubs'
-    inputs.dir(otherServiceStubsRepo)
-    systemProperty "spring.cloud.contract.stubrunner.repositoryRoot", otherServiceStubsRepo.toURI().toString()
-}

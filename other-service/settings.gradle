@@ -1,3 +1,5 @@
 rootProject.name = "other-service"
 
 include "other-subdomain-event-publishing"
+
+include "other-subdomain-rest-api"

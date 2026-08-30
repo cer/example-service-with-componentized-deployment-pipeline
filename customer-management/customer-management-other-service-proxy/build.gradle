@@ -1,0 +1,10 @@
+apply plugin: ConsumesOtherServiceStubsPlugin
+
+dependencies {
+    implementation project(':customer-management:customer-management-domain')
+    implementation "org.springframework.boot:spring-boot-starter-restclient"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-restclient-test"
+    testImplementation "org.springframework.cloud:spring-cloud-starter-contract-stub-runner"
+}
+

@@ -312,6 +312,30 @@ subdomain:
           methods:
             - shouldGetAsyncApiDocs
 
+    other-service-proxy:
+      per-entity: false
+      module: other-service-proxy
+      classes:
+        other-service-proxy:
+          main:
+            - name: OtherServiceProxy
+              transforms: [rename]
+            - name: OtherServiceProxyConfiguration
+              transforms: [rename]
+            - name: GetOtherResponse
+              transforms: [rename]
+          test:
+            - name: OtherServiceProxyTest
+              transforms: [rename]
+            - name: OtherServiceProxyContractTest
+              transforms: [rename]
+        domain:
+          main:
+            - name: OtherService
+              transforms: [rename]
+            - name: OtherDetails
+              transforms: [rename]
+
     command-api:
       per-entity: false
       module: command-api
