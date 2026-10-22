@@ -210,18 +210,18 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 6: A source file outside the project's package fails HEX-5
 
-- [ ] **Task 6.1: `checkProjectDependencies` fails a source file under `src/main/java` whose path is outside the project's package and its declared message copy packages, naming HEX-5**
+- [x] **Task 6.1: `checkProjectDependencies` fails a source file under `src/main/java` whose path is outside the project's package and its declared message copy packages, naming HEX-5**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkProjectDependencies`
   - Observable: A file `src/main/java/io/eventuate/customerservice/customermanagement/restapi/Foo.java` in the domain project fails with a message starting `HEX-5 (one project, one package)` that names the file. The files in the packages declared by `architectureRules { messageCopyPackages = [...] }` pass. `customer-management-sagas` and `customer-management-event-subscribers` declare their copy packages and pass.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.Hex5OneProjectOnePackageTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Write `Hex5OneProjectOnePackageTest`. It creates source files under the fixture project's `src/main/java`. A file in the project package and one in a sub-package pass. A file in another package fails. A file in a declared copy package passes.
-    - [ ] Add the `messageCopyPackages` list property to `ArchitectureRulesExtension`.
-    - [ ] Create `Hex5OneProjectOnePackage`. It walks the `src/main/java` source directories by path, without compiling, and adds itself to `CheckProjectDependenciesTask`. Declare the source tree as task input.
-    - [ ] Add `architectureRules { messageCopyPackages = ['io.eventuate.customerservice.customermanagement.commandapi', 'io.eventuate.otherservice.othersubdomain.commandapi'] }` to `customer-management/customer-management-sagas/build.gradle`.
-    - [ ] Add `architectureRules { messageCopyPackages = ['io.eventuate.otherservice.othersubdomain.domain'] }` to `customer-management/customer-management-event-subscribers/build.gradle`.
-    - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+    - [x] Write `Hex5OneProjectOnePackageTest`. It creates source files under the fixture project's `src/main/java`. A file in the project package and one in a sub-package pass. A file in another package fails. A file in a declared copy package passes.
+    - [x] Add the `messageCopyPackages` list property to `ArchitectureRulesExtension`.
+    - [x] Create `Hex5OneProjectOnePackage`. It walks the `src/main/java` source directories by path, without compiling, and adds itself to `CheckProjectDependenciesTask`. Declare the source tree as task input.
+    - [x] Add `architectureRules { messageCopyPackages = ['io.eventuate.customerservice.customermanagement.commandapi', 'io.eventuate.otherservice.othersubdomain.commandapi'] }` to `customer-management/customer-management-sagas/build.gradle`.
+    - [x] Add `architectureRules { messageCopyPackages = ['io.eventuate.otherservice.othersubdomain.domain'] }` to `customer-management/customer-management-event-subscribers/build.gradle`.
+    - [x] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
 ---
 

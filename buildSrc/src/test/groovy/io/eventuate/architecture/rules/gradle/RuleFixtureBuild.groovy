@@ -47,6 +47,12 @@ class RuleFixtureBuild {
         from.dependencies.add(configuration, dependency)
     }
 
+    void mainJavaSourceFile(Project project, String pathUnderSourceDirectory) {
+        File file = project.file("src/main/java/${pathUnderSourceDirectory}")
+        file.parentFile.mkdirs()
+        file.text = ''
+    }
+
     void evaluate() {
         projects.each { ((ProjectInternal) it).evaluate() }
     }

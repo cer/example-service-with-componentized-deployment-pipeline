@@ -4,6 +4,10 @@ plugins {
 
 apply plugin: 'org.springframework.cloud.contract'
 
+architectureRules {
+    messageCopyPackages = ['io.eventuate.customerservice.customermanagement.commandapi', 'io.eventuate.otherservice.othersubdomain.commandapi']
+}
+
 // The contracts for the commands customer-service sends are owned by other-service. They are
 // delivered by the composite build (includeBuild 'other-service' in settings.gradle) as the
 // command-api module's stubs jar, selected with targetConfiguration - no Maven-layout repo involved.

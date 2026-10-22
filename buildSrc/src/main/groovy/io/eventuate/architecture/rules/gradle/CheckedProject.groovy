@@ -1,25 +1,21 @@
 package io.eventuate.architecture.rules.gradle
 
+import groovy.transform.TupleConstructor
 import org.gradle.api.Project
 
-// A project with a role, its declared dependencies and the roles of the projects in the build
+// A project with a role, its declared dependencies, its main Java sources and the roles of the projects in the build
+@TupleConstructor(includeFields = true)
 class CheckedProject {
 
     final String path
     final Role role
     final DeclaredDependencies dependencies
+    final MainJavaSources mainJavaSources
     private final Map<String, Role> rolesByProjectPath
-
-    CheckedProject(String path, Role role, DeclaredDependencies dependencies, Map<String, Role> rolesByProjectPath) {
-        this.path = path
-        this.role = role
-        this.dependencies = dependencies
-        this.rolesByProjectPath = rolesByProjectPath
-    }
 
     static CheckedProject of(Project project) {
         new CheckedProject(project.path, roleOf(project), DeclaredDependencies.of(project),
-                rolesByProjectPath(project.rootProject))
+                MainJavaSources.of(project), rolesByProjectPath(project.rootProject))
     }
 
     Role roleOfProject(String projectPath) {

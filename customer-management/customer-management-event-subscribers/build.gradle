@@ -2,6 +2,10 @@ plugins {
     id 'io.eventuate.architecture.roles.event-subscribers'
 }
 
+architectureRules {
+    messageCopyPackages = ['io.eventuate.otherservice.othersubdomain.domain']
+}
+
 dependencies {
     implementation project(':customer-management:customer-management-domain')
 

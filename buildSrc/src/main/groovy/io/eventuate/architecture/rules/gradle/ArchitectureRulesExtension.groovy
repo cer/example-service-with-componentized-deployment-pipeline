@@ -1,5 +1,6 @@
 package io.eventuate.architecture.rules.gradle
 
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 
 abstract class ArchitectureRulesExtension {
@@ -10,4 +11,7 @@ abstract class ArchitectureRulesExtension {
     abstract Property<String> getSubdomain()
 
     abstract Property<String> getProjectPackage()
+
+    // The SUB-4 consumer-side message copies, declared in the producer's package
+    abstract ListProperty<String> getMessageCopyPackages()
 }
