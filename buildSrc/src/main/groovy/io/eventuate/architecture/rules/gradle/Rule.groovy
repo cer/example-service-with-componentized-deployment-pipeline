@@ -11,6 +11,7 @@ enum Rule {
     HEX_9('HEX-9', 'the message broker is declared in main only'),
     SUB_2('SUB-2', 'Gradle dependencies between subdomains are on API projects only'),
     SUB_3('SUB-3', 'four interaction mechanisms'),
+    SUB_6('SUB-6', 'no cycles between subdomains via shared code'),
     SUB_7('SUB-7', 'main is the only composition root'),
     SUB_8('SUB-8', 'shared libraries hold only value types')
 

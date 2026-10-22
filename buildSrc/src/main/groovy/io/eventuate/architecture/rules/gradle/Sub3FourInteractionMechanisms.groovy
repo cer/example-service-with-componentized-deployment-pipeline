@@ -3,7 +3,6 @@ package io.eventuate.architecture.rules.gradle
 // The dependency shape of SUB-3. How a mechanism is used is not enforced
 class Sub3FourInteractionMechanisms implements ProjectDependencyRule {
 
-    private static final Set<Role> API_ROLES = [Role.API, Role.API_FACET] as Set
     private static final Set<Role> OPERATION_CALLER_ROLES = [Role.DOMAIN, Role.SAGAS] as Set
     private static final Set<Role> OBSERVER_ROLES = [Role.DOMAIN] as Set
     private static final String OBSERVER_FACET = 'observer'
@@ -25,7 +24,7 @@ class Sub3FourInteractionMechanisms implements ProjectDependencyRule {
     private static boolean isApiProjectOfAnotherSubdomain(CheckedProject project, String dependencyPath) {
         String dependencySubdomain = project.subdomainOfProject(dependencyPath)
         dependencySubdomain != null && dependencySubdomain != project.subdomain &&
-                project.roleOfProject(dependencyPath) in API_ROLES
+                project.roleOfProject(dependencyPath)?.api
     }
 
     private static Set<Role> permittedRoles(String dependencyPath) {

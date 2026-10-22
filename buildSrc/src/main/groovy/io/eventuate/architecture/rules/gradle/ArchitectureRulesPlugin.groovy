@@ -11,6 +11,10 @@ class ArchitectureRulesPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         ArchitectureRulesExtension extension = project.extensions.create(EXTENSION_NAME, ArchitectureRulesExtension)
+        if (project == project.rootProject) {
+            registerCheckSubdomainGraph(project)
+            return
+        }
         project.afterEvaluate {
             if (extension.role.present) {
                 ProjectNaming.apply(project, extension)
@@ -29,6 +33,16 @@ class ArchitectureRulesPlugin implements Plugin<Project> {
     private static String noRoleMessage(Project project) {
         "Project ${project.path} has no architecture role. Apply one of these role plugins in its build file: " +
                 Role.values().collect { it.pluginId }.join(', ')
+    }
+
+    private static void registerCheckSubdomainGraph(Project rootProject) {
+        rootProject.pluginManager.apply('base')
+        def checkSubdomainGraph = rootProject.tasks.register(CheckSubdomainGraphTask.NAME, CheckSubdomainGraphTask) {
+            it.group = 'verification'
+            it.description = 'Checks that no subdomains depend on each other\'s API projects in a cycle.'
+            it.subdomainGraph.set(rootProject.provider { SubdomainGraph.of(rootProject) })
+        }
+        rootProject.tasks.named('check') { it.dependsOn(checkSubdomainGraph) }
     }
 
     private static void registerCheckProjectDependencies(Project project) {

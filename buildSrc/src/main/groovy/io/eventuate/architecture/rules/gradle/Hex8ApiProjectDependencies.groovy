@@ -3,8 +3,6 @@ package io.eventuate.architecture.rules.gradle
 // The project dependency clause of HEX-8. The contents clause is checked by ArchUnit
 class Hex8ApiProjectDependencies implements ProjectDependencyRule {
 
-    private static final Set<Role> API_ROLES = [Role.API, Role.API_FACET] as Set
-
     private static final List<String> FORBIDDEN_GROUP_PREFIXES = [
             'org.springframework',
             'jakarta.persistence',
@@ -17,7 +15,7 @@ class Hex8ApiProjectDependencies implements ProjectDependencyRule {
 
     @Override
     List<RuleViolation> check(CheckedProject project) {
-        if (!(project.role in API_ROLES)) {
+        if (!project.role.api) {
             return []
         }
         forbiddenProjectDependencyViolations(project) + forbiddenExternalDependencyViolations(project)
@@ -52,7 +50,7 @@ class Hex8ApiProjectDependencies implements ProjectDependencyRule {
     }
 
     private static boolean isApiProjectOfSameSubdomain(CheckedProject project, String dependencyPath) {
-        project.roleOfProject(dependencyPath) in API_ROLES &&
+        project.roleOfProject(dependencyPath)?.api &&
                 project.subdomainOfProject(dependencyPath) == project.subdomain
     }
 

@@ -17,6 +17,8 @@ class RuleFixtureBuild {
         root = ProjectBuilder.builder().withName('fixture-service').build()
         root.group = ROOT_PACKAGE
         setDockerPluginProperties(root)
+        // The root build file applies the common plugin outside its subprojects block
+        root.pluginManager.apply(ArchitectureRulesPlugin)
     }
 
     Project subdomainProject(String subdomain, Role role) {
@@ -67,7 +69,14 @@ class RuleFixtureBuild {
     }
 
     String checkProjectDependenciesFailure(Project project) {
-        Task task = project.tasks.getByName(CheckProjectDependenciesTask.NAME)
+        failureOf(project.tasks.getByName(CheckProjectDependenciesTask.NAME))
+    }
+
+    String checkSubdomainGraphFailure() {
+        failureOf(root.tasks.getByName(CheckSubdomainGraphTask.NAME))
+    }
+
+    private static String failureOf(Task task) {
         try {
             task.actions.each { it.execute(task) }
             null

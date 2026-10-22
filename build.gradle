@@ -15,6 +15,9 @@ buildscript {
 // Defines contractRepoDir/contractRepoUrl, the local Maven repo that PublishStubsPlugin publishes stubs to
 apply plugin: io.eventuate.tram.spring.testing.cloudcontract.plugins.gradle.ConfigureContractRepoDirPlugin
 
+// Registers checkSubdomainGraph, which the root check depends on
+apply plugin: 'io.eventuate.architecture.rules'
+
 allprojects {
     group = "io.eventuate.customerservice"
 }

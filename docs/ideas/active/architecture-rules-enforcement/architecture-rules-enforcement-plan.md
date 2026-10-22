@@ -325,18 +325,18 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 13: A cycle between subdomains fails SUB-6 at the root
 
-- [ ] **Task 13.1: The root `checkSubdomainGraph` fails on a cycle of API dependencies between subdomains, printing the cycle**
+- [x] **Task 13.1: The root `checkSubdomainGraph` fails on a cycle of API dependencies between subdomains, printing the cycle**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkSubdomainGraph`
   - Observable: With `a-domain` depending on `b-api` and `b-domain` depending on `a-api`, `checkSubdomainGraph` fails with a message starting `SUB-6 (no cycles between subdomains via shared code)` that contains the cycle `a -> b -> a`. The root `check` depends on `checkSubdomainGraph`, so `./gradlew build` runs it. `./gradlew checkProjectDependencies checkSubdomainGraph` runs no `compileJava` task.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.Sub6NoSubdomainCyclesTest` exits 0, `./test-scripts/test-end-to-end.sh` exits 0, and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Write `Sub6NoSubdomainCyclesTest`, covering the cycle case and an acyclic `a -> b` case.
-    - [ ] When `ArchitectureRulesPlugin` is applied to the root project, it applies `base`, so that the root has `check`, and registers `CheckSubdomainGraphTask`. The task builds the graph of subdomains from every subproject's role, subdomain and project dependencies on `api` and `api-facet` projects, and fails on a cycle.
-    - [ ] Add `apply plugin: 'io.eventuate.architecture.rules'` at the top level of `build.gradle`, outside `subprojects`, and wire the root `check` to `checkSubdomainGraph`.
-    - [ ] Update `test-scripts/test-project-dependency-checks-do-not-compile.sh` to run `./gradlew checkProjectDependencies checkSubdomainGraph --dry-run` and assert that `:checkSubdomainGraph` is listed and no `compileJava` task is listed.
-    - [ ] Record in the "Wiring" bullet of `docs/design/architecture-rules-enforcement.md` that the root build file also applies the common plugin to the root, to register `checkSubdomainGraph` and hold the exempt project list.
-    - [ ] Run `./gradlew -p buildSrc check`, `./test-scripts/test-end-to-end.sh` and `./gradlew build`.
+    - [x] Write `Sub6NoSubdomainCyclesTest`, covering the cycle case and an acyclic `a -> b` case.
+    - [x] When `ArchitectureRulesPlugin` is applied to the root project, it applies `base`, so that the root has `check`, and registers `CheckSubdomainGraphTask`. The task builds the graph of subdomains from every subproject's role, subdomain and project dependencies on `api` and `api-facet` projects, and fails on a cycle.
+    - [x] Add `apply plugin: 'io.eventuate.architecture.rules'` at the top level of `build.gradle`, outside `subprojects`, and wire the root `check` to `checkSubdomainGraph`.
+    - [x] Update `test-scripts/test-project-dependency-checks-do-not-compile.sh` to run `./gradlew checkProjectDependencies checkSubdomainGraph --dry-run` and assert that `:checkSubdomainGraph` is listed and no `compileJava` task is listed.
+    - [x] Record in the "Wiring" bullet of `docs/design/architecture-rules-enforcement.md` that the root build file also applies the common plugin to the root, to register `checkSubdomainGraph` and hold the exempt project list.
+    - [x] Run `./gradlew -p buildSrc check`, `./test-scripts/test-end-to-end.sh` and `./gradlew build`.
 
 ---
 

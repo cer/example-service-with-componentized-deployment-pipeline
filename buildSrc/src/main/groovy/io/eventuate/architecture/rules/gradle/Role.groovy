@@ -36,6 +36,10 @@ enum Role {
         PLUGIN_ID_PREFIX + roleName
     }
 
+    boolean isApi() {
+        this in [API, API_FACET]
+    }
+
     boolean isInSubdomain() {
         group in [RoleGroup.DOMAIN, RoleGroup.ADAPTER]
     }
