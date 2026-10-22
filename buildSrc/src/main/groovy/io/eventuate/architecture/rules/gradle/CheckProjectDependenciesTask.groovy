@@ -12,6 +12,7 @@ abstract class CheckProjectDependenciesTask extends DefaultTask {
 
     private static final List<ProjectDependencyRule> RULES = [
             new Hex1DomainDoesNotDependOnAdapters(),
+            new Sub2DependenciesBetweenSubdomainsAreOnApiProjects(),
     ]
 
     @Internal

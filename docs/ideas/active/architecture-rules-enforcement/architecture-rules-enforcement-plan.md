@@ -168,16 +168,16 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 4: A test source set depending on another subdomain's domain fails SUB-2
 
-- [ ] **Task 4.1: `checkProjectDependencies` fails a dependency, in any configuration, on a non-API project of another subdomain, naming SUB-2**
+- [x] **Task 4.1: `checkProjectDependencies` fails a dependency, in any configuration, on a non-API project of another subdomain, naming SUB-2**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkProjectDependencies`
   - Observable: In a build with subdomains `a` and `b`, `testImplementation project(':b:b-domain')` in an `a` project fails with a message starting `SUB-2 (Gradle dependencies between subdomains are on API projects only)` that names `:b:b-domain` and `testImplementation`. A dependency on `:b:b-api` passes this rule.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.Sub2DependenciesBetweenSubdomainsAreOnApiProjectsTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Write `Sub2DependenciesBetweenSubdomainsAreOnApiProjectsTest`, covering: `testImplementation` on `b-domain` fails; `implementation` on `b-command-api` fails; `implementation` on `b-api` and on `b-api-observer` passes.
-    - [ ] Create `Sub2DependenciesBetweenSubdomainsAreOnApiProjects` and add it to the rules run by `CheckProjectDependenciesTask`.
-    - [ ] Add a comment in `Sub2DependenciesBetweenSubdomainsAreOnApiProjects` stating that SUB-1 follows from this rule, as the enforcement document says.
-    - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+    - [x] Write `Sub2DependenciesBetweenSubdomainsAreOnApiProjectsTest`, covering: `testImplementation` on `b-domain` fails; `implementation` on `b-command-api` fails; `implementation` on `b-api` and on `b-api-observer` passes.
+    - [x] Create `Sub2DependenciesBetweenSubdomainsAreOnApiProjects` and add it to the rules run by `CheckProjectDependenciesTask`.
+    - [x] Add a comment in `Sub2DependenciesBetweenSubdomainsAreOnApiProjects` stating that SUB-1 follows from this rule, as the enforcement document says.
+    - [x] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
 ---
 
