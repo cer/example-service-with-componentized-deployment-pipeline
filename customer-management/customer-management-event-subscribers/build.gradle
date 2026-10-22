@@ -13,9 +13,6 @@ dependencies {
     }
     implementation 'io.eventuate.tram.core:eventuate-tram-spring-events-subscriber-starter'
 
-    // For MessageConsumer
-     runtimeOnly "io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka"
-
     // For Idempotency
     runtimeOnly "io.eventuate.tram.core:eventuate-tram-spring-consumer-jdbc"
 
@@ -32,6 +29,8 @@ dependencies {
     integrationTestImplementation 'io.eventuate.common:eventuate-common-testcontainers'
     integrationTestImplementation 'io.eventuate.messaging.kafka:eventuate-messaging-kafka-testcontainers'
     integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-producer-kafka"
+    // The transport is main's (HEX-9); the integration tests start Kafka and need the consumer
+    integrationTestRuntimeOnly "io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka"
 
     integrationTestImplementation 'io.eventuate.tram.core:eventuate-tram-spring-flyway'
     integrationTestImplementation "org.springframework.boot:spring-boot-starter-flyway"

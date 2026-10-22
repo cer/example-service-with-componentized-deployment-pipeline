@@ -15,6 +15,7 @@ dependencies {
     runtimeOnly project(":customer-management:customer-management-other-service-proxy")
     componentTestImplementation project(":customer-management:customer-management-event-subscribers")
 
+    implementation "io.eventuate.tram.core:eventuate-tram-spring-jdbc-kafka"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
     implementation "org.springframework.boot:spring-boot-starter-webmvc"
 
