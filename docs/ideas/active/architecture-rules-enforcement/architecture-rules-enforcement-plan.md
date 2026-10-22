@@ -311,15 +311,15 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 12: A cross-subdomain dependency from the wrong project fails SUB-3
 
-- [ ] **Task 12.1: `checkProjectDependencies` fails a dependency on another subdomain's API from a project other than `domain` and `sagas`, and on `api-observer` from a project other than `domain`, naming SUB-3**
+- [x] **Task 12.1: `checkProjectDependencies` fails a dependency on another subdomain's API from a project other than `domain` and `sagas`, and on `api-observer` from a project other than `domain`, naming SUB-3**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkProjectDependencies`
   - Observable: `a-event-subscribers` with `implementation project(':b:b-api')` fails with a message starting `SUB-3 (four interaction mechanisms)`. `a-sagas` on `b-api-observer` fails. `a-domain` on `b-api-observer` passes, and `a-sagas` on `b-api` passes.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.Sub3FourInteractionMechanismsTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Write `Sub3FourInteractionMechanismsTest`, covering the cases in the Observable.
-    - [ ] Create `Sub3FourInteractionMechanisms` and add it to `CheckProjectDependenciesTask`. The `api-observer` facet is identified by the facet name `observer`.
-    - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+    - [x] Write `Sub3FourInteractionMechanismsTest`, covering the cases in the Observable.
+    - [x] Create `Sub3FourInteractionMechanisms` and add it to `CheckProjectDependenciesTask`. The `api-observer` facet is identified by the facet name `observer`.
+    - [x] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
 ---
 
@@ -477,3 +477,6 @@ A subdomain directory project such as customer-management, which exists only bec
 
 ### 2026-10-23 07:17 - mark-task-complete
 An adapter's own path is permitted too, because customer-management-rest-api declares contractTestImplementation on itself
+
+### 2026-10-23 08:36 - mark-task-complete
+Sub3FourInteractionMechanismsTest passes, buildSrc check and ./gradlew build exit 0
