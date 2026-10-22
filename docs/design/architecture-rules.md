@@ -205,11 +205,12 @@ Checked on 2026-10-22 against every project in this repository, `main` source se
 - **SUB-4.** The three copies listed under the rule carry no handler or reply annotations and each has a contract test.
 - **HEX-4** for `customer-management-sagas`. Its build file declares the sagas DSL and the Eventuate Flyway migration support, both permitted in sagas.
 - **HEX-9.** Only `customer-service-main` declares a message broker artifact in a main source set. `customer-management-sagas` and `customer-management-command-api` declare the JDBC/Kafka starter `integrationTestImplementation` only.
+- **HEX-7.** `customer-service-main` declares no `implementation` project dependency. Its dependencies on every `customer-management` project are `runtimeOnly`. `CustomerServiceComponentTest` gets `customer-management-domain`, `customer-management-command-api`, `customer-management-sagas` and `customer-management-event-subscribers` through `componentTestImplementation`.
 - **SUB-5, SUB-7.** Satisfied with one subdomain.
 
 ### Violated
 
-- **HEX-7.** `customer-service-main` declares `implementation` dependencies on `customer-management-domain`, `customer-management-command-api` and `customer-management-sagas`. Main's own source references none of them; only `CustomerServiceComponentTest` does. Under HEX-7 the three become `runtimeOnly` and `componentTestImplementation`.
+None.
 
 ### Not demonstrated
 
@@ -235,26 +236,6 @@ Checked on 2026-10-22 against every project in this repository, `main` source se
 - Test source sets follow SUB-2: a subdomain's tests depend on other subdomains' API projects only.
 - The sagas project keeps the Eventuate Flyway migration support and the saga migrations (HEX-4 option A, 2026-10-22). Moving them to main or to a new adapter project was rejected as either coupling the orchestrator to main or adding a near-empty project.
 - The message broker artifacts are declared in main only (HEX-9, 2026-10-22). `spring-boot-starter-flyway` and `flyway-database-postgresql` are never declared explicitly, because `eventuate-tram-spring-flyway` declares both at compile scope.
+- `other-service` stands in for a separate service and is outside the rules (2026-10-22). It keeps `OtherEvent` in its `other-subdomain-event-publishing` project, in the `othersubdomain.domain` package.
 
 ## TODO
-
-### Resolve the HEX-7 violation in `customer-service-main`
-
-In this repository (`example-service`), `customer-service-main/build.gradle` declares:
-
-```
-implementation project(":customer-management:customer-management-domain")
-implementation project(":customer-management:customer-management-command-api")
-implementation project(":customer-management:customer-management-sagas")
-```
-
-Main's own source, `CustomerServiceMain`, references none of these projects. The only user is `CustomerServiceComponentTest` in the `componentTest` source set, which imports `ReserveCreditCommand` from command-api, `CustomerCreatedEvent` and `CustomerCreditReservedEvent` from domain, and `CustomerServiceProxy` from sagas.
-
-Fix: change the three lines to `runtimeOnly` and add `componentTestImplementation` for the same three projects, alongside the existing `componentTestImplementation` on `customer-management-event-subscribers`. Then run the component tests to confirm nothing else depended on the compile scope.
-
-### Decide whether `other-service` follows HEX-5
-
-`other-service/other-subdomain-event-publishing` declares `OtherEvent` in the package `io.eventuate.otherservice.othersubdomain.domain`, although the project is an event-publishing adapter. HEX-5 would require the event class to be in a `other-subdomain-domain` project. `other-service` stands in for a separate service and has no domain project, so the rules as written do not apply to it. Decide one of:
-
-- Record `other-service` as out of scope in this document and leave it as is.
-- Give `other-service` an `other-subdomain-domain` project holding `OtherEvent`, so that the stand-in follows the same rules as the service it stands in for.

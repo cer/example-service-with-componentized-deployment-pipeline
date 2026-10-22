@@ -67,7 +67,7 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 1: Every project declares its role and the build checks HEX-1
 
-- [ ] **Task 1.1: The service builds with main's dependencies on domain, command-api and sagas at runtimeOnly scope**
+- [x] **Task 1.1: The service builds with main's dependencies on domain, command-api and sagas at runtimeOnly scope**
   - TaskType: INFRA
   - Entrypoint: `./gradlew build`
   - Observable: `customer-service-main/build.gradle` declares no `implementation` project dependency. `customer-management-domain`, `customer-management-command-api` and `customer-management-sagas` are declared `runtimeOnly` and `componentTestImplementation`. `CustomerServiceComponentTest` and every other test pass. In the rules document, the current-state section records no violation and the TODO section has no entries.
@@ -76,8 +76,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [x] Run `./gradlew build` to confirm that the existing build and CI baseline passes before any change.
     - [x] In `customer-service-main/build.gradle`, change the three `implementation project(...)` lines for `customer-management-domain`, `customer-management-command-api` and `customer-management-sagas` to `runtimeOnly`. Add `componentTestImplementation` for the same three projects, next to the existing `componentTestImplementation` on `customer-management-event-subscribers`.
     - [x] Run `./gradlew :customer-service-main:componentTest`, then `./gradlew build`.
-    - [ ] In `docs/design/architecture-rules.md`, move HEX-7 from "Violated" to "Satisfied". Replace the "Violated" list with "None."
-    - [ ] In `docs/design/architecture-rules.md`, delete the "Resolve the HEX-7 violation" TODO entry. Delete the "Decide whether `other-service` follows HEX-5" TODO entry, and add a "Decisions recorded" bullet saying that `other-service` stands in for a separate service, is outside the rules, and keeps `OtherEvent` in its event-publishing project. Leave the `## TODO` heading with no entries.
+    - [x] In `docs/design/architecture-rules.md`, move HEX-7 from "Violated" to "Satisfied". Replace the "Violated" list with "None."
+    - [x] In `docs/design/architecture-rules.md`, delete the "Resolve the HEX-7 violation" TODO entry. Delete the "Decide whether `other-service` follows HEX-5" TODO entry, and add a "Decisions recorded" bullet saying that `other-service` stands in for a separate service, is outside the rules, and keeps `OtherEvent` in its event-publishing project. Leave the `## TODO` heading with no entries.
 
 - [ ] **Task 1.2: Each build file declares its role with one role plugin line, and the role plugin applies the role's build conventions**
   - TaskType: OUTCOME
