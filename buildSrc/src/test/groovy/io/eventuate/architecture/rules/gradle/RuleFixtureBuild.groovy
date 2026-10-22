@@ -20,7 +20,12 @@ class RuleFixtureBuild {
     }
 
     Project subdomainProject(String subdomain, Role role) {
-        projectWithRole(subdomainDirectory(subdomain), "${subdomain}-${role.roleName}", role)
+        String nameWithXForOtherPlaceholders = role.projectNamePattern.replace('<subdomain>', subdomain).replaceAll(/<[a-z]+>/, 'x')
+        projectWithRole(subdomainDirectory(subdomain), nameWithXForOtherPlaceholders, role)
+    }
+
+    Project getRootProject() {
+        root
     }
 
     Project subdomainProjectWithoutRole(String subdomain, String name) {
@@ -65,7 +70,7 @@ class RuleFixtureBuild {
         }
     }
 
-    private Project projectWithRole(Project parent, String name, Role role) {
+    Project projectWithRole(Project parent, String name, Role role) {
         Project project = childProject(parent, name)
         applyRootBuildFilePlugins(project)
         project.pluginManager.apply(role.pluginId)
@@ -76,6 +81,7 @@ class RuleFixtureBuild {
     // The plugins the root build file's subprojects block applies
     private static void applyRootBuildFilePlugins(Project project) {
         project.group = ROOT_PACKAGE
+        setDockerPluginProperties(project)
         project.pluginManager.apply('java-library')
         project.pluginManager.apply(ArchitectureRulesPlugin)
     }

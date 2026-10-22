@@ -153,16 +153,16 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 3: A misnamed project fails the build
 
-- [ ] **Task 3.1: A project whose name does not match its role's pattern, or a domain or adapter project outside a subdomain directory, fails the build**
+- [x] **Task 3.1: A project whose name does not match its role's pattern, or a domain or adapter project outside a subdomain directory, fails the build**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew build`
   - Observable: `customer-management/customer-proxy` applying `io.eventuate.architecture.roles.proxy` fails configuration with a message stating that the name does not match the pattern `<subdomain>-<other>-proxy`. A project with a domain or adapter role whose parent directory is the root directory fails, stating that it is not in a subdomain directory. Every project in this repository passes.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.ProjectNamingTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Write `ProjectNamingTest`, covering: `customer-proxy` with the proxy role fails; `customer-management-other-service-proxy` passes; a domain-role project at the root fails; `x-main` at the root with the main role passes; a shared library at the root passes.
-    - [ ] Add derivation of the subdomain to the extension. The subdomain is the name of the parent directory. Add derivation of the project package: the root package is the project `group`, and the subdomain and the role suffixes have their hyphens removed, for example `customer-management-other-service-proxy` gives `<root>.customermanagement.otherserviceproxy`.
-    - [ ] Add the name and directory check to `ArchitectureRulesPlugin.afterEvaluate`, driven by `Role`'s name pattern and group.
-    - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+    - [x] Write `ProjectNamingTest`, covering: `customer-proxy` with the proxy role fails; `customer-management-other-service-proxy` passes; a domain-role project at the root fails; `x-main` at the root with the main role passes; a shared library at the root passes.
+    - [x] Add derivation of the subdomain to the extension. The subdomain is the name of the parent directory. Add derivation of the project package: the root package is the project `group`, and the subdomain and the role suffixes have their hyphens removed, for example `customer-management-other-service-proxy` gives `<root>.customermanagement.otherserviceproxy`.
+    - [x] Add the name and directory check to `ArchitectureRulesPlugin.afterEvaluate`, driven by `Role`'s name pattern and group.
+    - [x] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
 ---
 

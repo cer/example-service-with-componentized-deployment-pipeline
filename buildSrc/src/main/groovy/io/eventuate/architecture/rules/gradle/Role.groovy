@@ -1,5 +1,8 @@
 package io.eventuate.architecture.rules.gradle
 
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 // The roles table in docs/design/architecture-rules-enforcement.md
 enum Role {
     API('api', RoleGroup.DOMAIN, '<subdomain>-api', '<subdomain>.api'),
@@ -31,5 +34,43 @@ enum Role {
 
     String getPluginId() {
         PLUGIN_ID_PREFIX + roleName
+    }
+
+    boolean isInSubdomain() {
+        group in [RoleGroup.DOMAIN, RoleGroup.ADAPTER]
+    }
+
+    // The value of each placeholder in the project name pattern, or null when the name does not match it
+    Map<String, String> placeholderValues(String projectName, String subdomain) {
+        Matcher matcher = Pattern.compile(namePatternRegex(subdomain)).matcher(projectName)
+        matcher.matches() ? placeholdersOf(projectNamePattern).collectEntries { [(it): matcher.group(it)] } : null
+    }
+
+    String packageUnder(String rootPackage, Map<String, String> placeholderValues) {
+        String relativePackage = packagePattern.replaceAll(PLACEHOLDER) { String all, String placeholder ->
+            placeholder == ROOT_PLACEHOLDER ? rootPackage : placeholderValues[placeholder].replace('-', '')
+        }
+        packagePattern.startsWith("<${ROOT_PLACEHOLDER}>") ? relativePackage : "${rootPackage}.${relativePackage}"
+    }
+
+    private static final String PLACEHOLDER = /<([a-z]+)>/
+    private static final String ROOT_PLACEHOLDER = 'root'
+    private static final String SUBDOMAIN_PLACEHOLDER = 'subdomain'
+    private static final String NAME_PART = /[a-z0-9]+(?:-[a-z0-9]+)*/
+
+    private String namePatternRegex(String subdomain) {
+        List<String> placeholders = placeholdersOf(projectNamePattern)
+        projectNamePattern.split(PLACEHOLDER, -1).toList().withIndex().collect { String literal, int index ->
+            String placeholder = placeholders[index]
+            Pattern.quote(literal) + (placeholder ? "(?<${placeholder}>${placeholderRegex(placeholder, subdomain)})" : '')
+        }.join('')
+    }
+
+    private static String placeholderRegex(String placeholder, String subdomain) {
+        placeholder == SUBDOMAIN_PLACEHOLDER ? Pattern.quote(subdomain) : NAME_PART
+    }
+
+    private static List<String> placeholdersOf(String pattern) {
+        (pattern =~ PLACEHOLDER).collect { it[1] }
     }
 }
