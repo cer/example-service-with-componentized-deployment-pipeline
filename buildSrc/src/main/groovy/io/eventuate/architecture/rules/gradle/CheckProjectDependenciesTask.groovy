@@ -14,8 +14,12 @@ abstract class CheckProjectDependenciesTask extends DefaultTask {
 
     static final String NAME = 'checkProjectDependencies'
 
+    // HEX-3 (outbound dependencies go through ports) follows from HEX-1 (the domain does not
+    // depend on adapters): a domain project cannot name an adapter's implementing class
+    // without a project dependency on the adapter
     private static final List<ProjectDependencyRule> RULES = [
             new Hex1DomainDoesNotDependOnAdapters(),
+            new Hex2AdaptersDependOnlyOnDomain(),
             new Hex4DomainDependencyList(),
             new Hex5OneProjectOnePackage(),
             new Sub2DependenciesBetweenSubdomainsAreOnApiProjects(),

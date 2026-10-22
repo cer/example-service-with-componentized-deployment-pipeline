@@ -227,15 +227,15 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 7: An adapter depending on another adapter fails HEX-2
 
-- [ ] **Task 7.1: `checkProjectDependencies` fails an adapter's project dependency on anything other than a domain-group project of its own subdomain or a shared library, naming HEX-2**
+- [x] **Task 7.1: `checkProjectDependencies` fails an adapter's project dependency on anything other than a domain-group project of its own subdomain or a shared library, naming HEX-2**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkProjectDependencies`
   - Observable: `implementation project(':a:a-persistence')` in `a-rest-api` fails with a message starting `HEX-2 (adapters depend only on the domain)` that names the dependency and configuration. `a-rest-api` depending on `a-domain` and `a-sagas` passes.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.Hex2AdaptersDependOnlyOnDomainTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Write `Hex2AdaptersDependOnlyOnDomainTest`, covering: an adapter on an adapter fails; an adapter on `domain`, `sagas` and a shared library passes; an adapter on `main` fails.
-    - [ ] Create `Hex2AdaptersDependOnlyOnDomain` and add it to `CheckProjectDependenciesTask`. Add a comment that HEX-3 follows from HEX-1.
-    - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+    - [x] Write `Hex2AdaptersDependOnlyOnDomainTest`, covering: an adapter on an adapter fails; an adapter on `domain`, `sagas` and a shared library passes; an adapter on `main` fails.
+    - [x] Create `Hex2AdaptersDependOnlyOnDomain` and add it to `CheckProjectDependenciesTask`. Add a comment that HEX-3 follows from HEX-1.
+    - [x] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
 ---
 
@@ -474,3 +474,6 @@ componentTest and ./gradlew build pass after the change
 
 ### 2026-10-22 19:07 - mark-task-complete
 A subdomain directory project such as customer-management, which exists only because settings.gradle includes its children, is not a module and needs no role; the check skips projects with child projects.
+
+### 2026-10-23 07:17 - mark-task-complete
+An adapter's own path is permitted too, because customer-management-rest-api declares contractTestImplementation on itself
