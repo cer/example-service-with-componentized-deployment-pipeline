@@ -1,3 +1,7 @@
+plugins {
+    id 'io.eventuate.architecture.roles.domain'
+}
+
 dependencies {
     api "io.eventuate.examples.common:eventuate-examples-common-money-jakarta9:$eventuateCommonExamplesVersion"
     api 'io.eventuate.tram.core:eventuate-tram-spring-events'

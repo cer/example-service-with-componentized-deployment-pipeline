@@ -1,8 +1,6 @@
 plugins {
-    id 'io.eventuate.plugins.gradle.testing.component-tests'
+    id 'io.eventuate.architecture.roles.main'
 }
-
-apply plugin: ServicePlugin
 
 dependencies {
     runtimeOnly project(":customer-management:customer-management-domain")

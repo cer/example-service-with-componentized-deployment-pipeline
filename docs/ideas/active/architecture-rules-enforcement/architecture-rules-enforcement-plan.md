@@ -79,28 +79,28 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [x] In `docs/design/architecture-rules.md`, move HEX-7 from "Violated" to "Satisfied". Replace the "Violated" list with "None."
     - [x] In `docs/design/architecture-rules.md`, delete the "Resolve the HEX-7 violation" TODO entry. Delete the "Decide whether `other-service` follows HEX-5" TODO entry, and add a "Decisions recorded" bullet saying that `other-service` stands in for a separate service, is outside the rules, and keeps `OtherEvent` in its event-publishing project. Leave the `## TODO` heading with no entries.
 
-- [ ] **Task 1.2: Each build file declares its role with one role plugin line, and the role plugin applies the role's build conventions**
+- [x] **Task 1.2: Each build file declares its role with one role plugin line, and the role plugin applies the role's build conventions**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew build`
   - Observable: Each of the nine build files applies exactly one `io.eventuate.architecture.roles.<role>` plugin, and each project's `architectureRules.role` extension property holds that role. The adapter roles and `sagas` have an `integrationTest` task from `io.eventuate.plugins.gradle.testing.integration-tests`. `main` has `bootJar` from `ServicePlugin` and `componentTest` from `io.eventuate.plugins.gradle.testing.component-tests`. No build file applies the integration-tests plugin, the component-tests plugin or `ServicePlugin` directly. The build passes.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.RolePluginsTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Create `buildSrc/settings.gradle` containing `rootProject.name = 'buildSrc'`, so that `./gradlew -p buildSrc` runs `buildSrc` as a standalone build.
-    - [ ] Update `buildSrc/build.gradle`:
+    - [x] Create `buildSrc/settings.gradle` containing `rootProject.name = 'buildSrc'`, so that `./gradlew -p buildSrc` runs `buildSrc` as a standalone build.
+    - [x] Update `buildSrc/build.gradle`:
       - Apply `groovy` and `java-gradle-plugin`.
       - Add `gradlePluginPortal()` and the repositories in `rootGradleProperties.eventuateMavenRepoUrl`.
       - Add `implementation` dependencies on the plugin marker artifacts `io.eventuate.plugins.gradle.testing.integration-tests:io.eventuate.plugins.gradle.testing.integration-tests.gradle.plugin` and `io.eventuate.plugins.gradle.testing.component-tests:io.eventuate.plugins.gradle.testing.component-tests.gradle.plugin`, at `rootGradleProperties.eventuateTestPluginsVersion`.
       - Add JUnit Jupiter `testImplementation` and `junit-platform-launcher` `testRuntimeOnly` dependencies, and `test { useJUnitPlatform() }`.
-    - [ ] Write `RolePluginsTest`. For each role id it applies the plugin to a `ProjectBuilder` project and asserts the role on the extension. It asserts that `integrationTest` exists for the six adapter roles and `sagas`, and that `bootJar` and `componentTest` exist for `main`.
-    - [ ] Create these classes in `buildSrc/src/main/groovy/io/eventuate/architecture/rules/gradle/`:
+    - [x] Write `RolePluginsTest`. For each role id it applies the plugin to a `ProjectBuilder` project and asserts the role on the extension. It asserts that `integrationTest` exists for the six adapter roles and `sagas`, and that `bootJar` and `componentTest` exist for `main`.
+    - [x] Create these classes in `buildSrc/src/main/groovy/io/eventuate/architecture/rules/gradle/`:
       - `RoleGroup`: an enum with `DOMAIN`, `ADAPTER`, `MAIN` and `SHARED_LIBRARY`.
       - `Role`: an enum holding the roles table from `docs/design/architecture-rules-enforcement.md`, with the role name, group, project name pattern and package pattern.
       - `ArchitectureRulesExtension`: holds a `role` property.
       - `ArchitectureRulesPlugin`: creates the `architectureRules` extension.
-    - [ ] Create the abstract `RolePlugin`. It applies `ArchitectureRulesPlugin` (applying it twice has no effect), sets the role, and calls an `applyConventions(Project)` hook. Create the twelve role plugin classes, one per role: `ApiRolePlugin`, `ApiFacetRolePlugin`, `DomainRolePlugin`, `SagasRolePlugin`, `RestApiRolePlugin`, `CommandApiRolePlugin`, `EventSubscribersRolePlugin`, `PersistenceRolePlugin`, `EventPublishingRolePlugin`, `ProxyRolePlugin`, `MainRolePlugin` and `SharedLibraryRolePlugin`. The adapter roles and `sagas` apply `io.eventuate.plugins.gradle.testing.integration-tests`. `main` applies `ServicePlugin` and `io.eventuate.plugins.gradle.testing.component-tests`.
-    - [ ] Declare the twelve role plugin ids and the common plugin id `io.eventuate.architecture.rules` in the `gradlePlugin` block of `buildSrc/build.gradle`.
-    - [ ] Add `apply plugin: 'io.eventuate.architecture.rules'` to the `subprojects` block in `build.gradle`.
-    - [ ] Convert the build files:
+    - [x] Create the abstract `RolePlugin`. It applies `ArchitectureRulesPlugin` (applying it twice has no effect), sets the role, and calls an `applyConventions(Project)` hook. Create the twelve role plugin classes, one per role: `ApiRolePlugin`, `ApiFacetRolePlugin`, `DomainRolePlugin`, `SagasRolePlugin`, `RestApiRolePlugin`, `CommandApiRolePlugin`, `EventSubscribersRolePlugin`, `PersistenceRolePlugin`, `EventPublishingRolePlugin`, `ProxyRolePlugin`, `MainRolePlugin` and `SharedLibraryRolePlugin`. The adapter roles and `sagas` apply `io.eventuate.plugins.gradle.testing.integration-tests`. `main` applies `ServicePlugin` and `io.eventuate.plugins.gradle.testing.component-tests`.
+    - [x] Declare the twelve role plugin ids and the common plugin id `io.eventuate.architecture.rules` in the `gradlePlugin` block of `buildSrc/build.gradle`.
+    - [x] Add `apply plugin: 'io.eventuate.architecture.rules'` to the `subprojects` block in `build.gradle`.
+    - [x] Convert the build files:
       - `customer-management/customer-management-domain/build.gradle`: add `plugins { id 'io.eventuate.architecture.roles.domain' }`.
       - `customer-management/customer-management-sagas/build.gradle`: apply `io.eventuate.architecture.roles.sagas` in place of the integration-tests plugin. Keep the contract plugin lines.
       - `customer-management/customer-management-rest-api/build.gradle`: add `io.eventuate.architecture.roles.rest-api`. Keep the contract and `PublishStubsPlugin` lines.
@@ -110,10 +110,10 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
       - `customer-management/customer-management-event-publishing/build.gradle`: apply `io.eventuate.architecture.roles.event-publishing` in place of the integration-tests plugin. Keep the contract and `PublishStubsPlugin` lines.
       - `customer-management/customer-management-other-service-proxy/build.gradle`: add `io.eventuate.architecture.roles.proxy`.
       - `customer-service-main/build.gradle`: apply `io.eventuate.architecture.roles.main` in place of the component-tests plugin and `apply plugin: ServicePlugin`.
-    - [ ] Remove the `plugins { }` block that declares the two test plugin versions from `pluginManagement` in `settings.gradle`. The test plugins now come from the `buildSrc` classpath, and a version request for a plugin already on the classpath fails.
-    - [ ] Add a step `./gradlew -p buildSrc check` to `.github/workflows/ci.yaml`, before "Build and test".
-    - [ ] Add an "Architecture rules" section to `README.md`. It says that each project applies one role plugin, lists the role plugin ids, and links `docs/design/architecture-rules.md`.
-    - [ ] Run `./gradlew -p buildSrc check`, then `./gradlew build`.
+    - [x] Remove the `plugins { }` block that declares the two test plugin versions from `pluginManagement` in `settings.gradle`. The test plugins now come from the `buildSrc` classpath, and a version request for a plugin already on the classpath fails.
+    - [x] Add a step `./gradlew -p buildSrc check` to `.github/workflows/ci.yaml`, before "Build and test".
+    - [x] Add an "Architecture rules" section to `README.md`. It says that each project applies one role plugin, lists the role plugin ids, and links `docs/design/architecture-rules.md`.
+    - [x] Run `./gradlew -p buildSrc check`, then `./gradlew build`.
 
 - [ ] **Task 1.3: `checkProjectDependencies` fails a domain project that depends on an adapter, naming HEX-1, before compilation**
   - TaskType: OUTCOME

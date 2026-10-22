@@ -23,6 +23,7 @@ subprojects {
 
     apply plugin: "java-library"
     apply plugin: "io.spring.dependency-management"
+    apply plugin: 'io.eventuate.architecture.rules'
 
     java {
         toolchain {

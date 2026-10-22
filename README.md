@@ -92,6 +92,33 @@ This script:
 5. Deploys the service using Helm
 6. Runs smoke tests against the deployed service
 
+## Architecture rules
+
+Each project's build file applies exactly one role plugin, which declares the project's architectural role and applies that role's build conventions:
+
+```groovy
+plugins {
+    id 'io.eventuate.architecture.roles.domain'
+}
+```
+
+The role plugin ids are:
+
+- `io.eventuate.architecture.roles.api`
+- `io.eventuate.architecture.roles.api-facet`
+- `io.eventuate.architecture.roles.domain`
+- `io.eventuate.architecture.roles.sagas`
+- `io.eventuate.architecture.roles.rest-api`
+- `io.eventuate.architecture.roles.command-api`
+- `io.eventuate.architecture.roles.event-subscribers`
+- `io.eventuate.architecture.roles.persistence`
+- `io.eventuate.architecture.roles.event-publishing`
+- `io.eventuate.architecture.roles.proxy`
+- `io.eventuate.architecture.roles.main`
+- `io.eventuate.architecture.roles.shared-library`
+
+The plugins are defined in `buildSrc`, whose tests run with `./gradlew -p buildSrc check`. The rules are described in [docs/design/architecture-rules.md](docs/design/architecture-rules.md).
+
 ## License
 
 Apache License 2.0 - see [LICENSE.md](LICENSE.md).

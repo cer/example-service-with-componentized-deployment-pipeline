@@ -1,11 +1,58 @@
-repositories {
-    mavenCentral()
+plugins {
+    id 'groovy'
+    id 'java-gradle-plugin'
 }
 
 def rootGradleProperties = new Properties()
 file("../gradle.properties").withInputStream { rootGradleProperties.load(it) }
 
+repositories {
+    mavenCentral()
+    gradlePluginPortal()
+    rootGradleProperties.eventuateMavenRepoUrl.split(',').each { repoUrl -> maven { url repoUrl } }
+}
+
 dependencies {
     implementation "org.springframework.boot:spring-boot-gradle-plugin:${rootGradleProperties.springBootVersion}"
     implementation 'io.spring.gradle:dependency-management-plugin:1.1.7'
+    implementation "io.eventuate.plugins.gradle.testing.integration-tests:io.eventuate.plugins.gradle.testing.integration-tests.gradle.plugin:${rootGradleProperties.eventuateTestPluginsVersion}"
+    implementation "io.eventuate.plugins.gradle.testing.component-tests:io.eventuate.plugins.gradle.testing.component-tests.gradle.plugin:${rootGradleProperties.eventuateTestPluginsVersion}"
+
+    testImplementation platform('org.junit:junit-bom:5.12.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+def rolePluginClasses = [
+        'api'              : 'ApiRolePlugin',
+        'api-facet'        : 'ApiFacetRolePlugin',
+        'domain'           : 'DomainRolePlugin',
+        'sagas'            : 'SagasRolePlugin',
+        'rest-api'         : 'RestApiRolePlugin',
+        'command-api'      : 'CommandApiRolePlugin',
+        'event-subscribers': 'EventSubscribersRolePlugin',
+        'persistence'      : 'PersistenceRolePlugin',
+        'event-publishing' : 'EventPublishingRolePlugin',
+        'proxy'            : 'ProxyRolePlugin',
+        'main'             : 'MainRolePlugin',
+        'shared-library'   : 'SharedLibraryRolePlugin',
+]
+
+gradlePlugin {
+    plugins {
+        architectureRules {
+            id = 'io.eventuate.architecture.rules'
+            implementationClass = 'io.eventuate.architecture.rules.gradle.ArchitectureRulesPlugin'
+        }
+        rolePluginClasses.each { roleName, className ->
+            create("${roleName}Role") {
+                id = "io.eventuate.architecture.roles.${roleName}"
+                implementationClass = "io.eventuate.architecture.rules.gradle.${className}"
+            }
+        }
+    }
 }

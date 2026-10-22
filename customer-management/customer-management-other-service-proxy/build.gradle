@@ -1,3 +1,7 @@
+plugins {
+    id 'io.eventuate.architecture.roles.proxy'
+}
+
 dependencies {
     implementation project(':customer-management:customer-management-domain')
     implementation "org.springframework.boot:spring-boot-starter-restclient"

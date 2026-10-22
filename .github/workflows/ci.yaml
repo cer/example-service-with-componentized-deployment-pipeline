@@ -17,6 +17,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Test buildSrc
+      run: ./gradlew -p buildSrc check
+
     - name: Build and test
       uses: cer/github-build-and-test-action/build-and-test@main
 
