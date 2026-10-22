@@ -1,5 +1,6 @@
 package io.eventuate.architecture.rules.gradle
 
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -13,8 +14,20 @@ class ArchitectureRulesPlugin implements Plugin<Project> {
         project.afterEvaluate {
             if (extension.role.present) {
                 registerCheckProjectDependencies(project)
+            } else if (!isDirectoryOfProjects(project)) {
+                throw new GradleException(noRoleMessage(project))
             }
         }
+    }
+
+    // A subdomain directory such as customer-management is a project only because settings.gradle includes its children
+    private static boolean isDirectoryOfProjects(Project project) {
+        !project.childProjects.isEmpty()
+    }
+
+    private static String noRoleMessage(Project project) {
+        "Project ${project.path} has no architecture role. Apply one of these role plugins in its build file: " +
+                Role.values().collect { it.pluginId }.join(', ')
     }
 
     private static void registerCheckProjectDependencies(Project project) {

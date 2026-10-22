@@ -139,15 +139,15 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 2: A project added without a role fails the build
 
-- [ ] **Task 2.1: A project whose build file applies no role plugin fails the build after evaluation, listing the role plugin ids**
+- [x] **Task 2.1: A project whose build file applies no role plugin fails the build after evaluation, listing the role plugin ids**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew build`
   - Observable: A project such as `customer-management/customer-management-payment-proxy` whose build file applies no role plugin fails configuration. The message states that the project has no architecture role and lists all twelve `io.eventuate.architecture.roles.*` ids. Removing the role plugin line from any build file fails the build the same way.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.ProjectWithoutRoleTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Write `ProjectWithoutRoleTest`. A subproject with the common plugin and no role plugin fails evaluation with the message naming the project path and the twelve ids. A subproject with a role plugin evaluates.
-    - [ ] In `ArchitectureRulesPlugin.afterEvaluate`, throw a `GradleException` when no role is set. The message lists the ids from `Role`.
-    - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+    - [x] Write `ProjectWithoutRoleTest`. A subproject with the common plugin and no role plugin fails evaluation with the message naming the project path and the twelve ids. A subproject with a role plugin evaluates.
+    - [x] In `ArchitectureRulesPlugin.afterEvaluate`, throw a `GradleException` when no role is set. The message lists the ids from `Role`.
+    - [x] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
 ---
 
@@ -471,3 +471,6 @@ main's domain, command-api and sagas dependencies changed to runtimeOnly plus co
 
 ### 2026-10-22 18:45 - mark-step-complete
 componentTest and ./gradlew build pass after the change
+
+### 2026-10-22 19:07 - mark-task-complete
+A subdomain directory project such as customer-management, which exists only because settings.gradle includes its children, is not a module and needs no role; the check skips projects with child projects.

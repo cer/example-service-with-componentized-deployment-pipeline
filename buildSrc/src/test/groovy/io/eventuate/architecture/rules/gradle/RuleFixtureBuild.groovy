@@ -20,8 +20,21 @@ class RuleFixtureBuild {
     }
 
     Project subdomainProject(String subdomain, Role role) {
-        Project subdomainDirectory = subdomains.computeIfAbsent(subdomain) { name -> childProject(root, name) }
-        projectWithRole(subdomainDirectory, "${subdomain}-${role.roleName}", role)
+        projectWithRole(subdomainDirectory(subdomain), "${subdomain}-${role.roleName}", role)
+    }
+
+    Project subdomainProjectWithoutRole(String subdomain, String name) {
+        Project project = childProject(subdomainDirectory(subdomain), name)
+        applyRootBuildFilePlugins(project)
+        project
+    }
+
+    Project subdomainDirectory(String subdomain) {
+        subdomains.computeIfAbsent(subdomain) { name ->
+            Project directory = childProject(root, name)
+            applyRootBuildFilePlugins(directory)
+            directory
+        }
     }
 
     // dependency is a Project or an external dependency notation such as 'group:name'
@@ -31,6 +44,15 @@ class RuleFixtureBuild {
 
     void evaluate() {
         projects.each { ((ProjectInternal) it).evaluate() }
+    }
+
+    String evaluationFailure(Project project) {
+        try {
+            ((ProjectInternal) project).evaluate()
+            null
+        } catch (Exception e) {
+            messagesOf(e)
+        }
     }
 
     String checkProjectDependenciesFailure(Project project) {
@@ -45,11 +67,25 @@ class RuleFixtureBuild {
 
     private Project projectWithRole(Project parent, String name, Role role) {
         Project project = childProject(parent, name)
-        project.group = ROOT_PACKAGE
-        project.pluginManager.apply('java-library')
+        applyRootBuildFilePlugins(project)
         project.pluginManager.apply(role.pluginId)
         projects << project
         project
+    }
+
+    // The plugins the root build file's subprojects block applies
+    private static void applyRootBuildFilePlugins(Project project) {
+        project.group = ROOT_PACKAGE
+        project.pluginManager.apply('java-library')
+        project.pluginManager.apply(ArchitectureRulesPlugin)
+    }
+
+    private static String messagesOf(Throwable e) {
+        [e, *causesOf(e)].collect { it.message }.join('\n')
+    }
+
+    private static List<Throwable> causesOf(Throwable e) {
+        e.cause == null || e.cause.is(e) ? [] : [e.cause, *causesOf(e.cause)]
     }
 
     private static Project childProject(Project parent, String name) {
