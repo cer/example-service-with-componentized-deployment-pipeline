@@ -22,16 +22,17 @@ abstract class CheckProjectDependenciesTask extends DefaultTask {
             new Hex2AdaptersDependOnlyOnDomain(),
             new Hex4DomainDependencyList(),
             new Hex5OneProjectOnePackage(),
+            new Hex7MainContainsNoBusinessLogic(),
             new Sub2DependenciesBetweenSubdomainsAreOnApiProjects(),
     ]
 
     @Internal
     abstract Property<CheckedProject> getCheckedProject()
 
-    // Read by HEX-5 (one project, one package) through checkedProject
+    // Read by HEX-5 (one project, one package) and HEX-7 (main contains no business logic) through checkedProject
     @InputFiles
     @PathSensitive(PathSensitivity.RELATIVE)
-    abstract ConfigurableFileCollection getMainJavaSourceDirectories()
+    abstract ConfigurableFileCollection getJavaSourceDirectories()
 
     @TaskAction
     void checkProjectDependencies() {

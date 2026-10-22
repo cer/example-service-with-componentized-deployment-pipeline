@@ -6,6 +6,7 @@ enum Rule {
     HEX_2('HEX-2', 'adapters depend only on the domain'),
     HEX_4('HEX-4', 'domain projects stay free of infrastructure technology'),
     HEX_5('HEX-5', 'one project, one package'),
+    HEX_7('HEX-7', 'main contains no business logic'),
     SUB_2('SUB-2', 'Gradle dependencies between subdomains are on API projects only')
 
     final String identifier

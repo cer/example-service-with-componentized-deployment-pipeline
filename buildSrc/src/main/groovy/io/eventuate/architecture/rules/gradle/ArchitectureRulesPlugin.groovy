@@ -36,7 +36,7 @@ class ArchitectureRulesPlugin implements Plugin<Project> {
             it.group = 'verification'
             it.description = 'Checks the project dependencies declared by this project against the architecture rules.'
             it.checkedProject.set(project.provider { CheckedProject.of(project) })
-            it.mainJavaSourceDirectories.from(project.provider { MainJavaSourceFile.sourceDirectoriesOf(project) })
+            it.javaSourceDirectories.from(project.provider { CompileConfigurationSources.javaSourceDirectoriesOf(project) })
         }
         project.pluginManager.withPlugin('lifecycle-base') {
             project.tasks.named('check') { it.dependsOn(checkProjectDependencies) }

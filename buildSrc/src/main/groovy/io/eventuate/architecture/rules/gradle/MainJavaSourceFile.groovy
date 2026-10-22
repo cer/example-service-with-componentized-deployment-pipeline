@@ -14,7 +14,7 @@ class MainJavaSourceFile {
     String path
     String packageName
 
-    static Set<File> sourceDirectoriesOf(Project project) {
+    private static Set<File> sourceDirectoriesOf(Project project) {
         SourceSetContainer sourceSets = project.extensions.findByType(SourceSetContainer)
         sourceSets?.findByName(SourceSet.MAIN_SOURCE_SET_NAME)?.java?.srcDirs ?: [] as Set
     }

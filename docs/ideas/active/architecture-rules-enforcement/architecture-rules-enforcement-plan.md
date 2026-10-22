@@ -241,16 +241,16 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 8: Main compiling against an adapter it does not use fails HEX-7
 
-- [ ] **Task 8.1: `checkProjectDependencies` fails main's compile-scope dependency on an adapter that the source set does not reference, and a main class outside the root package, naming HEX-7**
+- [x] **Task 8.1: `checkProjectDependencies` fails main's compile-scope dependency on an adapter that the source set does not reference, and a main class outside the root package, naming HEX-7**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkProjectDependencies`
   - Observable: `implementation project(':a:a-command-api')` in main, with no file in `src/main/java` mentioning the adapter's package or one of its `messageCopyPackages`, fails with a message starting `HEX-7 (main contains no business logic)` that names the dependency. `componentTestImplementation` on an adapter whose package appears in `src/componentTest/java` passes, and `runtimeOnly` passes. A class in a sub-package of the root package in main's `src/main/java` fails. The current `customer-service-main/build.gradle` passes, because `CustomerServiceComponentTest` references the `customermanagement.commandapi` package and the event-subscribers copy package `othersubdomain.domain`.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.Hex7MainContainsNoBusinessLogicTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Write `Hex7MainContainsNoBusinessLogicTest` with fixture source files in the main fixture's `src/main/java` and `src/componentTest/java`, covering each case in the Observable.
-    - [ ] Create `Hex7MainContainsNoBusinessLogic`. For each adapter dependency of main in `implementation`, `api` or `<sourceSet>Implementation`, it scans the `.java` files of that source set for the adapter's package or one of its message copy packages. It also checks that `src/main/java` holds only files directly in the root package. Add it to `CheckProjectDependenciesTask`.
-    - [ ] Record the source-scan approach in the HEX-7 bullet of `docs/design/architecture-rules-enforcement.md`.
-    - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+    - [x] Write `Hex7MainContainsNoBusinessLogicTest` with fixture source files in the main fixture's `src/main/java` and `src/componentTest/java`, covering each case in the Observable.
+    - [x] Create `Hex7MainContainsNoBusinessLogic`. For each adapter dependency of main in `implementation`, `api` or `<sourceSet>Implementation`, it scans the `.java` files of that source set for the adapter's package or one of its message copy packages. It also checks that `src/main/java` holds only files directly in the root package. Add it to `CheckProjectDependenciesTask`.
+    - [x] Record the source-scan approach in the HEX-7 bullet of `docs/design/architecture-rules-enforcement.md`.
+    - [x] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
 ---
 

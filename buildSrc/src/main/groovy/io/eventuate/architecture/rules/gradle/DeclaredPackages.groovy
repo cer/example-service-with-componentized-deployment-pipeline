@@ -21,7 +21,7 @@ class DeclaredPackages {
         messageCopyPackages ? "${projectPackage} and its message copy packages ${messageCopyPackages.join(', ')}" : projectPackage
     }
 
-    private List<String> allPackages() {
+    List<String> allPackages() {
         [projectPackage, *messageCopyPackages]
     }
 }
