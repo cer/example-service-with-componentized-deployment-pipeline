@@ -4,16 +4,13 @@ package io.eventuate.architecture.rules.gradle
 // so only the main source set configurations are checked
 class Hex4DomainDependencyList implements ProjectDependencyRule {
 
-    private static final Set<String> MAIN_SOURCE_SET_CONFIGURATIONS =
-            ['api', 'implementation', 'compileOnly', 'runtimeOnly'] as Set
-
     @Override
     List<RuleViolation> check(CheckedProject project) {
         if (project.role.group != RoleGroup.DOMAIN) {
             return []
         }
         project.dependencies.externalDependencies
-                .findAll { it.configuration in MAIN_SOURCE_SET_CONFIGURATIONS }
+                .findAll { it.inMainSourceSet }
                 .findAll { !PermittedDomainDependencies.isPermitted(project.role, it.group, it.name) }
                 .collect {
                     new RuleViolation(Rule.HEX_4,

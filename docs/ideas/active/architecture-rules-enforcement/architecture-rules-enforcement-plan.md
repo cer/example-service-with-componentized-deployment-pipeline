@@ -286,16 +286,16 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 11: API and shared-library projects with forbidden dependencies fail HEX-8 and SUB-8
 
-- [ ] **Task 11.1: `checkProjectDependencies` fails an `api` or `api-facet` project depending on a non-API project or on a Spring, JPA or Eventuate infrastructure artifact, naming HEX-8**
+- [x] **Task 11.1: `checkProjectDependencies` fails an `api` or `api-facet` project depending on a non-API project or on a Spring, JPA or Eventuate infrastructure artifact, naming HEX-8**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkProjectDependencies`
   - Observable: `a-api` with `implementation project(':a:a-domain')` fails with a message starting `HEX-8 (API projects contain only interfaces and value types)`. `a-api` with `implementation "org.springframework:spring-context"` fails. `a-api-observer` depending on `a-api` passes, and `a-api` depending on `eventuate-examples-common-money-jakarta9` passes.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.Hex8ApiProjectDependenciesTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Write `Hex8ApiProjectDependenciesTest`, covering the cases in the Observable.
-    - [ ] Create `Hex8ApiProjectDependencies`. In the main source set configurations it forbids external groups starting with `org.springframework`, `jakarta.persistence`, `org.hibernate`, `io.eventuate.tram`, `io.eventuate.common`, `io.eventuate.messaging` and `io.eventuate.platform`. Add it to `CheckProjectDependenciesTask`.
-    - [ ] Record the forbidden group prefixes in the HEX-8 bullet of `docs/design/architecture-rules-enforcement.md`.
-    - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+    - [x] Write `Hex8ApiProjectDependenciesTest`, covering the cases in the Observable.
+    - [x] Create `Hex8ApiProjectDependencies`. In the main source set configurations it forbids external groups starting with `org.springframework`, `jakarta.persistence`, `org.hibernate`, `io.eventuate.tram`, `io.eventuate.common`, `io.eventuate.messaging` and `io.eventuate.platform`. Add it to `CheckProjectDependenciesTask`.
+    - [x] Record the forbidden group prefixes in the HEX-8 bullet of `docs/design/architecture-rules-enforcement.md`.
+    - [x] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
 - [ ] **Task 11.2: `checkProjectDependencies` fails a `shared-library` project depending on any subdomain project or other shared library, naming SUB-8**
   - TaskType: OUTCOME

@@ -17,9 +17,17 @@ class DeclaredDependencies {
 
     @Immutable
     static class DeclaredExternalDependency {
+
+        private static final Set<String> MAIN_SOURCE_SET_CONFIGURATIONS =
+                ['api', 'implementation', 'compileOnly', 'runtimeOnly'] as Set
+
         String configuration
         String group
         String name
+
+        boolean isInMainSourceSet() {
+            configuration in MAIN_SOURCE_SET_CONFIGURATIONS
+        }
     }
 
     final List<DeclaredProjectDependency> projectDependencies
