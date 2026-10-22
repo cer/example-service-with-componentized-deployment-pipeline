@@ -73,9 +73,9 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
   - Observable: `customer-service-main/build.gradle` declares no `implementation` project dependency. `customer-management-domain`, `customer-management-command-api` and `customer-management-sagas` are declared `runtimeOnly` and `componentTestImplementation`. `CustomerServiceComponentTest` and every other test pass. In the rules document, the current-state section records no violation and the TODO section has no entries.
   - Evidence: `./gradlew build` exits 0, including `:customer-service-main:componentTest`. CI runs the build on push.
   - Steps:
-    - [ ] Run `./gradlew build` to confirm that the existing build and CI baseline passes before any change.
-    - [ ] In `customer-service-main/build.gradle`, change the three `implementation project(...)` lines for `customer-management-domain`, `customer-management-command-api` and `customer-management-sagas` to `runtimeOnly`. Add `componentTestImplementation` for the same three projects, next to the existing `componentTestImplementation` on `customer-management-event-subscribers`.
-    - [ ] Run `./gradlew :customer-service-main:componentTest`, then `./gradlew build`.
+    - [x] Run `./gradlew build` to confirm that the existing build and CI baseline passes before any change.
+    - [x] In `customer-service-main/build.gradle`, change the three `implementation project(...)` lines for `customer-management-domain`, `customer-management-command-api` and `customer-management-sagas` to `runtimeOnly`. Add `componentTestImplementation` for the same three projects, next to the existing `componentTestImplementation` on `customer-management-event-subscribers`.
+    - [x] Run `./gradlew :customer-service-main:componentTest`, then `./gradlew build`.
     - [ ] In `docs/design/architecture-rules.md`, move HEX-7 from "Violated" to "Satisfied". Replace the "Violated" list with "None."
     - [ ] In `docs/design/architecture-rules.md`, delete the "Resolve the HEX-7 violation" TODO entry. Delete the "Decide whether `other-service` follows HEX-5" TODO entry, and add a "Decisions recorded" bullet saying that `other-service` stands in for a separate service, is outside the rules, and keeps `OtherEvent` in its event-publishing project. Leave the `## TODO` heading with no entries.
 
@@ -135,6 +135,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Create `test-scripts/test-end-to-end.sh`, which runs each `test-scripts/test-*.sh` behaviour script in sequence. Add a CI step to `.github/workflows/ci.yaml` that runs `./test-scripts/test-end-to-end.sh` after "Build and test".
     - [ ] Run `./gradlew -p buildSrc check`, `./test-scripts/test-end-to-end.sh` and `./gradlew build`.
 
+---
+
 ## Steel Thread 2: A project added without a role fails the build
 
 - [ ] **Task 2.1: A project whose build file applies no role plugin fails the build after evaluation, listing the role plugin ids**
@@ -146,6 +148,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Write `ProjectWithoutRoleTest`. A subproject with the common plugin and no role plugin fails evaluation with the message naming the project path and the twelve ids. A subproject with a role plugin evaluates.
     - [ ] In `ArchitectureRulesPlugin.afterEvaluate`, throw a `GradleException` when no role is set. The message lists the ids from `Role`.
     - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+
+---
 
 ## Steel Thread 3: A misnamed project fails the build
 
@@ -160,6 +164,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Add the name and directory check to `ArchitectureRulesPlugin.afterEvaluate`, driven by `Role`'s name pattern and group.
     - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
+---
+
 ## Steel Thread 4: A test source set depending on another subdomain's domain fails SUB-2
 
 - [ ] **Task 4.1: `checkProjectDependencies` fails a dependency, in any configuration, on a non-API project of another subdomain, naming SUB-2**
@@ -172,6 +178,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Create `Sub2DependenciesBetweenSubdomainsAreOnApiProjects` and add it to the rules run by `CheckProjectDependenciesTask`.
     - [ ] Add a comment in `Sub2DependenciesBetweenSubdomainsAreOnApiProjects` stating that SUB-1 follows from this rule, as the enforcement document says.
     - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+
+---
 
 ## Steel Thread 5: A domain project that pulls in infrastructure fails HEX-4
 
@@ -198,6 +206,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Add the Money value type category to the HEX-4 list in `docs/design/architecture-rules.md` and to the HEX-4 dependency list bullet in `docs/design/architecture-rules-enforcement.md`.
     - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
+---
+
 ## Steel Thread 6: A source file outside the project's package fails HEX-5
 
 - [ ] **Task 6.1: `checkProjectDependencies` fails a source file under `src/main/java` whose path is outside the project's package and its declared message copy packages, naming HEX-5**
@@ -213,6 +223,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Add `architectureRules { messageCopyPackages = ['io.eventuate.otherservice.othersubdomain.domain'] }` to `customer-management/customer-management-event-subscribers/build.gradle`.
     - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
+---
+
 ## Steel Thread 7: An adapter depending on another adapter fails HEX-2
 
 - [ ] **Task 7.1: `checkProjectDependencies` fails an adapter's project dependency on anything other than a domain-group project of its own subdomain or a shared library, naming HEX-2**
@@ -224,6 +236,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Write `Hex2AdaptersDependOnlyOnDomainTest`, covering: an adapter on an adapter fails; an adapter on `domain`, `sagas` and a shared library passes; an adapter on `main` fails.
     - [ ] Create `Hex2AdaptersDependOnlyOnDomain` and add it to `CheckProjectDependenciesTask`. Add a comment that HEX-3 follows from HEX-1.
     - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+
+---
 
 ## Steel Thread 8: Main compiling against an adapter it does not use fails HEX-7
 
@@ -237,6 +251,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Create `Hex7MainContainsNoBusinessLogic`. For each adapter dependency of main in `implementation`, `api` or `<sourceSet>Implementation`, it scans the `.java` files of that source set for the adapter's package or one of its message copy packages. It also checks that `src/main/java` holds only files directly in the root package. Add it to `CheckProjectDependenciesTask`.
     - [ ] Record the source-scan approach in the HEX-7 bullet of `docs/design/architecture-rules-enforcement.md`.
     - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+
+---
 
 ## Steel Thread 9: A broker artifact outside main fails HEX-9
 
@@ -252,6 +268,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Record in the HEX-9 bullet of `docs/design/architecture-rules-enforcement.md` that every configuration of the `integrationTest` and `componentTest` source sets is accepted, because `customer-management-event-subscribers` declares the Kafka consumer `integrationTestRuntimeOnly`.
     - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
+---
+
 ## Steel Thread 10: A second composition root fails SUB-7
 
 - [ ] **Task 10.1: `checkProjectDependencies` fails a non-main project with dependencies on adapters of more than one subdomain, and any dependency on main, naming SUB-7**
@@ -263,6 +281,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Write `Sub7MainIsOnlyCompositionRootTest`, covering the three cases in the Observable.
     - [ ] Create `Sub7MainIsOnlyCompositionRoot` and add it to `CheckProjectDependenciesTask`.
     - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+
+---
 
 ## Steel Thread 11: API and shared-library projects with forbidden dependencies fail HEX-8 and SUB-8
 
@@ -287,6 +307,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Create `Sub8SharedLibraryProjectDependencies` and add it to `CheckProjectDependenciesTask`.
     - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
+---
+
 ## Steel Thread 12: A cross-subdomain dependency from the wrong project fails SUB-3
 
 - [ ] **Task 12.1: `checkProjectDependencies` fails a dependency on another subdomain's API from a project other than `domain` and `sagas`, and on `api-observer` from a project other than `domain`, naming SUB-3**
@@ -298,6 +320,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Write `Sub3FourInteractionMechanismsTest`, covering the cases in the Observable.
     - [ ] Create `Sub3FourInteractionMechanisms` and add it to `CheckProjectDependenciesTask`. The `api-observer` facet is identified by the facet name `observer`.
     - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+
+---
 
 ## Steel Thread 13: A cycle between subdomains fails SUB-6 at the root
 
@@ -313,6 +337,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Update `test-scripts/test-project-dependency-checks-do-not-compile.sh` to run `./gradlew checkProjectDependencies checkSubdomainGraph --dry-run` and assert that `:checkSubdomainGraph` is listed and no `compileJava` task is listed.
     - [ ] Record in the "Wiring" bullet of `docs/design/architecture-rules-enforcement.md` that the root build file also applies the common plugin to the root, to register `checkSubdomainGraph` and hold the exempt project list.
     - [ ] Run `./gradlew -p buildSrc check`, `./test-scripts/test-end-to-end.sh` and `./gradlew build`.
+
+---
 
 ## Steel Thread 14: An API project with a configuration class fails HEX-6 in `checkArchitectureRules`
 
@@ -346,6 +372,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
       - Make `check` depend on it, and make `test` `mustRunAfter` it.
     - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
+---
+
 ## Steel Thread 15: A domain class depending on a transitive infrastructure type fails HEX-4
 
 - [ ] **Task 15.1: `checkArchitectureRules` fails a domain-group class that depends on a forbidden infrastructure package, naming HEX-4, the class and the forbidden class**
@@ -359,6 +387,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Add `hex4DomainClassDependencies` to `ArchitectureRuleDefinitions`. The forbidden packages are `java.sql..`, `javax.sql..`, `org.springframework.web..`, `org.springframework.jdbc..`, `org.flywaydb..`, `jakarta.servlet..`, `org.apache.kafka..`, `io.eventuate.tram.messaging.producer..`, `io.eventuate.tram.messaging.consumer..` and `io.eventuate.tram.commands..`. For `sagas`, `io.eventuate.tram.commands.common..`, `io.eventuate.tram.commands.consumer..` and `io.eventuate.tram.sagas..` are permitted. Add an `@ArchTest` method to `ArchitectureRulesTest` that applies it to domain-group roles.
     - [ ] Record in the HEX-4 class dependencies bullet of `docs/design/architecture-rules-enforcement.md` that the forbidden packages are the ones listed above, and that `sagas` is also permitted the Eventuate Tram command `common` and `consumer` packages, which the orchestration DSL's `Command` and `CommandWithDestination` types require.
     - [ ] Run `./gradlew :architecture-rules:test` and `./gradlew build`.
+
+---
 
 ## Steel Thread 16: An API or shared-library class with behaviour or framework annotations fails HEX-8 and SUB-8
 
@@ -383,6 +413,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Add `sub8SharedLibraryContents` to `ArchitectureRuleDefinitions`, using `valueTypesOnly`, and add an `@ArchTest` method for `shared-library`.
     - [ ] Run `./gradlew :architecture-rules:test` and `./gradlew build`.
 
+---
+
 ## Steel Thread 17: A message copy carrying an Eventuate annotation fails SUB-4
 
 - [ ] **Task 17.1: `checkArchitectureRules` fails a class outside the project's own package that carries an `io.eventuate` annotation, naming SUB-4**
@@ -395,6 +427,8 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Write `Sub4MessageCopiesCarryNoEventuateAnnotationsTest` with fixtures under `fixtures/sub4/`.
     - [ ] Add `sub4MessageCopiesCarryNoEventuateAnnotations` to `ArchitectureRuleDefinitions`. It checks classes, methods and fields, and its scope is the classes outside `RoleContext.packageName()` and its sub-packages. Add an `@ArchTest` method that applies it to every role.
     - [ ] Run `./gradlew :architecture-rules:test` and `./gradlew build`.
+
+---
 
 ## Steel Thread 18: A generated service with two subdomains is checked on its first build
 
@@ -421,8 +455,19 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [ ] Update the current-state section of `docs/design/architecture-rules.md` to state that the rules are now enforced by the build. Leave SUB-5 and the usage part of SUB-3 listed as not enforced.
     - [ ] Run `./gradlew -p buildSrc check`, `./gradlew build` and `./test-scripts/test-end-to-end.sh`.
 
+---
+
 ## Change History
 
 ### 2026-10-22: Put each Observable on a single line
 
 Tasks 1.2, 1.3, 3.1, 5.1, 6.1, 8.1, 9.1, 11.1, 12.1, 13.1, 14.1, 14.2, 15.1, 17.1 and 18.2 listed their Observable as nested bullets, and the validator did not see them. Each Observable is now one line with the same content. In Task 9.1, "integrationTestImplementation, integrationTestRuntimeOnly or componentTestImplementation passes" now reads "and", so it says that every one of those configurations passes.
+
+### 2026-10-22 18:45 - mark-step-complete
+Baseline ./gradlew build passed before any change
+
+### 2026-10-22 18:45 - mark-step-complete
+main's domain, command-api and sagas dependencies changed to runtimeOnly plus componentTestImplementation
+
+### 2026-10-22 18:45 - mark-step-complete
+componentTest and ./gradlew build pass after the change
