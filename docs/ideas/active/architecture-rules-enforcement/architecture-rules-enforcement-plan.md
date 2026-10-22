@@ -272,15 +272,15 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 10: A second composition root fails SUB-7
 
-- [ ] **Task 10.1: `checkProjectDependencies` fails a non-main project with dependencies on adapters of more than one subdomain, and any dependency on main, naming SUB-7**
+- [x] **Task 10.1: `checkProjectDependencies` fails a non-main project with dependencies on adapters of more than one subdomain, and any dependency on main, naming SUB-7**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkProjectDependencies`
   - Observable: A shared library that depends on adapter projects of `a` and `b` fails with a message starting `SUB-7 (main is the only composition root)`. A project depending on `x-main` fails with the same rule identifier. Main depending on adapters of `a` and `b` passes.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.Sub7MainIsOnlyCompositionRootTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Write `Sub7MainIsOnlyCompositionRootTest`, covering the three cases in the Observable.
-    - [ ] Create `Sub7MainIsOnlyCompositionRoot` and add it to `CheckProjectDependenciesTask`.
-    - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+    - [x] Write `Sub7MainIsOnlyCompositionRootTest`, covering the three cases in the Observable.
+    - [x] Create `Sub7MainIsOnlyCompositionRoot` and add it to `CheckProjectDependenciesTask`.
+    - [x] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
 ---
 

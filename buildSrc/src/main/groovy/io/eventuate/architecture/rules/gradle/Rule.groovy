@@ -8,7 +8,8 @@ enum Rule {
     HEX_5('HEX-5', 'one project, one package'),
     HEX_7('HEX-7', 'main contains no business logic'),
     HEX_9('HEX-9', 'the message broker is declared in main only'),
-    SUB_2('SUB-2', 'Gradle dependencies between subdomains are on API projects only')
+    SUB_2('SUB-2', 'Gradle dependencies between subdomains are on API projects only'),
+    SUB_7('SUB-7', 'main is the only composition root')
 
     final String identifier
     final String title
