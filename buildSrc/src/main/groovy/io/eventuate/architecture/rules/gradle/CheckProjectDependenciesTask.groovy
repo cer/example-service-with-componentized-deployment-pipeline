@@ -27,6 +27,7 @@ abstract class CheckProjectDependenciesTask extends DefaultTask {
             new Hex9MessageBrokerInMainOnly(),
             new Sub2DependenciesBetweenSubdomainsAreOnApiProjects(),
             new Sub7MainIsOnlyCompositionRoot(),
+            new Sub8SharedLibraryProjectDependencies(),
     ]
 
     @Internal

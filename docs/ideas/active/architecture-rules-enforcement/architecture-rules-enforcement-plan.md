@@ -297,15 +297,15 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [x] Record the forbidden group prefixes in the HEX-8 bullet of `docs/design/architecture-rules-enforcement.md`.
     - [x] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
-- [ ] **Task 11.2: `checkProjectDependencies` fails a `shared-library` project depending on any subdomain project or other shared library, naming SUB-8**
+- [x] **Task 11.2: `checkProjectDependencies` fails a `shared-library` project depending on any subdomain project or other shared library, naming SUB-8**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkProjectDependencies`
   - Observable: A shared library `money` with `implementation project(':a:a-api')` fails with a message starting `SUB-8 (shared libraries hold only value types)`. A shared library depending on another shared library fails. A shared library with only external dependencies passes.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.Sub8SharedLibraryProjectDependenciesTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Write `Sub8SharedLibraryProjectDependenciesTest`, covering the cases in the Observable.
-    - [ ] Create `Sub8SharedLibraryProjectDependencies` and add it to `CheckProjectDependenciesTask`.
-    - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+    - [x] Write `Sub8SharedLibraryProjectDependenciesTest`, covering the cases in the Observable.
+    - [x] Create `Sub8SharedLibraryProjectDependencies` and add it to `CheckProjectDependenciesTask`.
+    - [x] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
 ---
 
