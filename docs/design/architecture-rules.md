@@ -118,6 +118,7 @@ Domain projects do not depend on web frameworks (Spring MVC, servlet API), HTTP 
 - Spring context annotations (`@Configuration`, `@Bean`, `@Transactional`) for wiring, in `<subdomain>-domain` and `<subdomain>-sagas`.
 - JPA annotations on entities and Spring Data repository interfaces, because the template keeps the entity and its mapping in one place.
 - The Eventuate Tram events API (`eventuate-tram-spring-events`) for the `DomainEvent` interface.
+- The Money value type (`eventuate-examples-common-money-jakarta9`).
 - The Eventuate Tram Sagas orchestration DSL, in `<subdomain>-sagas` only.
 - The Eventuate Tram Flyway migration support (`eventuate-tram-spring-flyway`) and the saga Flyway migrations (`eventuate-tram-sagas-spring-flyway`), in `<subdomain>-sagas` only, because the orchestrator's tables are created by migrations the sagas project enables with `@EnableEventuateTramFlywayMigration`.
 

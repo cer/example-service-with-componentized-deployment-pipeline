@@ -183,28 +183,28 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 5: A domain project that pulls in infrastructure fails HEX-4
 
-- [ ] **Task 5.1: `checkProjectDependencies` fails an external dependency of a domain-group project outside the permitted categories, naming HEX-4 and the categories**
+- [x] **Task 5.1: `checkProjectDependencies` fails an external dependency of a domain-group project outside the permitted categories, naming HEX-4 and the categories**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkProjectDependencies`
   - Observable: `implementation "org.springframework.boot:spring-boot-starter-webmvc"` in a `domain` project fails with a message starting `HEX-4 (domain projects stay free of infrastructure technology)` that names the dependency and lists the permitted categories for the role. `eventuate-tram-spring-flyway` passes in `sagas` and fails in `domain`. The current `customer-management-domain` and `customer-management-sagas` build files pass.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.Hex4DomainDependencyListTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Write `Hex4DomainDependencyListTest`, covering:
+    - [x] Write `Hex4DomainDependencyListTest`, covering:
       - `spring-boot-starter-webmvc` in `domain` fails.
       - `runtimeOnly "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-flyway"` passes in `sagas` and fails in `domain`.
       - `spring-boot-starter-data-jpa`, `eventuate-tram-spring-events` and `eventuate-examples-common-money-jakarta9` pass in `domain`.
       - `testImplementation "org.springframework.boot:spring-boot-starter-test"` passes.
-    - [ ] Create `PermittedDomainDependencies`, holding the categories as allow-lists of group and artifact:
+    - [x] Create `PermittedDomainDependencies`, holding the categories as allow-lists of group and artifact:
       - Spring context: `org.springframework:spring-context`, `org.springframework:spring-tx`, `org.springframework.boot:spring-boot-starter`.
       - JPA and Spring Data: `org.springframework.boot:spring-boot-starter-data-jpa`, `org.springframework.data:spring-data-jpa`, `org.springframework.data:spring-data-commons`, `jakarta.persistence:jakarta.persistence-api`.
       - Eventuate events API: `io.eventuate.tram.core:eventuate-tram-spring-events`.
       - Money value type: `io.eventuate.examples.common:eventuate-examples-common-money-jakarta9`.
       - `sagas` only, Eventuate Sagas orchestration DSL: `io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl-starter`.
       - `sagas` only, Eventuate Flyway migration support: `io.eventuate.tram.core:eventuate-tram-spring-flyway`, `io.eventuate.tram.sagas:eventuate-tram-sagas-spring-flyway`.
-    - [ ] Create `Hex4DomainDependencyList`. It checks the main source set configurations `api`, `implementation`, `compileOnly` and `runtimeOnly` of every domain-group project, and adds itself to `CheckProjectDependenciesTask`.
-    - [ ] Record in `docs/design/architecture-rules-enforcement.md`, under the HEX-4 dependency list bullet and in "Decisions", that the list applies to the main source set configurations. The reason is that test source sets do not ship and that HEX-9 places broker artifacts in integration test configurations.
-    - [ ] Add the Money value type category to the HEX-4 list in `docs/design/architecture-rules.md` and to the HEX-4 dependency list bullet in `docs/design/architecture-rules-enforcement.md`.
-    - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+    - [x] Create `Hex4DomainDependencyList`. It checks the main source set configurations `api`, `implementation`, `compileOnly` and `runtimeOnly` of every domain-group project, and adds itself to `CheckProjectDependenciesTask`.
+    - [x] Record in `docs/design/architecture-rules-enforcement.md`, under the HEX-4 dependency list bullet and in "Decisions", that the list applies to the main source set configurations. The reason is that test source sets do not ship and that HEX-9 places broker artifacts in integration test configurations.
+    - [x] Add the Money value type category to the HEX-4 list in `docs/design/architecture-rules.md` and to the HEX-4 dependency list bullet in `docs/design/architecture-rules-enforcement.md`.
+    - [x] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
 ---
 
