@@ -23,6 +23,7 @@ abstract class CheckProjectDependenciesTask extends DefaultTask {
             new Hex4DomainDependencyList(),
             new Hex5OneProjectOnePackage(),
             new Hex7MainContainsNoBusinessLogic(),
+            new Hex9MessageBrokerInMainOnly(),
             new Sub2DependenciesBetweenSubdomainsAreOnApiProjects(),
     ]
 

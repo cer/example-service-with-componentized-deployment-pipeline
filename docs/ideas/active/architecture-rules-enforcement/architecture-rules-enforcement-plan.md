@@ -256,17 +256,17 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 9: A broker artifact outside main fails HEX-9
 
-- [ ] **Task 9.1: `checkProjectDependencies` fails a message broker artifact declared by a non-main project outside its integration and component test source sets, naming HEX-9**
+- [x] **Task 9.1: `checkProjectDependencies` fails a message broker artifact declared by a non-main project outside its integration and component test source sets, naming HEX-9**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkProjectDependencies`
   - Observable: `implementation "io.eventuate.tram.core:eventuate-tram-spring-jdbc-kafka"` in a `sagas` project fails with a message starting `HEX-9 (the message broker is declared in main only)` that names the artifact and configuration. The same artifact in `integrationTestImplementation`, `integrationTestRuntimeOnly` and `componentTestImplementation` passes, and in main's `implementation` it passes.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.Hex9MessageBrokerInMainOnlyTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Write `Hex9MessageBrokerInMainOnlyTest`, covering each case in the Observable plus `testImplementation` in an adapter, which fails.
-    - [ ] Create `MessageBrokerArtifacts`, an allow-list of group and artifact: `io.eventuate.tram.core:eventuate-tram-spring-jdbc-kafka`, `eventuate-tram-spring-consumer-kafka`, and their `activemq`, `rabbitmq` and `redis` equivalents.
-    - [ ] Create `Hex9MessageBrokerInMainOnly`. It accepts any configuration of the `integrationTest` and `componentTest` source sets in non-main projects. Add it to `CheckProjectDependenciesTask`.
-    - [ ] Record in the HEX-9 bullet of `docs/design/architecture-rules-enforcement.md` that every configuration of the `integrationTest` and `componentTest` source sets is accepted, because `customer-management-event-subscribers` declares the Kafka consumer `integrationTestRuntimeOnly`.
-    - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+    - [x] Write `Hex9MessageBrokerInMainOnlyTest`, covering each case in the Observable plus `testImplementation` in an adapter, which fails.
+    - [x] Create `MessageBrokerArtifacts`, an allow-list of group and artifact: `io.eventuate.tram.core:eventuate-tram-spring-jdbc-kafka`, `eventuate-tram-spring-consumer-kafka`, and their `activemq`, `rabbitmq` and `redis` equivalents.
+    - [x] Create `Hex9MessageBrokerInMainOnly`. It accepts any configuration of the `integrationTest` and `componentTest` source sets in non-main projects. Add it to `CheckProjectDependenciesTask`.
+    - [x] Record in the HEX-9 bullet of `docs/design/architecture-rules-enforcement.md` that every configuration of the `integrationTest` and `componentTest` source sets is accepted, because `customer-management-event-subscribers` declares the Kafka consumer `integrationTestRuntimeOnly`.
+    - [x] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
 ---
 
