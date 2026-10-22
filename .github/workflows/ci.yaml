@@ -23,6 +23,9 @@ jobs:
     - name: Build and test
       uses: cer/github-build-and-test-action/build-and-test@main
 
+    - name: Test scripts
+      run: ./test-scripts/test-end-to-end.sh
+
     - name: Kubernetes test
       uses: cer/github-build-and-test-action/k8s-test@main
       with:

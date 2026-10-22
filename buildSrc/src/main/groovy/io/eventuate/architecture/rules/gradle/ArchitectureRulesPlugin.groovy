@@ -9,6 +9,22 @@ class ArchitectureRulesPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        project.extensions.create(EXTENSION_NAME, ArchitectureRulesExtension)
+        ArchitectureRulesExtension extension = project.extensions.create(EXTENSION_NAME, ArchitectureRulesExtension)
+        project.afterEvaluate {
+            if (extension.role.present) {
+                registerCheckProjectDependencies(project)
+            }
+        }
+    }
+
+    private static void registerCheckProjectDependencies(Project project) {
+        def checkProjectDependencies = project.tasks.register(CheckProjectDependenciesTask.NAME, CheckProjectDependenciesTask) {
+            it.group = 'verification'
+            it.description = 'Checks the project dependencies declared by this project against the architecture rules.'
+            it.checkedProject.set(project.provider { CheckedProject.of(project) })
+        }
+        project.pluginManager.withPlugin('lifecycle-base') {
+            project.tasks.named('check') { it.dependsOn(checkProjectDependencies) }
+        }
     }
 }

@@ -115,25 +115,25 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [x] Add an "Architecture rules" section to `README.md`. It says that each project applies one role plugin, lists the role plugin ids, and links `docs/design/architecture-rules.md`.
     - [x] Run `./gradlew -p buildSrc check`, then `./gradlew build`.
 
-- [ ] **Task 1.3: `checkProjectDependencies` fails a domain project that depends on an adapter, naming HEX-1, before compilation**
+- [x] **Task 1.3: `checkProjectDependencies` fails a domain project that depends on an adapter, naming HEX-1, before compilation**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkProjectDependencies`
   - Observable: In a build where `customer-management-domain` declares `implementation project(':customer-management:customer-management-persistence')`, `checkProjectDependencies` fails with a message that starts `HEX-1 (the domain does not depend on adapters)` and names the dependency path and the configuration `implementation`. `check` in every project with a role depends on `checkProjectDependencies`. Running `checkProjectDependencies` executes no `compileJava` task.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.Hex1DomainDoesNotDependOnAdaptersTest` exits 0, `./test-scripts/test-end-to-end.sh` exits 0, and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Create the test helper `RuleFixtureBuild` in `buildSrc/src/test/groovy/io/eventuate/architecture/rules/gradle/`. It builds a root project and subdomain directories with `ProjectBuilder`, applies role plugins, adds project and external dependencies to named configurations, evaluates the projects, and runs a project's `checkProjectDependencies` action, returning the failure message.
-    - [ ] Write `Hex1DomainDoesNotDependOnAdaptersTest`. A domain project with `implementation` on a persistence project fails with a message naming HEX-1, the target path and `implementation`. The same holds for `testImplementation`. A domain project with no adapter dependency passes.
-    - [ ] Create these classes:
+    - [x] Create the test helper `RuleFixtureBuild` in `buildSrc/src/test/groovy/io/eventuate/architecture/rules/gradle/`. It builds a root project and subdomain directories with `ProjectBuilder`, applies role plugins, adds project and external dependencies to named configurations, evaluates the projects, and runs a project's `checkProjectDependencies` action, returning the failure message.
+    - [x] Write `Hex1DomainDoesNotDependOnAdaptersTest`. A domain project with `implementation` on a persistence project fails with a message naming HEX-1, the target path and `implementation`. The same holds for `testImplementation`. A domain project with no adapter dependency passes.
+    - [x] Create these classes:
       - `Rule`: an enum of rule identifiers with their titles from `docs/design/architecture-rules.md`.
       - `RuleViolation`: holds a rule and a message.
       - `DeclaredDependencies`: a model of a project's declared project dependencies and external dependencies per configuration. It reads `configuration.dependencies` without resolving them, and takes project paths from `ProjectDependency.getPath()`.
       - `ProjectDependencyRule`: an interface returning a list of violations.
       - `Hex1DomainDoesNotDependOnAdapters`.
       - `CheckProjectDependenciesTask`: runs every `ProjectDependencyRule` and fails with all violations, one per line.
-    - [ ] In `ArchitectureRulesPlugin`, register `checkProjectDependencies` in `afterEvaluate` for every project with a role, and make `check` depend on it.
-    - [ ] Create `test-scripts/test-project-dependency-checks-do-not-compile.sh`. It runs `./gradlew checkProjectDependencies --dry-run`, asserts that the output lists `:customer-management:customer-management-domain:checkProjectDependencies`, and asserts that it lists no `compileJava` task.
-    - [ ] Create `test-scripts/test-end-to-end.sh`, which runs each `test-scripts/test-*.sh` behaviour script in sequence. Add a CI step to `.github/workflows/ci.yaml` that runs `./test-scripts/test-end-to-end.sh` after "Build and test".
-    - [ ] Run `./gradlew -p buildSrc check`, `./test-scripts/test-end-to-end.sh` and `./gradlew build`.
+    - [x] In `ArchitectureRulesPlugin`, register `checkProjectDependencies` in `afterEvaluate` for every project with a role, and make `check` depend on it.
+    - [x] Create `test-scripts/test-project-dependency-checks-do-not-compile.sh`. It runs `./gradlew checkProjectDependencies --dry-run`, asserts that the output lists `:customer-management:customer-management-domain:checkProjectDependencies`, and asserts that it lists no `compileJava` task.
+    - [x] Create `test-scripts/test-end-to-end.sh`, which runs each `test-scripts/test-*.sh` behaviour script in sequence. Add a CI step to `.github/workflows/ci.yaml` that runs `./test-scripts/test-end-to-end.sh` after "Build and test".
+    - [x] Run `./gradlew -p buildSrc check`, `./test-scripts/test-end-to-end.sh` and `./gradlew build`.
 
 ---
 

@@ -1,0 +1,38 @@
+package io.eventuate.architecture.rules.gradle
+
+import org.gradle.api.Project
+
+// A project with a role, its declared dependencies and the roles of the projects in the build
+class CheckedProject {
+
+    final String path
+    final Role role
+    final DeclaredDependencies dependencies
+    private final Map<String, Role> rolesByProjectPath
+
+    CheckedProject(String path, Role role, DeclaredDependencies dependencies, Map<String, Role> rolesByProjectPath) {
+        this.path = path
+        this.role = role
+        this.dependencies = dependencies
+        this.rolesByProjectPath = rolesByProjectPath
+    }
+
+    static CheckedProject of(Project project) {
+        new CheckedProject(project.path, roleOf(project), DeclaredDependencies.of(project),
+                rolesByProjectPath(project.rootProject))
+    }
+
+    Role roleOfProject(String projectPath) {
+        rolesByProjectPath[projectPath]
+    }
+
+    private static Map<String, Role> rolesByProjectPath(Project rootProject) {
+        rootProject.allprojects
+                .findAll { roleOf(it) != null }
+                .collectEntries { [(it.path): roleOf(it)] }
+    }
+
+    private static Role roleOf(Project project) {
+        project.extensions.findByType(ArchitectureRulesExtension)?.role?.getOrNull()
+    }
+}
