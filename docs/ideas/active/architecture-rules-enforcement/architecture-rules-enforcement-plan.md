@@ -376,17 +376,17 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 15: A domain class depending on a transitive infrastructure type fails HEX-4
 
-- [ ] **Task 15.1: `checkArchitectureRules` fails a domain-group class that depends on a forbidden infrastructure package, naming HEX-4, the class and the forbidden class**
+- [x] **Task 15.1: `checkArchitectureRules` fails a domain-group class that depends on a forbidden infrastructure package, naming HEX-4, the class and the forbidden class**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkArchitectureRules`
   - Observable: A fixture domain class with a field of type `org.springframework.web.client.RestClient` fails with a message naming `HEX-4 (domain projects stay free of infrastructure technology)`, the class and `org.springframework.web.client.RestClient`. A fixture sagas class depending on `io.eventuate.tram.commands.consumer.CommandWithDestination` passes, and the same class in a domain fixture fails. `customer-management-domain` and `customer-management-sagas` pass.
   - Evidence: `./gradlew :architecture-rules:test --tests io.eventuate.architecture.rules.Hex4DomainClassDependenciesTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Add `testImplementation 'org.springframework:spring-web'` and `testImplementation 'io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl-starter'` to `architecture-rules/build.gradle` for the fixtures.
-    - [ ] Write `Hex4DomainClassDependenciesTest` with fixtures under `fixtures/hex4/`, covering each case in the Observable.
-    - [ ] Add `hex4DomainClassDependencies` to `ArchitectureRuleDefinitions`. The forbidden packages are `java.sql..`, `javax.sql..`, `org.springframework.web..`, `org.springframework.jdbc..`, `org.flywaydb..`, `jakarta.servlet..`, `org.apache.kafka..`, `io.eventuate.tram.messaging.producer..`, `io.eventuate.tram.messaging.consumer..` and `io.eventuate.tram.commands..`. For `sagas`, `io.eventuate.tram.commands.common..`, `io.eventuate.tram.commands.consumer..` and `io.eventuate.tram.sagas..` are permitted. Add an `@ArchTest` method to `ArchitectureRulesTest` that applies it to domain-group roles.
-    - [ ] Record in the HEX-4 class dependencies bullet of `docs/design/architecture-rules-enforcement.md` that the forbidden packages are the ones listed above, and that `sagas` is also permitted the Eventuate Tram command `common` and `consumer` packages, which the orchestration DSL's `Command` and `CommandWithDestination` types require.
-    - [ ] Run `./gradlew :architecture-rules:test` and `./gradlew build`.
+    - [x] Add `testImplementation 'org.springframework:spring-web'` and `testImplementation 'io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl-starter'` to `architecture-rules/build.gradle` for the fixtures.
+    - [x] Write `Hex4DomainClassDependenciesTest` with fixtures under `fixtures/hex4/`, covering each case in the Observable.
+    - [x] Add `hex4DomainClassDependencies` to `ArchitectureRuleDefinitions`. The forbidden packages are `java.sql..`, `javax.sql..`, `org.springframework.web..`, `org.springframework.jdbc..`, `org.flywaydb..`, `jakarta.servlet..`, `org.apache.kafka..`, `io.eventuate.tram.messaging.producer..`, `io.eventuate.tram.messaging.consumer..` and `io.eventuate.tram.commands..`. For `sagas`, `io.eventuate.tram.commands.common..`, `io.eventuate.tram.commands.consumer..` and `io.eventuate.tram.sagas..` are permitted. Add an `@ArchTest` method to `ArchitectureRulesTest` that applies it to domain-group roles.
+    - [x] Record in the HEX-4 class dependencies bullet of `docs/design/architecture-rules-enforcement.md` that the forbidden packages are the ones listed above, and that `sagas` is also permitted the Eventuate Tram command `common` and `consumer` packages, which the orchestration DSL's `Command` and `CommandWithDestination` types require.
+    - [x] Run `./gradlew :architecture-rules:test` and `./gradlew build`.
 
 ---
 

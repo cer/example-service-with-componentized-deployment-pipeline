@@ -23,6 +23,14 @@ public record RoleContext(String role, String group, String subdomain, String pr
         return "api".equals(role) || "api-facet".equals(role);
     }
 
+    public boolean isInDomainGroup() {
+        return isApi() || "domain".equals(role) || isSagas();
+    }
+
+    public boolean isSagas() {
+        return "sagas".equals(role);
+    }
+
     // A project in a subdomain has the package <root>.<subdomain>...; the package of any other project is derived from the group
     public String rootPackage() {
         if (subdomain == null) {

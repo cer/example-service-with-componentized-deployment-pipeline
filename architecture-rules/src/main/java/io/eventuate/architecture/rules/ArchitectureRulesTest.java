@@ -12,4 +12,12 @@ public class ArchitectureRulesTest {
     void hex6EachProjectWiresItself(JavaClasses classes) {
         ArchitectureRuleDefinitions.hex6EachProjectWiresItself(RoleContext.fromSystemProperties()).check(classes);
     }
+
+    @ArchTest
+    void hex4DomainClassDependencies(JavaClasses classes) {
+        RoleContext context = RoleContext.fromSystemProperties();
+        if (context.isInDomainGroup()) {
+            ArchitectureRuleDefinitions.hex4DomainClassDependencies(context).check(classes);
+        }
+    }
 }

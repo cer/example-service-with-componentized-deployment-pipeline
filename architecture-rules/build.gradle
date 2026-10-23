@@ -10,6 +10,8 @@ dependencies {
 
     // The fixtures the rule tests analyze
     testImplementation 'org.springframework:spring-context'
+    testImplementation 'org.springframework:spring-web'
+    testImplementation 'io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl-starter'
 
     // Runs ArchitectureRulesTest on the JUnit Platform the way checkArchitectureRules does
     testImplementation 'org.junit.platform:junit-platform-testkit'

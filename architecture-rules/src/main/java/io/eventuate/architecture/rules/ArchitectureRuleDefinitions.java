@@ -1,5 +1,7 @@
 package io.eventuate.architecture.rules;
 
+import com.tngtech.archunit.base.DescribedPredicate;
+import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
@@ -7,6 +9,8 @@ import com.tngtech.archunit.lang.CompositeArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 
+import static com.tngtech.archunit.base.DescribedPredicate.not;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
@@ -15,6 +19,26 @@ public final class ArchitectureRuleDefinitions {
 
     private static final String CONFIGURATION_ANNOTATION = "org.springframework.context.annotation.Configuration";
     private static final String BEAN_ANNOTATION = "org.springframework.context.annotation.Bean";
+
+    private static final String[] FORBIDDEN_INFRASTRUCTURE_PACKAGES = {
+            "java.sql..",
+            "javax.sql..",
+            "org.springframework.web..",
+            "org.springframework.jdbc..",
+            "org.flywaydb..",
+            "jakarta.servlet..",
+            "org.apache.kafka..",
+            "io.eventuate.tram.messaging.producer..",
+            "io.eventuate.tram.messaging.consumer..",
+            "io.eventuate.tram.commands..",
+    };
+
+    // The orchestration DSL's Command and CommandWithDestination types are in the command common and consumer packages
+    private static final String[] PERMITTED_SAGAS_PACKAGES = {
+            "io.eventuate.tram.commands.common..",
+            "io.eventuate.tram.commands.consumer..",
+            "io.eventuate.tram.sagas..",
+    };
 
     private ArchitectureRuleDefinitions() {
     }
@@ -30,6 +54,19 @@ public final class ArchitectureRuleDefinitions {
         ArchRule noConfigurationClasses = noClasses().should().beMetaAnnotatedWith(CONFIGURATION_ANNOTATION)
                 .because("an API project is wired by the projects that implement it");
         return CompositeArchRule.of(noConfigurationClasses).and(beansAreOwnOrThirdPartyTypes).as(description);
+    }
+
+    public static ArchRule hex4DomainClassDependencies(RoleContext context) {
+        return noClasses().should().dependOnClassesThat(resideInAForbiddenInfrastructurePackage(context))
+                .as("HEX-4 (domain projects stay free of infrastructure technology)");
+    }
+
+    private static DescribedPredicate<JavaClass> resideInAForbiddenInfrastructurePackage(RoleContext context) {
+        DescribedPredicate<JavaClass> forbidden = resideInAnyPackage(FORBIDDEN_INFRASTRUCTURE_PACKAGES);
+        if (!context.isSagas()) {
+            return forbidden;
+        }
+        return forbidden.and(not(resideInAnyPackage(PERMITTED_SAGAS_PACKAGES)));
     }
 
     private static ArchCondition<JavaMethod> returnATypeInTheProjectOrOutsideTheRootPackage(RoleContext context) {
