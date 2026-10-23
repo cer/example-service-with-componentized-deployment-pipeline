@@ -432,16 +432,16 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 18: A generated service with two subdomains is checked on its first build
 
-- [ ] **Task 18.1: A copy of the template with a second subdomain runs all three check tasks in every project and passes**
+- [x] **Task 18.1: A copy of the template with a second subdomain runs all three check tasks in every project and passes**
   - TaskType: INFRA
   - Entrypoint: `./test-scripts/test-generated-service-is-checked.sh`
   - Observable: The script copies the template into `build/generated-service-test/`, excluding `.git`, `.gradle` and `build` directories. It adds a `billing` subdomain with `billing/billing-domain`, which applies `io.eventuate.architecture.roles.domain` and holds one class in `io.eventuate.customerservice.billing.domain`. It runs `./gradlew checkProjectDependencies checkSubdomainGraph checkArchitectureRules` in the copy. The run exits 0, and its output shows `checkProjectDependencies` and `checkArchitectureRules` executed for `:billing:billing-domain` and for every `customer-management` project.
   - Evidence: `./test-scripts/test-end-to-end.sh` exits 0, running `test-cleanup.sh`, `test-project-dependency-checks-do-not-compile.sh` and `test-generated-service-is-checked.sh`.
   - Steps:
-    - [ ] Create `test-scripts/test-cleanup.sh`, which removes `build/generated-service-test/`.
-    - [ ] Create `test-scripts/test-generated-service-is-checked.sh`. It copies the template with `rsync`, adds the `billing` subdomain and its `include` line to the copy's `settings.gradle`, runs the three tasks with `--console=plain`, and asserts the executed task lines.
-    - [ ] Update `test-scripts/test-end-to-end.sh` to run `test-cleanup.sh` first and then the new script.
-    - [ ] Run `./test-scripts/test-end-to-end.sh`.
+    - [x] Create `test-scripts/test-cleanup.sh`, which removes `build/generated-service-test/`.
+    - [x] Create `test-scripts/test-generated-service-is-checked.sh`. It copies the template with `rsync`, adds the `billing` subdomain and its `include` line to the copy's `settings.gradle`, runs the three tasks with `--console=plain`, and asserts the executed task lines.
+    - [x] Update `test-scripts/test-end-to-end.sh` to run `test-cleanup.sh` first and then the new script.
+    - [x] Run `./test-scripts/test-end-to-end.sh`.
 
 - [ ] **Task 18.2: The repository builds under every enforced rule, with no project-specific names in the plugins and rules**
   - TaskType: OUTCOME
