@@ -22,6 +22,8 @@ class ArchitectureRulesTestTest {
     private static final String HEX4 = "HEX-4 (domain projects stay free of infrastructure technology)";
     private static final String HEX8_ROOT_PACKAGE = "io.eventuate.architecture.rules.fixtures.hex8";
     private static final String HEX8 = "HEX-8 (API projects contain only interfaces and value types)";
+    private static final String SUB8_ROOT_PACKAGE = "io.eventuate.architecture.rules.fixtures.sub8";
+    private static final String SUB8 = "SUB-8 (shared libraries hold only value types)";
 
     private Map<String, String> properties = Map.of();
 
@@ -70,6 +72,22 @@ class ArchitectureRulesTestTest {
         List<String> failures = runArchitectureRulesTest("domain", HEX4_ROOT_PACKAGE, "customers", "customers.domain");
 
         assertThat(failures).noneSatisfy(failure -> assertThat(failure).contains(HEX8));
+    }
+
+    @Test
+    void sharedLibraryProjectWithPlainClassFailsSub8() {
+        List<String> failures = runArchitectureRulesTest("shared-library", SUB8_ROOT_PACKAGE, "", "money");
+
+        assertThat(failures).anySatisfy(failure -> assertThat(failure)
+                .contains(SUB8)
+                .contains(SUB8_ROOT_PACKAGE + ".money.MoneyCalculator"));
+    }
+
+    @Test
+    void apiProjectIsNotCheckedAgainstSub8() {
+        List<String> failures = runArchitectureRulesTest("api", HEX8_ROOT_PACKAGE, "orders", "orders.api");
+
+        assertThat(failures).noneSatisfy(failure -> assertThat(failure).contains(SUB8));
     }
 
     private List<String> runArchitectureRulesTest(String role, String group, String subdomain, String packageUnderRoot) {

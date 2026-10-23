@@ -73,6 +73,10 @@ public final class ArchitectureRuleDefinitions {
         return valueTypesOnly("HEX-8 (API projects contain only interfaces and value types)");
     }
 
+    public static ArchRule sub8SharedLibraryContents() {
+        return valueTypesOnly("SUB-8 (shared libraries hold only value types)");
+    }
+
     private static ArchRule valueTypesOnly(String description) {
         return classes().should(beAnInterfaceARecordOrAnEnum()).andShould(notCarryAFrameworkAnnotation()).as(description);
     }

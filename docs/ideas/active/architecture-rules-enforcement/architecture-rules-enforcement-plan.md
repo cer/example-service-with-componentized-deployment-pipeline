@@ -403,15 +403,15 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [x] Add `valueTypesOnly(Rule)` to `ArchitectureRuleDefinitions`. It checks that every class is an interface, a record or an enum, and that no class carries an annotation from `org.springframework..`, `jakarta.persistence..` or `io.eventuate..`. Add `hex8ApiContents`, which uses it, and an `@ArchTest` method for `api` and `api-facet`.
     - [x] Run `./gradlew :architecture-rules:test` and `./gradlew build`.
 
-- [ ] **Task 16.2: `checkArchitectureRules` fails a class in a `shared-library` project that is not a value type, naming SUB-8**
+- [x] **Task 16.2: `checkArchitectureRules` fails a class in a `shared-library` project that is not a value type, naming SUB-8**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkArchitectureRules`
   - Observable: In a `shared-library` fixture, a plain class fails with a message naming `SUB-8 (shared libraries hold only value types)` and the class. A record passes.
   - Evidence: `./gradlew :architecture-rules:test --tests io.eventuate.architecture.rules.Sub8SharedLibraryContentsTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Write `Sub8SharedLibraryContentsTest` with fixtures under `fixtures/sub8/`.
-    - [ ] Add `sub8SharedLibraryContents` to `ArchitectureRuleDefinitions`, using `valueTypesOnly`, and add an `@ArchTest` method for `shared-library`.
-    - [ ] Run `./gradlew :architecture-rules:test` and `./gradlew build`.
+    - [x] Write `Sub8SharedLibraryContentsTest` with fixtures under `fixtures/sub8/`.
+    - [x] Add `sub8SharedLibraryContents` to `ArchitectureRuleDefinitions`, using `valueTypesOnly`, and add an `@ArchTest` method for `shared-library`.
+    - [x] Run `./gradlew :architecture-rules:test` and `./gradlew build`.
 
 ---
 

@@ -27,4 +27,11 @@ public class ArchitectureRulesTest {
             ArchitectureRuleDefinitions.hex8ApiContents().check(classes);
         }
     }
+
+    @ArchTest
+    void sub8SharedLibraryContents(JavaClasses classes) {
+        if (RoleContext.fromSystemProperties().isSharedLibrary()) {
+            ArchitectureRuleDefinitions.sub8SharedLibraryContents().check(classes);
+        }
+    }
 }

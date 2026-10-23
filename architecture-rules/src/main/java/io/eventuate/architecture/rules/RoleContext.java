@@ -31,6 +31,10 @@ public record RoleContext(String role, String group, String subdomain, String pr
         return "sagas".equals(role);
     }
 
+    public boolean isSharedLibrary() {
+        return "shared-library".equals(role);
+    }
+
     // A project in a subdomain has the package <root>.<subdomain>...; the package of any other project is derived from the group
     public String rootPackage() {
         if (subdomain == null) {
