@@ -1,8 +1,12 @@
 plugins {
-    id 'io.eventuate.plugins.gradle.testing.integration-tests'
+    id 'io.eventuate.architecture.roles.sagas'
 }
 
 apply plugin: 'org.springframework.cloud.contract'
+
+architectureRules {
+    messageCopyPackages = ['io.eventuate.customerservice.customermanagement.commandapi', 'io.eventuate.otherservice.othersubdomain.commandapi']
+}
 
 // The contracts for the commands customer-service sends are owned by other-service. They are
 // delivered by the composite build (includeBuild 'other-service' in settings.gradle) as the

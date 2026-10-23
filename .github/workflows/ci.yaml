@@ -9,7 +9,7 @@ on:
 jobs:
   build-test-and-publish:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -17,8 +17,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Test buildSrc
+      run: ./gradlew -p buildSrc check
+
     - name: Build and test
       uses: cer/github-build-and-test-action/build-and-test@main
+
+    - name: Test scripts
+      run: ./test-scripts/test-end-to-end.sh
 
     - name: Kubernetes test
       uses: cer/github-build-and-test-action/k8s-test@main
