@@ -119,6 +119,38 @@ The role plugin ids are:
 
 The plugins are defined in `buildSrc`, whose tests run with `./gradlew -p buildSrc check`. The rules are described in [docs/design/architecture-rules.md](docs/design/architecture-rules.md).
 
+### Check tasks
+
+`./gradlew check` and `./gradlew build` run three tasks that enforce the rules:
+
+- `checkProjectDependencies`, in every project with a role, checks the project's declared dependencies and the packages of its source files: which projects it depends on, which external artifacts a domain project uses, where the message broker is declared, and that the project's name matches its role. It reads build scripts and the source tree and needs no compilation.
+- `checkArchitectureRules`, in every project with a role, runs the ArchUnit rules in the `architecture-rules` subproject against the project's compiled classes: forbidden infrastructure classes in domain projects, `@Bean` methods that wire another project's classes, the contents of API and shared-library projects, and Eventuate annotations on message copies.
+- `checkSubdomainGraph`, in the root project, checks that no subdomains depend on each other's API projects in a cycle.
+
+A project included in `settings.gradle` that applies no role plugin fails the build with a message listing the role plugin ids, unless it is a directory of projects or is listed in the root project's `architectureRules { exemptProjects = [...] }`.
+
+### Reading a failure
+
+Each line of a failure starts with the identifier of the rule it breaks, followed by the offending item. For example:
+
+```
+HEX-2: :customer-management:customer-management-rest-api declares implementation project(':customer-management:customer-management-persistence'), which is neither a domain project of its subdomain nor a shared library
+```
+
+Look up the identifier, such as `HEX-2` or `SUB-4`, in [docs/design/architecture-rules.md](docs/design/architecture-rules.md). `checkProjectDependencies` and `checkSubdomainGraph` print the violations in the task failure. `checkArchitectureRules` is a test task, so its violations are in the failed ArchUnit rule's message and in the project's `build/reports/tests/checkArchitectureRules` report.
+
+### Message copy packages
+
+A project's classes must be in the project's own package or a sub-package of it (HEX-5). The exception is the copies of message classes that a consumer declares in the producer's package (SUB-4). A project that contains such copies lists their packages in its build file:
+
+```groovy
+architectureRules {
+    messageCopyPackages = ['io.eventuate.otherservice.othersubdomain.commandapi']
+}
+```
+
+Classes in these packages may carry no `io.eventuate` annotation.
+
 ## License
 
 Apache License 2.0 - see [LICENSE.md](LICENSE.md).

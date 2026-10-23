@@ -195,6 +195,8 @@ Any project may depend on a shared library. A shared library depends on no subdo
 
 Checked on 2026-10-22 against every project in this repository, `main` source sets and build files.
 
+Since 2026-10-23 the rules are enforced by the build, as described in [architecture-rules-enforcement.md](architecture-rules-enforcement.md). `./gradlew build` runs `checkProjectDependencies` and `checkArchitectureRules` in every project with a role and `checkSubdomainGraph` in the root project, and passes, so no rule below is violated. Two rules are not enforced: SUB-5 (each subdomain owns its data), and the part of SUB-3 (four interaction mechanisms) that covers how a mechanism is used, such as whether A's domain calls the interface or registers the observer. The build checks only which project of A depends on which API project of B.
+
 ### Satisfied
 
 - **HEX-1.** `customer-management-domain` and `customer-management-sagas` depend on no adapter project and import no adapter package.

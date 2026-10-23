@@ -1,7 +1,7 @@
 package io.eventuate.architecture.rules.gradle
 
 // Every configuration of the integrationTest and componentTest source sets is accepted, because
-// customer-management-event-subscribers declares the Kafka consumer integrationTestRuntimeOnly
+// an event-subscribers project's integration tests declare the Kafka consumer integrationTestRuntimeOnly
 class Hex9MessageBrokerInMainOnly implements ProjectDependencyRule {
 
     private static final List<String> BROKER_TEST_SOURCE_SETS = ['integrationTest', 'componentTest']

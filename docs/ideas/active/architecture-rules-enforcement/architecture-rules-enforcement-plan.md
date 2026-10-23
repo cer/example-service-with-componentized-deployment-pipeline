@@ -443,17 +443,17 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
     - [x] Update `test-scripts/test-end-to-end.sh` to run `test-cleanup.sh` first and then the new script.
     - [x] Run `./test-scripts/test-end-to-end.sh`.
 
-- [ ] **Task 18.2: The repository builds under every enforced rule, with no project-specific names in the plugins and rules**
+- [x] **Task 18.2: The repository builds under every enforced rule, with no project-specific names in the plugins and rules**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew build`
   - Observable: `./gradlew build` runs `checkProjectDependencies` and `checkArchitectureRules` in every project with a role, and `checkSubdomainGraph` at the root, and passes. `grep -r customer-management buildSrc/src/main architecture-rules/src/main` prints nothing. The rules document's current-state section records no violation, and its TODO section has no entries. `README.md` describes the three check tasks, the role plugins and `messageCopyPackages`.
   - Evidence: `./gradlew -p buildSrc check` exits 0, `./gradlew build` exits 0, and `./test-scripts/test-end-to-end.sh` exits 0.
   - Steps:
-    - [ ] Run `grep -r customer-management buildSrc/src/main architecture-rules/src/main`. Remove any project-specific name it finds.
-    - [ ] Extend the "Architecture rules" section of `README.md` with the three check tasks, how to read a failure, and `architectureRules { messageCopyPackages = [...] }`.
-    - [ ] Add a sentence to the "Initial implementation" section of `docs/design/architecture-rules-enforcement.md` stating that the implementation is in place and naming the class and task names it uses.
-    - [ ] Update the current-state section of `docs/design/architecture-rules.md` to state that the rules are now enforced by the build. Leave SUB-5 and the usage part of SUB-3 listed as not enforced.
-    - [ ] Run `./gradlew -p buildSrc check`, `./gradlew build` and `./test-scripts/test-end-to-end.sh`.
+    - [x] Run `grep -r customer-management buildSrc/src/main architecture-rules/src/main`. Remove any project-specific name it finds.
+    - [x] Extend the "Architecture rules" section of `README.md` with the three check tasks, how to read a failure, and `architectureRules { messageCopyPackages = [...] }`.
+    - [x] Add a sentence to the "Initial implementation" section of `docs/design/architecture-rules-enforcement.md` stating that the implementation is in place and naming the class and task names it uses.
+    - [x] Update the current-state section of `docs/design/architecture-rules.md` to state that the rules are now enforced by the build. Leave SUB-5 and the usage part of SUB-3 listed as not enforced.
+    - [x] Run `./gradlew -p buildSrc check`, `./gradlew build` and `./test-scripts/test-end-to-end.sh`.
 
 ---
 

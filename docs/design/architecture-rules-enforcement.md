@@ -141,6 +141,8 @@ No known-violations list is provided, neither `FreezingArchRule` nor an equivale
 
 The first implementation lives in this project.
 
+The implementation is in place. `ArchitectureRulesPlugin` registers `checkProjectDependencies` (`CheckProjectDependenciesTask`) and `checkArchitectureRules` in every project with a role and `checkSubdomainGraph` (`CheckSubdomainGraphTask`) in the root project; each project dependency rule is a `ProjectDependencyRule` class named after its identifier, such as `Hex2AdaptersDependOnlyOnDomain`; the role plugins are `RolePlugin` subclasses such as `DomainRolePlugin`; and the ArchUnit rules are `ArchitectureRuleDefinitions`, run by `ArchitectureRulesTest` in the `architecture-rules` subproject.
+
 - **Plugins in `buildSrc`.** The common plugin, `ArchitectureRulesPlugin`, and one role plugin class per row of the roles table, next to `ServicePlugin` and the Docker plugins. `buildSrc/build.gradle` applies `java-gradle-plugin` and declares the plugin ids from the roles table so that build files can use the `plugins { id '...' }` form. The role table, the HEX-4 (domain projects stay free of infrastructure technology) allow-lists and the project dependency rules are code and data in `buildSrc/src/main/groovy`, with tests in `buildSrc/src/test`, one per rule identifier, using Gradle's `ProjectBuilder`.
 - **ArchUnit rules in a subproject.** A new `architecture-rules` subproject holds the ArchUnit rules.
   - It is a `java-library` with ArchUnit and JUnit Jupiter as `implementation` dependencies. Its own tests run the rules against small fixture classes, one per rule identifier.

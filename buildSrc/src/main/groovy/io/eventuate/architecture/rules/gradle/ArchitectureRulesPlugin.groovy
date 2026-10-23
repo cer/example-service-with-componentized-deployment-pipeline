@@ -30,7 +30,7 @@ class ArchitectureRulesPlugin implements Plugin<Project> {
         project.rootProject.extensions.getByType(ArchitectureRulesExtension).exemptProjects.getOrElse([]).contains(project.path)
     }
 
-    // A subdomain directory such as customer-management is a project only because settings.gradle includes its children
+    // A subdomain directory is a project only because settings.gradle includes its children
     private static boolean isDirectoryOfProjects(Project project) {
         !project.childProjects.isEmpty()
     }
