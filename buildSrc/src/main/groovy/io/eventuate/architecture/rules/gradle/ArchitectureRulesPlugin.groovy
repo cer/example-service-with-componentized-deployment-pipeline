@@ -19,10 +19,14 @@ class ArchitectureRulesPlugin implements Plugin<Project> {
             if (extension.role.present) {
                 ProjectNaming.apply(project, extension)
                 registerCheckProjectDependencies(project)
-            } else if (!isDirectoryOfProjects(project)) {
+            } else if (!isDirectoryOfProjects(project) && !isExempt(project)) {
                 throw new GradleException(noRoleMessage(project))
             }
         }
+    }
+
+    private static boolean isExempt(Project project) {
+        project.rootProject.extensions.getByType(ArchitectureRulesExtension).exemptProjects.getOrElse([]).contains(project.path)
     }
 
     // A subdomain directory such as customer-management is a project only because settings.gradle includes its children

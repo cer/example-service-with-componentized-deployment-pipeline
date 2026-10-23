@@ -30,6 +30,14 @@ class ProjectWithoutRoleTest {
     }
 
     @Test
+    void exemptProjectWithoutRoleEvaluates() {
+        build.rootProject.extensions.getByType(ArchitectureRulesExtension).exemptProjects.set([':architecture-rules'])
+        Project project = build.architectureRulesProject()
+
+        assertNull(build.evaluationFailure(project))
+    }
+
+    @Test
     void subdomainDirectoryEvaluates() {
         build.subdomainProject('a', Role.DOMAIN)
 

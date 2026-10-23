@@ -342,21 +342,21 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 14: An API project with a configuration class fails HEX-6 in `checkArchitectureRules`
 
-- [ ] **Task 14.1: The HEX-6 ArchUnit rule in the `architecture-rules` subproject rejects a `@Configuration` class in an API project and a `@Bean` returning another project's type**
+- [x] **Task 14.1: The HEX-6 ArchUnit rule in the `architecture-rules` subproject rejects a `@Configuration` class in an API project and a `@Bean` returning another project's type**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew :architecture-rules:test`
   - Observable: The rule fails on a fixture `api` package containing a `@Configuration` class, with a message naming `HEX-6 (each project wires itself)` and the class. The rule fails on a fixture `domain` package whose `@Bean` method returns a type in a sibling project package under the root package. The rule passes on a fixture whose `@Bean` methods return a type in its own package, in a sub-package, and outside the root package.
   - Evidence: `./gradlew :architecture-rules:test --tests io.eventuate.architecture.rules.Hex6EachProjectWiresItselfTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Add `archunitVersion` to `gradle.properties`, set to the latest `com.tngtech.archunit:archunit-junit5` release on Maven Central.
-    - [ ] Add `include 'architecture-rules'` to `settings.gradle`.
-    - [ ] Create `architecture-rules/build.gradle`. It applies the plugins it needs, declares `implementation "com.tngtech.archunit:archunit-junit5:$archunitVersion"` and `implementation 'org.junit.jupiter:junit-jupiter'`, and adds `testImplementation 'org.springframework:spring-context'` for the fixtures.
-    - [ ] Add `architectureRules { exemptProjects = [':architecture-rules']; rulesProject = ':architecture-rules' }` to the top level of `build.gradle`. Make `ArchitectureRulesPlugin` skip the role requirement for exempt projects. Extend `ProjectWithoutRoleTest` with an exempt-project case.
-    - [ ] Write `Hex6EachProjectWiresItselfTest` with fixture classes under `architecture-rules/src/test/java/io/eventuate/architecture/rules/fixtures/hex6/`, covering each case in the Observable.
-    - [ ] Create these classes in `architecture-rules/src/main/java/io/eventuate/architecture/rules/`:
+    - [x] Add `archunitVersion` to `gradle.properties`, set to the latest `com.tngtech.archunit:archunit-junit5` release on Maven Central.
+    - [x] Add `include 'architecture-rules'` to `settings.gradle`.
+    - [x] Create `architecture-rules/build.gradle`. It applies the plugins it needs, declares `implementation "com.tngtech.archunit:archunit-junit5:$archunitVersion"` and `implementation 'org.junit.jupiter:junit-jupiter'`, and adds `testImplementation 'org.springframework:spring-context'` for the fixtures.
+    - [x] Add `architectureRules { exemptProjects = [':architecture-rules']; rulesProject = ':architecture-rules' }` to the top level of `build.gradle`. Make `ArchitectureRulesPlugin` skip the role requirement for exempt projects. Extend `ProjectWithoutRoleTest` with an exempt-project case.
+    - [x] Write `Hex6EachProjectWiresItselfTest` with fixture classes under `architecture-rules/src/test/java/io/eventuate/architecture/rules/fixtures/hex6/`, covering each case in the Observable.
+    - [x] Create these classes in `architecture-rules/src/main/java/io/eventuate/architecture/rules/`:
       - `RoleContext`: a record holding the role, group, subdomain, package and classes directory, read from the `architectureRules.*` system properties. Its `rootPackage()` method derives the root package from the package and subdomain.
       - `ArchitectureRuleDefinitions`: a static factory per rule taking a `RoleContext` and returning an `ArchRule` described with its rule identifier and title. Start with `hex6EachProjectWiresItself`.
-    - [ ] Run `./gradlew :architecture-rules:test`.
+    - [x] Run `./gradlew :architecture-rules:test`.
 
 - [ ] **Task 14.2: `checkArchitectureRules` runs the ArchUnit rules against every project with a role after `classes`, and `check` depends on it**
   - TaskType: OUTCOME

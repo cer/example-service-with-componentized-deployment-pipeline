@@ -14,4 +14,10 @@ abstract class ArchitectureRulesExtension {
 
     // The SUB-4 consumer-side message copies, declared in the producer's package
     abstract ListProperty<String> getMessageCopyPackages()
+
+    // Set in the root project: the paths of the projects that need no role
+    abstract ListProperty<String> getExemptProjects()
+
+    // Set in the root project: the path of the project containing the ArchUnit rules
+    abstract Property<String> getRulesProject()
 }

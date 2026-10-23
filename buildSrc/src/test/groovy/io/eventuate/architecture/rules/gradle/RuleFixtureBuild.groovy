@@ -36,6 +36,13 @@ class RuleFixtureBuild {
         project
     }
 
+    // A project without a role directly under the root, like the ArchUnit rules project
+    Project architectureRulesProject() {
+        Project project = childProject(root, 'architecture-rules')
+        applyRootBuildFilePlugins(project)
+        project
+    }
+
     Project subdomainDirectory(String subdomain) {
         subdomains.computeIfAbsent(subdomain) { name ->
             Project directory = childProject(root, name)

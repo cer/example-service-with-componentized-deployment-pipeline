@@ -1,0 +1,11 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation "com.tngtech.archunit:archunit-junit5:$archunitVersion"
+    implementation 'org.junit.jupiter:junit-jupiter'
+
+    // The fixtures the rule tests analyze
+    testImplementation 'org.springframework:spring-context'
+}
