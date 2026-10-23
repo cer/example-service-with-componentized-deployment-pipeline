@@ -20,6 +20,8 @@ class ArchitectureRulesTestTest {
     private static final String HEX6_ROOT_PACKAGE = "io.eventuate.architecture.rules.fixtures.hex6";
     private static final String HEX4_ROOT_PACKAGE = "io.eventuate.architecture.rules.fixtures.hex4";
     private static final String HEX4 = "HEX-4 (domain projects stay free of infrastructure technology)";
+    private static final String HEX8_ROOT_PACKAGE = "io.eventuate.architecture.rules.fixtures.hex8";
+    private static final String HEX8 = "HEX-8 (API projects contain only interfaces and value types)";
 
     private Map<String, String> properties = Map.of();
 
@@ -52,6 +54,22 @@ class ArchitectureRulesTestTest {
         List<String> failures = runArchitectureRulesTest("rest-api", HEX4_ROOT_PACKAGE, "customers", "customers.restapi");
 
         assertThat(failures).noneSatisfy(failure -> assertThat(failure).contains(HEX4));
+    }
+
+    @Test
+    void apiFacetProjectWithPlainClassFailsHex8() {
+        List<String> failures = runArchitectureRulesTest("api-facet", HEX8_ROOT_PACKAGE, "orders", "orders.api");
+
+        assertThat(failures).anySatisfy(failure -> assertThat(failure)
+                .contains(HEX8)
+                .contains(HEX8_ROOT_PACKAGE + ".orders.api.OrderTotals"));
+    }
+
+    @Test
+    void domainProjectIsNotCheckedAgainstHex8() {
+        List<String> failures = runArchitectureRulesTest("domain", HEX4_ROOT_PACKAGE, "customers", "customers.domain");
+
+        assertThat(failures).noneSatisfy(failure -> assertThat(failure).contains(HEX8));
     }
 
     private List<String> runArchitectureRulesTest(String role, String group, String subdomain, String packageUnderRoot) {

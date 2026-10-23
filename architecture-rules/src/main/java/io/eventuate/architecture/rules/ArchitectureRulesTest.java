@@ -20,4 +20,11 @@ public class ArchitectureRulesTest {
             ArchitectureRuleDefinitions.hex4DomainClassDependencies(context).check(classes);
         }
     }
+
+    @ArchTest
+    void hex8ApiContents(JavaClasses classes) {
+        if (RoleContext.fromSystemProperties().isApi()) {
+            ArchitectureRuleDefinitions.hex8ApiContents().check(classes);
+        }
+    }
 }

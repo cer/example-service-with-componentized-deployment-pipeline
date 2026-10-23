@@ -1,6 +1,7 @@
 package io.eventuate.architecture.rules;
 
 import com.tngtech.archunit.base.DescribedPredicate;
+import com.tngtech.archunit.core.domain.JavaAnnotation;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.lang.ArchCondition;
@@ -11,6 +12,7 @@ import com.tngtech.archunit.lang.SimpleConditionEvent;
 
 import static com.tngtech.archunit.base.DescribedPredicate.not;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
@@ -40,6 +42,12 @@ public final class ArchitectureRuleDefinitions {
             "io.eventuate.tram.sagas..",
     };
 
+    private static final String[] FRAMEWORK_ANNOTATION_PACKAGES = {
+            "org.springframework..",
+            "jakarta.persistence..",
+            "io.eventuate..",
+    };
+
     private ArchitectureRuleDefinitions() {
     }
 
@@ -59,6 +67,41 @@ public final class ArchitectureRuleDefinitions {
     public static ArchRule hex4DomainClassDependencies(RoleContext context) {
         return noClasses().should().dependOnClassesThat(resideInAForbiddenInfrastructurePackage(context))
                 .as("HEX-4 (domain projects stay free of infrastructure technology)");
+    }
+
+    public static ArchRule hex8ApiContents() {
+        return valueTypesOnly("HEX-8 (API projects contain only interfaces and value types)");
+    }
+
+    private static ArchRule valueTypesOnly(String description) {
+        return classes().should(beAnInterfaceARecordOrAnEnum()).andShould(notCarryAFrameworkAnnotation()).as(description);
+    }
+
+    private static ArchCondition<JavaClass> beAnInterfaceARecordOrAnEnum() {
+        return new ArchCondition<>("be an interface, a record or an enum") {
+            @Override
+            public void check(JavaClass javaClass, ConditionEvents events) {
+                boolean satisfied = javaClass.isInterface() || javaClass.isRecord() || javaClass.isEnum();
+                events.add(new SimpleConditionEvent(javaClass, satisfied,
+                        javaClass.getName() + " is not an interface, a record or an enum"));
+            }
+        };
+    }
+
+    private static ArchCondition<JavaClass> notCarryAFrameworkAnnotation() {
+        DescribedPredicate<JavaClass> frameworkAnnotationType = resideInAnyPackage(FRAMEWORK_ANNOTATION_PACKAGES);
+        return new ArchCondition<>("not carry an annotation from " + String.join(", ", FRAMEWORK_ANNOTATION_PACKAGES)) {
+            @Override
+            public void check(JavaClass javaClass, ConditionEvents events) {
+                for (JavaAnnotation<JavaClass> annotation : javaClass.getAnnotations()) {
+                    JavaClass annotationType = annotation.getRawType();
+                    if (frameworkAnnotationType.test(annotationType)) {
+                        events.add(SimpleConditionEvent.violated(javaClass,
+                                javaClass.getName() + " is annotated with @" + annotationType.getName()));
+                    }
+                }
+            }
+        };
     }
 
     private static DescribedPredicate<JavaClass> resideInAForbiddenInfrastructurePackage(RoleContext context) {

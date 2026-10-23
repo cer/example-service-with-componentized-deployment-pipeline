@@ -392,16 +392,16 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 16: An API or shared-library class with behaviour or framework annotations fails HEX-8 and SUB-8
 
-- [ ] **Task 16.1: `checkArchitectureRules` fails a class in an `api` or `api-facet` project that is not an interface, record or enum, or that carries a Spring, JPA or Eventuate annotation, naming HEX-8**
+- [x] **Task 16.1: `checkArchitectureRules` fails a class in an `api` or `api-facet` project that is not an interface, record or enum, or that carries a Spring, JPA or Eventuate annotation, naming HEX-8**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkArchitectureRules`
   - Observable: In an `api` fixture, a plain class fails, and a record annotated `@jakarta.persistence.Embeddable` fails. Each message names `HEX-8 (API projects contain only interfaces and value types)` and the class. An interface, a record and an enum with no annotations pass.
   - Evidence: `./gradlew :architecture-rules:test --tests io.eventuate.architecture.rules.Hex8ApiContentsTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Add `testImplementation 'jakarta.persistence:jakarta.persistence-api'` to `architecture-rules/build.gradle`.
-    - [ ] Write `Hex8ApiContentsTest` with fixtures under `fixtures/hex8/`.
-    - [ ] Add `valueTypesOnly(Rule)` to `ArchitectureRuleDefinitions`. It checks that every class is an interface, a record or an enum, and that no class carries an annotation from `org.springframework..`, `jakarta.persistence..` or `io.eventuate..`. Add `hex8ApiContents`, which uses it, and an `@ArchTest` method for `api` and `api-facet`.
-    - [ ] Run `./gradlew :architecture-rules:test` and `./gradlew build`.
+    - [x] Add `testImplementation 'jakarta.persistence:jakarta.persistence-api'` to `architecture-rules/build.gradle`.
+    - [x] Write `Hex8ApiContentsTest` with fixtures under `fixtures/hex8/`.
+    - [x] Add `valueTypesOnly(Rule)` to `ArchitectureRuleDefinitions`. It checks that every class is an interface, a record or an enum, and that no class carries an annotation from `org.springframework..`, `jakarta.persistence..` or `io.eventuate..`. Add `hex8ApiContents`, which uses it, and an `@ArchTest` method for `api` and `api-facet`.
+    - [x] Run `./gradlew :architecture-rules:test` and `./gradlew build`.
 
 - [ ] **Task 16.2: `checkArchitectureRules` fails a class in a `shared-library` project that is not a value type, naming SUB-8**
   - TaskType: OUTCOME
