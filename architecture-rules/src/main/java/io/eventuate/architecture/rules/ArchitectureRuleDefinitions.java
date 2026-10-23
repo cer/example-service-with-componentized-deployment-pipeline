@@ -3,7 +3,9 @@ package io.eventuate.architecture.rules;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaAnnotation;
 import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.JavaField;
 import com.tngtech.archunit.core.domain.JavaMethod;
+import com.tngtech.archunit.core.domain.properties.HasAnnotations;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.CompositeArchRule;
@@ -11,6 +13,7 @@ import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 
 import static com.tngtech.archunit.base.DescribedPredicate.not;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
@@ -48,6 +51,8 @@ public final class ArchitectureRuleDefinitions {
             "io.eventuate..",
     };
 
+    private static final String EVENTUATE_PACKAGE = "io.eventuate..";
+
     private ArchitectureRuleDefinitions() {
     }
 
@@ -77,6 +82,13 @@ public final class ArchitectureRuleDefinitions {
         return valueTypesOnly("SUB-8 (shared libraries hold only value types)");
     }
 
+    public static ArchRule sub4MessageCopiesCarryNoEventuateAnnotations(RoleContext context) {
+        return classes().that(resideOutsideTheProjectPackage(context))
+                .should(notCarryAnEventuateAnnotationOnTheClassOrItsMembers())
+                .allowEmptyShould(true)
+                .as("SUB-4 (messages are copied, not shared)");
+    }
+
     private static ArchRule valueTypesOnly(String description) {
         return classes().should(beAnInterfaceARecordOrAnEnum()).andShould(notCarryAFrameworkAnnotation()).as(description);
     }
@@ -97,15 +109,45 @@ public final class ArchitectureRuleDefinitions {
         return new ArchCondition<>("not carry an annotation from " + String.join(", ", FRAMEWORK_ANNOTATION_PACKAGES)) {
             @Override
             public void check(JavaClass javaClass, ConditionEvents events) {
-                for (JavaAnnotation<JavaClass> annotation : javaClass.getAnnotations()) {
-                    JavaClass annotationType = annotation.getRawType();
-                    if (frameworkAnnotationType.test(annotationType)) {
-                        events.add(SimpleConditionEvent.violated(javaClass,
-                                javaClass.getName() + " is annotated with @" + annotationType.getName()));
-                    }
+                reportAnnotationsOfType(frameworkAnnotationType, javaClass, javaClass.getName(), events);
+            }
+        };
+    }
+
+    private static DescribedPredicate<JavaClass> resideOutsideTheProjectPackage(RoleContext context) {
+        return new DescribedPredicate<>("reside outside " + context.projectPackage() + " and its sub-packages") {
+            @Override
+            public boolean test(JavaClass javaClass) {
+                return !RoleContext.isInOrUnder(javaClass.getPackageName(), context.projectPackage());
+            }
+        };
+    }
+
+    private static ArchCondition<JavaClass> notCarryAnEventuateAnnotationOnTheClassOrItsMembers() {
+        DescribedPredicate<JavaClass> eventuateAnnotationType = resideInAPackage(EVENTUATE_PACKAGE);
+        return new ArchCondition<>("not carry an annotation from " + EVENTUATE_PACKAGE + " on the class, its methods or its fields") {
+            @Override
+            public void check(JavaClass javaClass, ConditionEvents events) {
+                reportAnnotationsOfType(eventuateAnnotationType, javaClass, javaClass.getName(), events);
+                for (JavaMethod method : javaClass.getMethods()) {
+                    reportAnnotationsOfType(eventuateAnnotationType, method, method.getFullName(), events);
+                }
+                for (JavaField field : javaClass.getFields()) {
+                    reportAnnotationsOfType(eventuateAnnotationType, field, field.getFullName(), events);
                 }
             }
         };
+    }
+
+    private static void reportAnnotationsOfType(DescribedPredicate<JavaClass> reportedType, HasAnnotations<?> annotated,
+                                                String name, ConditionEvents events) {
+        for (JavaAnnotation<?> annotation : annotated.getAnnotations()) {
+            JavaClass annotationType = annotation.getRawType();
+            if (reportedType.test(annotationType)) {
+                events.add(SimpleConditionEvent.violated(annotated,
+                        name + " is annotated with @" + annotationType.getName()));
+            }
+        }
     }
 
     private static DescribedPredicate<JavaClass> resideInAForbiddenInfrastructurePackage(RoleContext context) {

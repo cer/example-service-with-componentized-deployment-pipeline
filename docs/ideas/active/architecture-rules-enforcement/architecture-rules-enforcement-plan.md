@@ -417,16 +417,16 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
 
 ## Steel Thread 17: A message copy carrying an Eventuate annotation fails SUB-4
 
-- [ ] **Task 17.1: `checkArchitectureRules` fails a class outside the project's own package that carries an `io.eventuate` annotation, naming SUB-4**
+- [x] **Task 17.1: `checkArchitectureRules` fails a class outside the project's own package that carries an `io.eventuate` annotation, naming SUB-4**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkArchitectureRules`
   - Observable: In an `event-subscribers` fixture, a copy class in another package with a method annotated `@EventuateDomainEventHandler` fails, with a message naming `SUB-4 (messages are copied, not shared)` and the class. A copy class with no annotations passes. `customer-management-sagas` and `customer-management-event-subscribers` pass.
   - Evidence: `./gradlew :architecture-rules:test --tests io.eventuate.architecture.rules.Sub4MessageCopiesCarryNoEventuateAnnotationsTest` exits 0 and `./gradlew build` exits 0.
   - Steps:
-    - [ ] Add `testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-events-subscriber-starter'` to `architecture-rules/build.gradle`.
-    - [ ] Write `Sub4MessageCopiesCarryNoEventuateAnnotationsTest` with fixtures under `fixtures/sub4/`.
-    - [ ] Add `sub4MessageCopiesCarryNoEventuateAnnotations` to `ArchitectureRuleDefinitions`. It checks classes, methods and fields, and its scope is the classes outside `RoleContext.packageName()` and its sub-packages. Add an `@ArchTest` method that applies it to every role.
-    - [ ] Run `./gradlew :architecture-rules:test` and `./gradlew build`.
+    - [x] Add `testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-events-subscriber-starter'` to `architecture-rules/build.gradle`.
+    - [x] Write `Sub4MessageCopiesCarryNoEventuateAnnotationsTest` with fixtures under `fixtures/sub4/`.
+    - [x] Add `sub4MessageCopiesCarryNoEventuateAnnotations` to `ArchitectureRuleDefinitions`. It checks classes, methods and fields, and its scope is the classes outside `RoleContext.packageName()` and its sub-packages. Add an `@ArchTest` method that applies it to every role.
+    - [x] Run `./gradlew :architecture-rules:test` and `./gradlew build`.
 
 ---
 

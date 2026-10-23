@@ -29,6 +29,11 @@ public class ArchitectureRulesTest {
     }
 
     @ArchTest
+    void sub4MessageCopiesCarryNoEventuateAnnotations(JavaClasses classes) {
+        ArchitectureRuleDefinitions.sub4MessageCopiesCarryNoEventuateAnnotations(RoleContext.fromSystemProperties()).check(classes);
+    }
+
+    @ArchTest
     void sub8SharedLibraryContents(JavaClasses classes) {
         if (RoleContext.fromSystemProperties().isSharedLibrary()) {
             ArchitectureRuleDefinitions.sub8SharedLibraryContents().check(classes);

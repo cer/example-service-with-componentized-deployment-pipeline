@@ -24,6 +24,8 @@ class ArchitectureRulesTestTest {
     private static final String HEX8 = "HEX-8 (API projects contain only interfaces and value types)";
     private static final String SUB8_ROOT_PACKAGE = "io.eventuate.architecture.rules.fixtures.sub8";
     private static final String SUB8 = "SUB-8 (shared libraries hold only value types)";
+    private static final String SUB4_ROOT_PACKAGE = "io.eventuate.architecture.rules.fixtures.sub4";
+    private static final String SUB4 = "SUB-4 (messages are copied, not shared)";
 
     private Map<String, String> properties = Map.of();
 
@@ -88,6 +90,15 @@ class ArchitectureRulesTestTest {
         List<String> failures = runArchitectureRulesTest("api", HEX8_ROOT_PACKAGE, "orders", "orders.api");
 
         assertThat(failures).noneSatisfy(failure -> assertThat(failure).contains(SUB8));
+    }
+
+    @Test
+    void eventSubscribersProjectWithAnnotatedCopyClassFailsSub4() {
+        List<String> failures = runArchitectureRulesTest("event-subscribers", SUB4_ROOT_PACKAGE, "orders", "orders.eventsubscribers");
+
+        assertThat(failures).anySatisfy(failure -> assertThat(failure)
+                .contains(SUB4)
+                .contains(SUB4_ROOT_PACKAGE + ".customers.domain.CustomerCreditReserved"));
     }
 
     private List<String> runArchitectureRulesTest(String role, String group, String subdomain, String packageUnderRoot) {

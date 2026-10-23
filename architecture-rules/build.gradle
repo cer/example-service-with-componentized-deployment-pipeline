@@ -13,6 +13,7 @@ dependencies {
     testImplementation 'org.springframework:spring-web'
     testImplementation 'jakarta.persistence:jakarta.persistence-api'
     testImplementation 'io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl-starter'
+    testImplementation 'io.eventuate.tram.core:eventuate-tram-spring-events-subscriber-starter'
 
     // Runs ArchitectureRulesTest on the JUnit Platform the way checkArchitectureRules does
     testImplementation 'org.junit.platform:junit-platform-testkit'
