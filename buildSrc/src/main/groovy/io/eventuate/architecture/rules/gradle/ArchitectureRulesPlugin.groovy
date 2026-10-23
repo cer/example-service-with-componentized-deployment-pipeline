@@ -19,6 +19,7 @@ class ArchitectureRulesPlugin implements Plugin<Project> {
             if (extension.role.present) {
                 ProjectNaming.apply(project, extension)
                 registerCheckProjectDependencies(project)
+                CheckArchitectureRules.register(project, extension)
             } else if (!isDirectoryOfProjects(project) && !isExempt(project)) {
                 throw new GradleException(noRoleMessage(project))
             }

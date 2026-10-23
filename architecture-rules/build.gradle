@@ -5,7 +5,12 @@ plugins {
 dependencies {
     implementation "com.tngtech.archunit:archunit-junit5:$archunitVersion"
     implementation 'org.junit.jupiter:junit-jupiter'
+    // checkArchitectureRules runs with this project's runtime classpath, so it needs a launcher aligned with the engines
+    runtimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // The fixtures the rule tests analyze
     testImplementation 'org.springframework:spring-context'
+
+    // Runs ArchitectureRulesTest on the JUnit Platform the way checkArchitectureRules does
+    testImplementation 'org.junit.platform:junit-platform-testkit'
 }

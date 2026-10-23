@@ -358,19 +358,19 @@ Since Gradle 8, `buildSrc` tests do not run as part of the main build. They run 
       - `ArchitectureRuleDefinitions`: a static factory per rule taking a `RoleContext` and returning an `ArchRule` described with its rule identifier and title. Start with `hex6EachProjectWiresItself`.
     - [x] Run `./gradlew :architecture-rules:test`.
 
-- [ ] **Task 14.2: `checkArchitectureRules` runs the ArchUnit rules against every project with a role after `classes`, and `check` depends on it**
+- [x] **Task 14.2: `checkArchitectureRules` runs the ArchUnit rules against every project with a role after `classes`, and `check` depends on it**
   - TaskType: OUTCOME
   - Entrypoint: `./gradlew checkArchitectureRules`
   - Observable: Every project with a role has a `checkArchitectureRules` `Test` task that writes JUnit XML under `build/test-results/checkArchitectureRules`. Adding a `@Configuration` class to a project with role `api` fails the task with a message naming HEX-6 and the class. Every project in this repository passes. `test` runs after `checkArchitectureRules`. `architecture-rules` has no `checkArchitectureRules` task.
   - Evidence: `./gradlew -p buildSrc test --tests io.eventuate.architecture.rules.gradle.CheckArchitectureRulesTaskTest` exits 0 and `./gradlew build` exits 0, running `:customer-management:customer-management-domain:checkArchitectureRules` and the same task in every other project with a role.
   - Steps:
-    - [ ] Write `CheckArchitectureRulesTaskTest` using `RuleFixtureBuild`. For each role it asserts that the task exists, that its system properties hold the role, group, subdomain, package and classes directory, that `check` depends on it, and that `test` must run after it. It asserts that an exempt project has no such task.
-    - [ ] Create `ClassesDirLocationProvider`, which reads `architectureRules.classesDir`. Create `ArchitectureRulesTest` in `architecture-rules/src/main/java/io/eventuate/architecture/rules/`, annotated `@AnalyzeClasses(locations = ClassesDirLocationProvider.class)`, with an `@ArchTest` method that checks `hex6EachProjectWiresItself` for the role in `RoleContext`.
-    - [ ] In `ArchitectureRulesPlugin`, for each project with a role:
+    - [x] Write `CheckArchitectureRulesTaskTest` using `RuleFixtureBuild`. For each role it asserts that the task exists, that its system properties hold the role, group, subdomain, package and classes directory, that `check` depends on it, and that `test` must run after it. It asserts that an exempt project has no such task.
+    - [x] Create `ClassesDirLocationProvider`, which reads `architectureRules.classesDir`. Create `ArchitectureRulesTest` in `architecture-rules/src/main/java/io/eventuate/architecture/rules/`, annotated `@AnalyzeClasses(locations = ClassesDirLocationProvider.class)`, with an `@ArchTest` method that checks `hex6EachProjectWiresItself` for the role in `RoleContext`.
+    - [x] In `ArchitectureRulesPlugin`, for each project with a role:
       - Add two resolvable configurations on the rules project: `architectureRulesClasses`, with the `LibraryElements.CLASSES` attribute, and `architectureRulesRuntime`.
       - Register `checkArchitectureRules` as a `Test` task using JUnit Platform. Set `testClassesDirs` from `architectureRulesClasses`, and `classpath` to `architectureRulesRuntime` plus `sourceSets.main.output`. Set the five system properties.
       - Make `check` depend on it, and make `test` `mustRunAfter` it.
-    - [ ] Run `./gradlew -p buildSrc check` and `./gradlew build`.
+    - [x] Run `./gradlew -p buildSrc check` and `./gradlew build`.
 
 ---
 
@@ -480,3 +480,6 @@ An adapter's own path is permitted too, because customer-management-rest-api dec
 
 ### 2026-10-23 08:36 - mark-task-complete
 Sub3FourInteractionMechanismsTest passes, buildSrc check and ./gradlew build exit 0
+
+### 2026-10-23 09:19 - mark-task-complete
+checkArchitectureRules runs ArchitectureRulesTest in every project with a role; the proxy and event-publishing @Bean methods now return their own implementation classes to satisfy HEX-6

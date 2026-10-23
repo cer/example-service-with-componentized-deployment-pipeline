@@ -40,7 +40,7 @@ class DeclaredDependencies {
     }
 
     static DeclaredDependencies of(Project project) {
-        List<Configuration> configurations = project.configurations.toList()
+        List<Configuration> configurations = project.configurations.toList().findAll { !CheckArchitectureRules.isRulesConfiguration(it) }
         new DeclaredDependencies(
                 configurations.collectMany { declaredProjectDependencies(it) },
                 configurations.collectMany { declaredExternalDependencies(it) })
