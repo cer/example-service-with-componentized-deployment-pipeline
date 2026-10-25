@@ -1,18 +1,19 @@
 plugins {
-    id 'io.eventuate.plugins.gradle.testing.component-tests'
+    id 'io.eventuate.architecture.roles.main'
 }
 
-apply plugin: ServicePlugin
-
 dependencies {
-    implementation project(":customer-management:customer-management-domain")
-    implementation project(":customer-management:customer-management-command-api")
-    implementation project(":customer-management:customer-management-sagas")
+    runtimeOnly project(":customer-management:customer-management-domain")
+    runtimeOnly project(":customer-management:customer-management-command-api")
+    runtimeOnly project(":customer-management:customer-management-sagas")
     runtimeOnly project(":customer-management:customer-management-rest-api")
     runtimeOnly project(":customer-management:customer-management-persistence")
     runtimeOnly project(":customer-management:customer-management-event-publishing")
     runtimeOnly project(":customer-management:customer-management-event-subscribers")
     runtimeOnly project(":customer-management:customer-management-other-service-proxy")
+    componentTestImplementation project(":customer-management:customer-management-domain")
+    componentTestImplementation project(":customer-management:customer-management-command-api")
+    componentTestImplementation project(":customer-management:customer-management-sagas")
     componentTestImplementation project(":customer-management:customer-management-event-subscribers")
 
     implementation "io.eventuate.tram.core:eventuate-tram-spring-jdbc-kafka"

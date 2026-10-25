@@ -3,10 +3,6 @@ pluginManagement {
         gradlePluginPortal()
         maven { url 'https://snapshots.repositories.eventuate.io/repository' }
     }
-    plugins {
-        id 'io.eventuate.plugins.gradle.testing.integration-tests' version "${eventuateTestPluginsVersion}"
-        id 'io.eventuate.plugins.gradle.testing.component-tests' version "${eventuateTestPluginsVersion}"
-    }
 }
 
 includeBuild 'other-service'
@@ -22,3 +18,4 @@ include 'customer-management:customer-management-event-subscribers'
 include 'customer-management:customer-management-other-service-proxy'
 include 'customer-management:customer-management-sagas'
 include 'customer-service-main'
+include 'architecture-rules'

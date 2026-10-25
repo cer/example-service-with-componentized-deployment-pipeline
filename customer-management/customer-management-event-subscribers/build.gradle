@@ -1,5 +1,9 @@
 plugins {
-    id 'io.eventuate.plugins.gradle.testing.integration-tests'
+    id 'io.eventuate.architecture.roles.event-subscribers'
+}
+
+architectureRules {
+    messageCopyPackages = ['io.eventuate.otherservice.othersubdomain.domain']
 }
 
 dependencies {
