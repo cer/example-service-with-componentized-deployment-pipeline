@@ -5,6 +5,13 @@
 #   classes:      — dict keyed by module, then source-set (main/test/integrationTest/componentTest/contractTest)
 #   target:       — in contributes-to, the class being contributed to
 #   with-classes:  — in contributes-to, associated classes created alongside the contribution
+#   with-resources: — in contributes-to, resource files (e.g. contracts) created alongside the contribution,
+#                    keyed by module, then source-set, as paths relative to src/<source-set>/resources
+#   paths:        — in a feature, template paths copied only when the feature is applied
+#
+# other-service is test scaffolding, not a service to generate: it stands in for a collaborating
+# service and owns the contracts that the consumer-side contract tests run against (see
+# other-service/README.md). Features with such a test declare `paths: [other-service]`.
 #
 # Transforms (combinable):
 #   rename             — substitute subdomain/entity/service names
@@ -182,6 +189,18 @@ subdomain:
           - shouldGetCustomer
           - shouldReturn404WhenCustomerNotFound
 
+      - target: ContractVerifierBase
+        module: rest-api
+        source-set: contractTest
+        dependencies:
+          - param: CustomerManagementService customerManagementService
+        methods:
+          - stubFindCustomerById
+        with-resources:
+          rest-api:
+            contractTest:
+              - contracts/client-service/findCustomerById.groovy
+
   # Optional features
   features:
 
@@ -286,6 +305,9 @@ subdomain:
     event-subscribers:
       per-entity: false
       module: event-subscribers
+      paths:
+        - other-service
+        # Composite build that delivers other-service's event stubs jar to the contract test.
       classes:
         event-subscribers:
           main:
@@ -297,6 +319,8 @@ subdomain:
               transforms: []
           test:
             - name: CustomerManagementEventConsumerTest
+              transforms: [rename]
+            - name: CustomerManagementEventConsumerContractTest
               transforms: [rename]
           integrationTest:
             - name: CustomerManagementEventConsumerIntegrationTest
@@ -320,6 +344,9 @@ subdomain:
     other-service-proxy:
       per-entity: false
       module: other-service-proxy
+      paths:
+        - other-service
+        # Composite build that delivers other-service's REST API stubs jar to the contract test.
       classes:
         other-service-proxy:
           main:
@@ -381,6 +408,9 @@ subdomain:
     sagas:
       per-entity: false
       module: sagas
+      paths:
+        - other-service
+        # Composite build that delivers other-service's command contracts to the contract tests.
       classes:
         sagas:
           main:
@@ -440,6 +470,11 @@ subdomain:
           source-set: test
           methods:
             - shouldReserveCredit
+        - target: ContractVerifierBase
+          module: rest-api
+          source-set: contractTest
+          dependencies:
+            - param: CustomerManagementSagaService customerManagementSagaService
 
     rest-api:
       per-entity: false
@@ -478,6 +513,13 @@ subdomain:
           methods:
             - shouldGetSwaggerUi
             - shouldGetOpenApiDocs
+        - target: ContractVerifierBase
+          module: rest-api
+          source-set: contractTest
+          methods:
+            - setUpRestAssuredMockMvc
+            - resetRestAssuredMockMvc
+            # Each entity contributes its service mock, its stub method and its contract.
 
     rest-api-component-test:
       per-entity: true

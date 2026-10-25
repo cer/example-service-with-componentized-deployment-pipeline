@@ -43,10 +43,6 @@ import static org.mockito.Mockito.when;
 @WithMockUser(roles = "USER")
 public abstract class ContractVerifierBase {
 
-  public static final String CUSTOMER_ID = "11111111-1111-1111-1111-111111111111";
-  public static final String CUSTOMER_NAME = "Fred";
-  public static final Money CREDIT_LIMIT = new Money("15.00");
-
   @SpringBootApplication
   static class TestApp {
   }
@@ -77,24 +73,21 @@ public abstract class ContractVerifierBase {
   private CustomerManagementSagaService customerManagementSagaService;
 
   @BeforeEach
-  public void setup() {
-    when(customerManagementService.findCustomerById(customerId(CUSTOMER_ID))).thenReturn(Optional.of(existingCustomer()));
-
+  public void setUpRestAssuredMockMvc() {
     RestAssuredMockMvc.mockMvc(mockMvc);
   }
 
   @AfterEach
-  public void reset() {
+  public void resetRestAssuredMockMvc() {
     RestAssuredMockMvc.reset();
   }
 
-  private static Customer existingCustomer() {
-    Customer customer = new Customer(CUSTOMER_NAME, CREDIT_LIMIT);
-    ReflectionTestUtils.setField(customer, "id", UUID.fromString(CUSTOMER_ID));
-    return customer;
-  }
-
-  private static CustomerId customerId(String id) {
-    return new CustomerId(UUID.fromString(id));
+  @BeforeEach
+  public void stubFindCustomerById() {
+    // Stubs the response that contracts/client-service/findCustomerById.groovy specifies.
+    String id = "11111111-1111-1111-1111-111111111111";
+    Customer customer = new Customer("Fred", new Money("15.00"));
+    ReflectionTestUtils.setField(customer, "id", UUID.fromString(id));
+    when(customerManagementService.findCustomerById(new CustomerId(UUID.fromString(id)))).thenReturn(Optional.of(customer));
   }
 }
