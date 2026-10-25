@@ -20,6 +20,7 @@ dependencies {
 
     testImplementation platform('org.junit:junit-bom:5.12.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation "com.tngtech.archunit:archunit:${rootGradleProperties.archunitVersion}"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -46,12 +47,12 @@ gradlePlugin {
     plugins {
         architectureRules {
             id = 'io.eventuate.architecture.rules'
-            implementationClass = 'io.eventuate.architecture.rules.gradle.ArchitectureRulesPlugin'
+            implementationClass = 'io.eventuate.architecture.rules.gradle.plugins.ArchitectureRulesPlugin'
         }
         rolePluginClasses.each { roleName, className ->
             create("${roleName}Role") {
                 id = "io.eventuate.architecture.roles.${roleName}"
-                implementationClass = "io.eventuate.architecture.rules.gradle.${className}"
+                implementationClass = "io.eventuate.architecture.rules.gradle.plugins.${className}"
             }
         }
     }

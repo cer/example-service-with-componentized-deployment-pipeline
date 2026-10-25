@@ -1,5 +1,9 @@
 package io.eventuate.architecture.rules.gradle
 
+import io.eventuate.architecture.rules.gradle.plugins.ArchitectureRulesPlugin
+import io.eventuate.architecture.rules.gradle.roles.Role
+import io.eventuate.architecture.rules.gradle.tasks.CheckProjectDependenciesTask
+import io.eventuate.architecture.rules.gradle.tasks.CheckSubdomainGraphTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.internal.project.ProjectInternal
