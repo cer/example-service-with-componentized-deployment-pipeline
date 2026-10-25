@@ -36,11 +36,12 @@ The service is built on the [Eventuate](https://eventuate.io/) platform and cons
 
 | Module | Purpose |
 |---|---|
-| `customer-management/customer-management-web-api` | REST controllers, security configuration, request/response DTOs |
+| `customer-management/customer-management-rest-api` | REST controllers, security configuration, request/response DTOs |
 | `customer-management/customer-management-persistence` | JPA configuration, Flyway migrations |
 | `customer-management/customer-management-event-publishing` | Domain event publisher implementation |
 | `customer-management/customer-management-event-subscribers` | Domain event consumers |
 | `customer-management/customer-management-command-api` | Saga participant command handler (`ReserveCreditCommand`) |
+| `customer-management/customer-management-other-service-proxy` | REST client (`OtherServiceProxy`) for other-service's API, implementing the domain's `OtherService` port |
 
 #### Service main
 
@@ -48,9 +49,16 @@ The service is built on the [Eventuate](https://eventuate.io/) platform and cons
 |---|---|
 | `customer-service-main` | Spring Boot application entry point, aggregates all subdomain modules |
 
+#### Contract testing
+
+The modules are contract tested with [Spring Cloud Contract](https://spring.io/projects/spring-cloud-contract), on both sides of each collaboration:
+
+- **Provider side.** `customer-management-rest-api` and `customer-management-event-publishing` own contracts for their REST API and domain events, under `src/contractTest/resources/contracts/`. Their `contractTest` tasks verify the module against those contracts, and they publish the resulting stubs for consumers.
+- **Consumer side.** `customer-management-event-subscribers`, `customer-management-other-service-proxy` and `customer-management-sagas` test against the contracts of the service they collaborate with. That service is [`other-service`](other-service/README.md), a stand-in that exists only to own those contracts. It is included as a composite build in `settings.gradle`, which delivers its stubs jars to the consumer modules.
+
 ### Technology stack
 
-- **Language and runtime:** Java 17, Spring Boot 3.4
+- **Language and runtime:** Java 17, Spring Boot 4.1
 - **Persistence:** JPA/Hibernate with PostgreSQL, Flyway migrations, Spring Data JPA repositories
 - **Messaging:** Eventuate Tram transactional messaging with Kafka (JDBC outbox pattern)
 - **Sagas:** Eventuate Tram Sagas for orchestration-based credit reservation (`ReserveCreditSaga`)
