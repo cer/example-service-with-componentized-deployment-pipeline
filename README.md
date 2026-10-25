@@ -117,7 +117,7 @@ The role plugin ids are:
 - `io.eventuate.architecture.roles.main`
 - `io.eventuate.architecture.roles.shared-library`
 
-The plugins are defined in `buildSrc`, whose tests run with `./gradlew -p buildSrc check`. The rules are described in [docs/design/architecture-rules.md](docs/design/architecture-rules.md).
+The plugins are defined in `buildSrc`, whose tests run with `./gradlew -p buildSrc check`. Its packages are described in [Package layout](docs/design/architecture-rules-enforcement.md#package-layout). The rules are described in [docs/design/architecture-rules.md](docs/design/architecture-rules.md).
 
 ### Check tasks
 

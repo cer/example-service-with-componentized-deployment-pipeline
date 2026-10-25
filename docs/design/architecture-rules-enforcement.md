@@ -153,6 +153,18 @@ The implementation is in place. `ArchitectureRulesPlugin` registers `checkProjec
 
 Once the rules are stable and a second service needs them, the plugins and the rules subproject move to the Eventuate plugin repository and are published as `io.eventuate.plugins.gradle.architecture-rules`, alongside `io.eventuate.plugins.gradle.testing.*`, so that services built from the template get rule updates by changing a version. Until then the skeleton generator copies `buildSrc` and `architecture-rules` with the rest of the template.
 
+### Package layout
+
+The `buildSrc` code for the rules is in `io.eventuate.architecture.rules.gradle`, split into five packages. Each package depends only on the packages listed after it, and `PackageLayersTest` checks this with ArchUnit:
+
+- `plugins`: `ArchitectureRulesPlugin`, the role plugins, and `ProjectNaming`, which checks a project's name against its role and derives its subdomain and package.
+- `tasks`: `CheckProjectDependenciesTask`, `CheckSubdomainGraphTask`, and `CheckArchitectureRules`, which registers the `checkArchitectureRules` test task.
+- `rules`: the project dependency rules, one `ProjectDependencyRule` class per rule identifier; the allow-lists of HEX-4 (domain projects stay free of infrastructure technology) and HEX-9 (the message broker is declared in main only), `PermittedDomainDependencies` and `MessageBrokerArtifacts`; and `Rule` and `RuleViolation`.
+- `project`: what the checks read from the build: `ArchitectureRulesExtension`, a project's declared dependencies, packages and Java sources, `CheckedProject`, which combines them with the roles and packages of the other projects, and `SubdomainGraph`.
+- `roles`: `Role`, which holds the roles table, and `RoleGroup`.
+
+Each test is in the package of the class it tests. `RuleFixtureBuild`, the fixture the tests share, is in `io.eventuate.architecture.rules.gradle`.
+
 ## Decisions
 
 1. **A project whose name does not match its declared role's pattern fails the build.** The naming convention is a rule. A warning would let names drift from roles.
