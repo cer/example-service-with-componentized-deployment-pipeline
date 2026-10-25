@@ -232,6 +232,12 @@ subdomain:
             - name: EntityIdSetter
               transforms: []
               # Helper class copied as-is, no renaming needed.
+          contractTest:
+            - name: BaseClass
+              transforms: [rename, strip-methods]
+              # Result: base class shell for the tests that Spring Cloud Contract
+              # generates from src/contractTest/resources/contracts.
+              # Each published entity contributes its trigger method and its contract.
         customer-service-main:
           test:
             - name: GenerateMessagingApiDocsIntegrationTest
@@ -266,11 +272,6 @@ subdomain:
               transforms: [rename, strip-test-methods]
               # Result: test shell with TestContainers setup.
               # Each entity contributes its own publish test.
-          contractTest:
-            - name: BaseClass
-              transforms: [rename, strip-methods]
-              # Result: base class shell for the tests that Spring Cloud Contract
-              # generates from src/contractTest/resources/contracts.
       contributes-to:
         - target: CustomerManagementService
           module: domain
@@ -301,6 +302,15 @@ subdomain:
           source-set: integrationTest
           methods:
             - shouldPublishCustomerCreatedEvent
+        - target: BaseClass
+          module: event-publishing
+          source-set: contractTest
+          methods:
+            - customerCreatedEvent
+          with-resources:
+            event-publishing:
+              contractTest:
+                - contracts/client-service/customerCreatedEvent.groovy
 
     event-subscribers:
       per-entity: false
