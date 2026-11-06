@@ -487,7 +487,8 @@ subdomain:
       per-saga:
         # {Saga} is the saga's name in Pascal case, {saga} in camel case. A type is renamed wherever
         # it appears as a whole identifier. A member, Class.member, is renamed in its class and
-        # wherever it is referenced through a variable of that class's type.
+        # wherever it is referenced through a variable of that class's type. A literal is a
+        # substring renamed inside string literals.
         renames:
           types:
             ReserveCreditSaga: "{Saga}Saga"
@@ -511,6 +512,10 @@ subdomain:
             CustomerManagementControllerTest.customerManagementSagaService: "{saga}SagaService"
             CustomerManagementControllerTest.shouldReserveCredit: "should{Saga}"
             ContractVerifierBase.customerManagementSagaService: "{saga}SagaService"
+          literals:
+            # The REST path of the controller method that starts the saga, and of its test.
+            # {saga-kebab} is the saga's name in kebab case: placeOrder gives place-order.
+            creditreservations: "{saga-kebab}"
         classes:
           sagas:
             main:
