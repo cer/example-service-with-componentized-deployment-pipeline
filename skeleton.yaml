@@ -413,6 +413,20 @@ subdomain:
           module: domain
           source-set: main
           methods:
+            # Without the event: CustomerCreditReservedEvent needs the event-publishing feature.
+            - name: reserveCredit
+              transforms: [strip-event-publishing]
+          with-classes:
+            domain:
+              main:
+                - name: CustomerCreditLimitExceededException
+                  transforms: [rename]
+        - target: Customer
+          module: domain
+          source-set: main
+          methods:
+            # The entity's strip-non-getters removes both.
+            - availableCredit
             - reserveCredit
 
     sagas:
@@ -421,66 +435,143 @@ subdomain:
       paths:
         - other-service
         # Composite build that delivers other-service's command contracts to the contract tests.
+      # Applied once per subdomain. The per-saga part below is applied once for each saga the
+      # subdomain declares under domain.sagas.
       classes:
         sagas:
           main:
-            - name: CustomerManagementSagaService
-              transforms: [rename]
             - name: CustomerManagementSagasConfiguration
-              transforms: [rename]
-            - name: ReserveCreditSaga
-              transforms: [rename]
-            - name: ReserveCreditSagaData
-              transforms: [rename]
+              transforms: [rename, strip-methods]
+              # Result: empty @Configuration; the proxy and per-saga beans are contributed.
             - name: OtherServiceProxy
               transforms: [rename]
               # Saga participant proxy for the collaborating service. Distinct from the
               # rest-api OtherServiceProxy in the other-service-proxy module.
-          test:
-            - name: ReserveCreditSagaTest
-              transforms: [rename]
-            - name: CustomerManagementSagaServiceTest
-              transforms: [rename]
-          integrationTest:
-            - name: ReserveCreditSagaIntegrationTest
-              transforms: [rename]
+            # other-service's command and replies, which OtherServiceProxy sends and handles.
+            # They contain no template name, so they keep the package the contracts name.
+            - name: ReserveInventoryCommand
+              transforms: []
+            - name: ReserveInventoryResult
+              transforms: []
+            - name: InventoryOutOfStock
+              transforms: []
+            - name: InventoryReserved
+              transforms: []
           contractTest:
             - name: BaseForOtherServiceCommandTest
-              transforms: [rename, strip-methods]
-              # Result: base class shell for the tests that Spring Cloud Contract generates
-              # from the collaborating service's published command contracts.
+              transforms: [rename]
+              # Keeps reserveInventory(), which the contract test generated from
+              # reserveInventoryCommand.groovy calls.
+            - name: ReplyHandlersTest
+              transforms: [rename]
+        domain:
+          main:
+            - name: RejectionReason
+              transforms: [rename]
+            - name: CreditReservationDetails
+              transforms: [rename]
       contributes-to:
-        - target: CustomerManagementService
-          module: domain
+        - target: CustomerManagementSagasConfiguration
+          module: sagas
           source-set: main
-          methods:
-            - noteCreditReservationPending
-            - noteCreditReservationApproved
-            - noteCreditReservationRejected
-        - target: CustomerManagementController
-          module: rest-api
-          source-set: main
-          dependencies:
-            - param: CustomerManagementSagaService customerManagementSagaService
-          methods:
-            - createCreditReservation
-          with-classes:
-            rest-api:
-              main:
-                - name: ReserveCreditRequest
-                  transforms: [rename]
-                - name: ReserveCreditResponse
-                  transforms: [rename]
-        - target: CustomerManagementControllerTest
-          module: rest-api
-          source-set: test
-          methods:
-            - shouldReserveCredit
-        - target: ContractVerifierBase
-          module: rest-api
-          source-set: contractTest
-          dependencies:
-            - param: CustomerManagementSagaService customerManagementSagaService
+          beans:
+            - name: otherServiceProxy
+              type: OtherServiceProxy
+              impl: OtherServiceProxy
+          with-resources:
+            sagas:
+              contractTest:
+                # The H2 datasource the saga orchestration starter needs in the contract tests.
+                - application.properties
+
+      per-saga:
+        # {Saga} is the saga's name in Pascal case, {saga} in camel case. A type is renamed wherever
+        # it appears as a whole identifier. A member, Class.member, is renamed in its class and
+        # wherever it is referenced through a variable of that class's type.
+        renames:
+          types:
+            ReserveCreditSaga: "{Saga}Saga"
+            ReserveCreditSagaData: "{Saga}SagaData"
+            ReserveCreditSagaTest: "{Saga}SagaTest"
+            ReserveCreditSagaIntegrationTest: "{Saga}SagaIntegrationTest"
+            CustomerManagementSagaService: "{Saga}SagaService"
+            CustomerManagementSagaServiceTest: "{Saga}SagaServiceTest"
+            ReserveCreditRequest: "{Saga}Request"
+            ReserveCreditResponse: "{Saga}Response"
+          members:
+            CustomerManagementSagaService.reserveCredit: "{saga}"
+            CustomerManagementSagaService.reserveCreditSaga: "{saga}Saga"
+            CustomerManagementSagasConfiguration.reserveCreditSaga: "{saga}Saga"
+            CustomerManagementSagasConfiguration.creditReservationSagaService: "{saga}SagaService"
+            CustomerManagementService.noteCreditReservationPending: "note{Saga}Pending"
+            CustomerManagementService.noteCreditReservationApproved: "note{Saga}Approved"
+            CustomerManagementService.noteCreditReservationRejected: "note{Saga}Rejected"
+            CustomerManagementController.customerManagementSagaService: "{saga}SagaService"
+            CustomerManagementController.createCreditReservation: "{saga}"
+            CustomerManagementControllerTest.customerManagementSagaService: "{saga}SagaService"
+            CustomerManagementControllerTest.shouldReserveCredit: "should{Saga}"
+            ContractVerifierBase.customerManagementSagaService: "{saga}SagaService"
+        classes:
+          sagas:
+            main:
+              - name: ReserveCreditSaga
+                transforms: [rename]
+              - name: ReserveCreditSagaData
+                transforms: [rename]
+              - name: CustomerManagementSagaService
+                transforms: [rename]
+            test:
+              - name: ReserveCreditSagaTest
+                transforms: [rename]
+              - name: CustomerManagementSagaServiceTest
+                transforms: [rename]
+            integrationTest:
+              - name: ReserveCreditSagaIntegrationTest
+                transforms: [rename]
+        contributes-to:
+          - target: CustomerManagementSagasConfiguration
+            module: sagas
+            source-set: main
+            beans:
+              - name: reserveCreditSaga
+                type: ReserveCreditSaga
+                impl: ReserveCreditSaga
+              - name: creditReservationSagaService
+                type: CustomerManagementSagaService
+                impl: CustomerManagementSagaService
+          - target: CustomerManagementService
+            module: domain
+            source-set: main
+            methods:
+              - noteCreditReservationPending
+              - noteCreditReservationApproved
+              - noteCreditReservationRejected
+          - target: CustomerManagementController
+            module: rest-api
+            source-set: main
+            dependencies:
+              - param: CustomerManagementSagaService customerManagementSagaService
+            methods:
+              - createCreditReservation
+            with-classes:
+              rest-api:
+                main:
+                  - name: ReserveCreditRequest
+                    transforms: [rename]
+                  - name: ReserveCreditResponse
+                    transforms: [rename]
+          - target: CustomerManagementControllerTest
+            module: rest-api
+            source-set: test
+            dependencies:
+              - param: CustomerManagementSagaService customerManagementSagaService
+            methods:
+              - shouldReserveCredit
+          - target: ContractVerifierBase
+            module: rest-api
+            source-set: contractTest
+            dependencies:
+              - param: CustomerManagementSagaService customerManagementSagaService
 
     rest-api:
       per-entity: false
