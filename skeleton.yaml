@@ -432,8 +432,6 @@ subdomain:
               transforms: [rename]
             - name: ReserveCreditSagaData
               transforms: [rename]
-            - name: CustomerServiceProxy
-              transforms: [rename]
             - name: OtherServiceProxy
               transforms: [rename]
               # Saga participant proxy for the collaborating service. Distinct from the
@@ -442,8 +440,6 @@ subdomain:
             - name: ReserveCreditSagaTest
               transforms: [rename]
             - name: CustomerManagementSagaServiceTest
-              transforms: [rename]
-            - name: CustomerServiceProxyTest
               transforms: [rename]
           integrationTest:
             - name: ReserveCreditSagaIntegrationTest

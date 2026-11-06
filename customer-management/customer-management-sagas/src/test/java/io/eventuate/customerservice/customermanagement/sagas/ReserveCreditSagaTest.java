@@ -1,13 +1,9 @@
 package io.eventuate.customerservice.customermanagement.sagas;
 
-import io.eventuate.customerservice.customermanagement.commandapi.ReserveCreditCommand;
-import io.eventuate.customerservice.customermanagement.commandapi.CustomerCreditLimitExceeded;
-import io.eventuate.customerservice.customermanagement.commandapi.CustomerNotFound;
 import io.eventuate.customerservice.customermanagement.domain.CreditReservationDetails;
 import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.customerservice.customermanagement.domain.RejectionReason;
-import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerServiceProxy;
 import io.eventuate.customerservice.customermanagement.sagas.proxies.OtherServiceProxy;
 import io.eventuate.otherservice.othersubdomain.commandapi.InventoryOutOfStock;
 import io.eventuate.otherservice.othersubdomain.commandapi.ReserveInventoryCommand;
@@ -23,7 +19,6 @@ import static org.mockito.Mockito.verify;
 public class ReserveCreditSagaTest {
 
     private CustomerManagementService customerManagementService;
-    private CustomerServiceProxy customerServiceProxy;
     private OtherServiceProxy otherServiceProxy;
 
     private CustomerId customerId = CustomerId.generate();
@@ -33,12 +28,11 @@ public class ReserveCreditSagaTest {
     @BeforeEach
     public void setUp() {
         customerManagementService = mock(CustomerManagementService.class);
-        customerServiceProxy = new CustomerServiceProxy();
         otherServiceProxy = new OtherServiceProxy();
     }
 
     private ReserveCreditSaga makeSaga() {
-        return new ReserveCreditSaga(customerManagementService, customerServiceProxy, otherServiceProxy);
+        return new ReserveCreditSaga(customerManagementService, otherServiceProxy);
     }
 
     @Test
@@ -47,11 +41,6 @@ public class ReserveCreditSagaTest {
 
         given()
             .saga(makeSaga(), sagaData)
-            .expect()
-            .command(new ReserveCreditCommand(customerId.id(), orderId, orderTotal))
-            .to("customerService")
-            .andGiven()
-            .successReply()
             .expect()
             .command(new ReserveInventoryCommand(orderId))
             .to("otherService")
@@ -65,56 +54,11 @@ public class ReserveCreditSagaTest {
     }
 
     @Test
-    public void shouldRejectWhenCustomerNotFound() {
-        ReserveCreditSagaData sagaData = new ReserveCreditSagaData(customerId, orderId, orderTotal);
-
-        given()
-            .saga(makeSaga(), sagaData)
-            .expect()
-            .command(new ReserveCreditCommand(customerId.id(), orderId, orderTotal))
-            .to("customerService")
-            .andGiven()
-            .failureReply(new CustomerNotFound())
-            .expectRolledBack()
-            .assertSagaData(data ->
-                assertThat(data.getRejectionReason()).isEqualTo(RejectionReason.UNKNOWN_CUSTOMER));
-
-        CreditReservationDetails expectedDetails = new CreditReservationDetails(customerId, orderId, orderTotal);
-        verify(customerManagementService).noteCreditReservationPending(expectedDetails);
-        verify(customerManagementService).noteCreditReservationRejected(expectedDetails, RejectionReason.UNKNOWN_CUSTOMER);
-    }
-
-    @Test
-    public void shouldRejectWhenCreditLimitExceeded() {
-        ReserveCreditSagaData sagaData = new ReserveCreditSagaData(customerId, orderId, orderTotal);
-
-        given()
-            .saga(makeSaga(), sagaData)
-            .expect()
-            .command(new ReserveCreditCommand(customerId.id(), orderId, orderTotal))
-            .to("customerService")
-            .andGiven()
-            .failureReply(new CustomerCreditLimitExceeded())
-            .expectRolledBack()
-            .assertSagaData(data ->
-                assertThat(data.getRejectionReason()).isEqualTo(RejectionReason.INSUFFICIENT_CREDIT));
-
-        CreditReservationDetails expectedDetails = new CreditReservationDetails(customerId, orderId, orderTotal);
-        verify(customerManagementService).noteCreditReservationPending(expectedDetails);
-        verify(customerManagementService).noteCreditReservationRejected(expectedDetails, RejectionReason.INSUFFICIENT_CREDIT);
-    }
-
-    @Test
     public void shouldRejectWhenInventoryOutOfStock() {
         ReserveCreditSagaData sagaData = new ReserveCreditSagaData(customerId, orderId, orderTotal);
 
         given()
             .saga(makeSaga(), sagaData)
-            .expect()
-            .command(new ReserveCreditCommand(customerId.id(), orderId, orderTotal))
-            .to("customerService")
-            .andGiven()
-            .successReply()
             .expect()
             .command(new ReserveInventoryCommand(orderId))
             .to("otherService")

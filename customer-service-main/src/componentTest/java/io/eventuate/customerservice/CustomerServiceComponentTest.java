@@ -7,11 +7,12 @@ import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
 import io.eventuate.customerservice.customermanagement.commandapi.ReserveCreditCommand;
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreatedEvent;
 import io.eventuate.customerservice.customermanagement.domain.CustomerCreditReservedEvent;
-import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerServiceProxy;
+import io.eventuate.customerservice.customermanagement.sagas.proxies.OtherServiceProxy;
 import io.eventuate.examples.common.money.Money;
 import io.eventuate.examples.springauthorizationserver.testcontainers.AuthorizationServerContainerForServiceContainers;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeCluster;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeContainer;
+import io.eventuate.otherservice.othersubdomain.commandapi.ReserveInventoryCommand;
 import io.eventuate.otherservice.othersubdomain.domain.OtherEvent;
 import io.eventuate.testcontainers.service.BuildArgsResolver;
 import io.eventuate.testcontainers.service.ServiceContainer;
@@ -219,11 +220,10 @@ public class CustomerServiceComponentTest {
                 .log().ifValidationFails()
                 .statusCode(200);
 
-        // Verify the saga sent a ReserveCreditCommand
-        UUID expectedCustomerId = UUID.fromString(createdCustomerId);
+        // Verify the saga sent a ReserveInventoryCommand to other-service
         commandOutboxTestSupport.assertThatCommandMessageSent(
-                ReserveCreditCommand.class, CustomerServiceProxy.CHANNEL,
-                cmd -> cmd.customerId().equals(expectedCustomerId));
+                ReserveInventoryCommand.class, OtherServiceProxy.CHANNEL,
+                cmd -> cmd.orderId().equals(orderId));
     }
 
     @Test

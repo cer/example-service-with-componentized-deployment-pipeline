@@ -2,12 +2,9 @@ package io.eventuate.customerservice.customermanagement.sagas;
 
 import io.eventuate.common.testcontainers.EventuateDatabaseContainer;
 import io.eventuate.common.testcontainers.EventuateVanillaPostgresContainer;
-import io.eventuate.customerservice.customermanagement.commandapi.ReserveCreditCommand;
-import io.eventuate.customerservice.customermanagement.commandapi.CustomerCreditReserved;
 import io.eventuate.customerservice.customermanagement.domain.CreditReservationDetails;
 import io.eventuate.customerservice.customermanagement.domain.CustomerId;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
-import io.eventuate.customerservice.customermanagement.sagas.proxies.CustomerServiceProxy;
 import io.eventuate.customerservice.customermanagement.sagas.proxies.OtherServiceProxy;
 import io.eventuate.otherservice.othersubdomain.commandapi.InventoryReserved;
 import io.eventuate.otherservice.othersubdomain.commandapi.ReserveInventoryCommand;
@@ -79,12 +76,6 @@ public class ReserveCreditSagaIntegrationTest {
         Money orderTotal = new Money("12.34");
 
         customerManagementSagaService.reserveCredit(customerId, orderId, orderTotal);
-
-        Message reserveCreditMessage = commandOutboxTestSupport.assertThatCommandMessageSent(
-                ReserveCreditCommand.class, CustomerServiceProxy.CHANNEL,
-                cmd -> cmd.customerId().equals(customerId.id()));
-
-        commandReplyProducer.sendReply(reserveCreditMessage, ReserveCreditCommand.class, new CustomerCreditReserved());
 
         Message reserveInventoryMessage = commandOutboxTestSupport.assertThatCommandMessageSent(
                 ReserveInventoryCommand.class, OtherServiceProxy.CHANNEL,

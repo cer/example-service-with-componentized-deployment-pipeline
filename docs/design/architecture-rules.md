@@ -200,7 +200,7 @@ Checked on 2026-10-22 against every project in this repository, `main` source se
 - **HEX-2.** Every adapter depends on `customer-management-domain` only, plus `customer-management-rest-api` on `customer-management-sagas`, which is a domain project. No adapter imports another adapter's package.
 - **HEX-3.** The domain reaches persistence, events and `other-service` through `CustomerRepository`, `CustomerEventPublisher` and `OtherService`. It imports no implementing class.
 - **HEX-4** for `customer-management-domain`. Its third-party imports are Money, the Eventuate events API (`DomainEvent`, `DomainEventPublisherForAggregate`), JPA annotations, Spring Data `CrudRepository`, `@Transactional`, Spring `@Configuration`/`@Bean` and SLF4J, all permitted.
-- **HEX-5.** Each project's classes are in its own package or a sub-package (`sagas.proxies`). The classes outside that are the SUB-4 copies: `othersubdomain.domain.OtherEvent` in `customer-management-event-subscribers`, and the `customermanagement.commandapi` and `othersubdomain.commandapi` copies in `customer-management-sagas`.
+- **HEX-5.** Each project's classes are in its own package or a sub-package (`sagas.proxies`). The classes outside that are the SUB-4 copies: `othersubdomain.domain.OtherEvent` in `customer-management-event-subscribers`, and the `othersubdomain.commandapi` copies in `customer-management-sagas`.
 - **HEX-6.** Each project has one `@Configuration` class, and every `@Bean` it declares is of a class in that project or a third-party class.
 - **SUB-4.** The three copies listed under the rule carry no handler or reply annotations and each has a contract test.
 - **HEX-4** for `customer-management-sagas`. Its build file declares the sagas DSL and the Eventuate Flyway migration support, both permitted in sagas.
@@ -219,7 +219,7 @@ Checked on 2026-10-22 against every project in this repository, `main` source se
 ### Outside the rules
 
 - `other-service` is a stand-in for a separate service, delivered by composite build, and the rules do not apply to it. For the record, its `other-subdomain-event-publishing` project declares `OtherEvent` in the `othersubdomain.domain` package, which HEX-5 would forbid in this repository.
-- `CustomerServiceComponentTest` in main imports `CustomerServiceProxy` from the `sagas.proxies` package, an internal class of the sagas project. No rule covers tests in main.
+- `CustomerServiceComponentTest` in main imports `OtherServiceProxy` from the `sagas.proxies` package, an internal class of the sagas project. No rule covers tests in main.
 - `customer-management-event-subscribers` pins the `other-service` stubs to a literal `0.2.0-SNAPSHOT` while `customer-management-sagas` uses the `otherServiceStubsVersion` property. Not an architecture rule, noted in passing.
 
 ## Open questions
@@ -248,7 +248,7 @@ implementation project(":customer-management:customer-management-command-api")
 implementation project(":customer-management:customer-management-sagas")
 ```
 
-Main's own source, `CustomerServiceMain`, references none of these projects. The only user is `CustomerServiceComponentTest` in the `componentTest` source set, which imports `ReserveCreditCommand` from command-api, `CustomerCreatedEvent` and `CustomerCreditReservedEvent` from domain, and `CustomerServiceProxy` from sagas.
+Main's own source, `CustomerServiceMain`, references none of these projects. The only user is `CustomerServiceComponentTest` in the `componentTest` source set, which imports `ReserveCreditCommand` from command-api, `CustomerCreatedEvent` and `CustomerCreditReservedEvent` from domain, and `OtherServiceProxy` and `ReserveInventoryCommand` from sagas.
 
 Fix: change the three lines to `runtimeOnly` and add `componentTestImplementation` for the same three projects, alongside the existing `componentTestImplementation` on `customer-management-event-subscribers`. Then run the component tests to confirm nothing else depended on the compile scope.
 
