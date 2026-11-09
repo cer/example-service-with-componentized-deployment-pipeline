@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Entity
-@Table(name="Customer")
+@Table(name="\"Customer\"")
 @Access(AccessType.FIELD)
 @IdClass(CustomerId.class)
 public class Customer {
