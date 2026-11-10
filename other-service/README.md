@@ -8,7 +8,7 @@ It owns the contracts that the customer service's consumer-side contract tests r
 |---|---|---|
 | `other-subdomain-event-publishing` | `events/otherEvent.groovy` — the `OtherEvent` domain event | `CustomerManagementEventConsumerContractTest` in `customer-management-event-subscribers` |
 | `other-subdomain-rest-api` | `rest/getOther.groovy`, `rest/getOtherNotFound.groovy` — `GET` of an other resource | `OtherServiceProxyContractTest` in `customer-management-other-service-proxy` |
-| `other-subdomain-command-api` | `commands/reserveInventoryCommand.groovy`, `replies/inventoryReservedReply.groovy` — the saga's `reserveInventory` step | The contract tests generated in `customer-management-sagas`, and `ReplyHandlersTest` |
+| `other-subdomain-command-api` | `commands/authorizePaymentCommand.groovy`, `replies/paymentAuthorizedReply.groovy` — the saga's `authorizePayment` step | The contract tests generated in `customer-management-sagas`, and `ReplyHandlersTest` |
 
 The contracts are under `src/contractTest/resources/contracts/customer-service/`, named for the consumer.
 

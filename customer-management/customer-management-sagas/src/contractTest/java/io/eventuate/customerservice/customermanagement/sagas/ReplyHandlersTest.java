@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 public class ReplyHandlersTest {
 
-    private static final String REPLY_CHANNEL = "reserveInventoryReply";
+    private static final String REPLY_CHANNEL = "authorizePaymentReply";
 
     @Configuration
     @EnableAutoConfiguration
@@ -54,14 +54,14 @@ public class ReplyHandlersTest {
     }
 
     @Test
-    public void shouldReceiveInventoryReservedReply() {
-        stubFinder.trigger("inventoryReserved");
+    public void shouldReceivePaymentAuthorizedReply() {
+        stubFinder.trigger("paymentAuthorized");
 
         Eventually.eventually(() -> {
             Message reply = replies.peek();
             assertThat(reply).isNotNull();
             assertThat(reply.getRequiredHeader("reply_type"))
-                    .isEqualTo("io.eventuate.otherservice.othersubdomain.commandapi.InventoryReserved");
+                    .isEqualTo("io.eventuate.otherservice.othersubdomain.commandapi.PaymentAuthorized");
             assertThat(reply.getRequiredHeader("reply_outcome-type")).isEqualTo("SUCCESS");
         });
     }

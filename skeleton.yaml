@@ -521,19 +521,19 @@ subdomain:
               # rest-api OtherServiceProxy in the other-service-proxy module.
             # other-service's command and replies, which OtherServiceProxy sends and handles.
             # They contain no template name, so they keep the package the contracts name.
-            - name: ReserveInventoryCommand
+            - name: AuthorizePaymentCommand
               transforms: []
-            - name: ReserveInventoryResult
+            - name: AuthorizePaymentResult
               transforms: []
-            - name: InventoryOutOfStock
+            - name: PaymentDeclined
               transforms: []
-            - name: InventoryReserved
+            - name: PaymentAuthorized
               transforms: []
           contractTest:
             - name: BaseForOtherServiceCommandTest
               transforms: [rename]
-              # Keeps reserveInventory(), which the contract test generated from
-              # reserveInventoryCommand.groovy calls.
+              # Keeps authorizePayment(), which the contract test generated from
+              # authorizePaymentCommand.groovy calls.
             - name: ReplyHandlersTest
               transforms: [rename]
         domain:
