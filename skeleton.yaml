@@ -391,6 +391,18 @@ subdomain:
               transforms: [rename]
             - name: CustomerManagementCommandHandlerWithFlywayConfiguration
               transforms: [rename]
+          contractTest:
+            - name: ContractVerifierBase
+              transforms: [rename, strip-methods]
+              # Each command contributes its reply triggers.
+            - name: CommandHandlersTest
+              transforms: [rename, strip-methods]
+              # Each command contributes the test that triggers its command stub.
+      resources:
+        command-api:
+          contractTest:
+            # The H2 datasource the saga participant starter needs in the contract tests.
+            - application.properties
       # Applied once for each command the adapter declares under commands, on the adapter's channel.
       # {Command}, {SuccessReply} and {FailureReply} are the command's class names, {operation} its
       # operation in camel case, {Operation} in Pascal case, and {channel} the adapter's channel.
@@ -407,7 +419,18 @@ subdomain:
             CustomerManagementCommandHandlerIntegrationTest: "{Operation}CommandHandlerIntegrationTest"
           members:
             CustomerManagementCommandHandler.reserveCredit: "{operation}"
+            ContractVerifierBase.reserveCredit: "{operation}"
+            ContractVerifierBase.reserveCreditSuccessReply: "{operation}SuccessReply"
+            ContractVerifierBase.reserveCreditFailureReply: "{operation}FailureReply"
+            ContractVerifierBase.sendReserveCreditCommand: "send{Operation}Command"
+            CommandHandlersTest.shouldHandleReserveCreditCommand: "shouldHandle{Operation}Command"
           literals:
+            customerService: "{channel}"
+            # The command stub's label, and the reply channel the contract tests use.
+            reserveCredit: "{operation}"
+          text:
+            # In the contracts: the labels, trigger methods and reply channel, and the command channel.
+            reserveCredit: "{operation}"
             customerService: "{channel}"
         classes:
           command-api:
@@ -432,6 +455,31 @@ subdomain:
             source-set: main
             methods:
               - reserveCredit
+          - target: ContractVerifierBase
+            module: command-api
+            source-set: contractTest
+            methods:
+              - reserveCredit
+              - reserveCreditSuccessReply
+              - reserveCreditFailureReply
+              - sendReserveCreditCommand
+          - target: CommandHandlersTest
+            module: command-api
+            source-set: contractTest
+            methods:
+              - shouldHandleReserveCreditCommand
+        # Applied once for each service that sends the command: the contracts for the command and its
+        # replies, laid out by that service's name.
+        per-caller:
+          renames:
+            text:
+              client-service: "{caller}"
+          resources:
+            command-api:
+              contractTest:
+                - contracts/client-service/commands/reserveCreditCommand.groovy
+                - contracts/client-service/replies/reserveCreditSuccessReply.groovy
+                - contracts/client-service/replies/reserveCreditFailureReply.groovy
       contributes-to:
         - target: CustomerManagementService
           module: domain
