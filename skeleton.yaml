@@ -385,29 +385,53 @@ subdomain:
         command-api:
           main:
             - name: CustomerManagementCommandHandler
-              transforms: [rename]
+              transforms: [rename, strip-methods]
+              # Result: a handler with no methods. Each command contributes its handler method.
             - name: CustomerCommandHandlerConfiguration
               transforms: [rename]
             - name: CustomerManagementCommandHandlerWithFlywayConfiguration
               transforms: [rename]
-            - name: ReserveCreditCommand
-              transforms: [rename]
-            - name: ReleaseCreditCommand
-              transforms: [rename]
-            - name: ReserveCreditResult
-              transforms: [rename]
-            - name: CustomerCreditReserved
-              transforms: [rename]
-            - name: CustomerNotFound
-              transforms: [rename]
-            - name: CustomerCreditLimitExceeded
-              transforms: [rename]
-          test:
-            - name: CustomerManagementCommandHandlerTest
-              transforms: [rename]
-          integrationTest:
-            - name: CustomerManagementCommandHandlerIntegrationTest
-              transforms: [rename]
+      # Applied once for each command the adapter declares under commands, on the adapter's channel.
+      # {Command}, {SuccessReply} and {FailureReply} are the command's class names, {operation} its
+      # operation in camel case, {Operation} in Pascal case, and {channel} the adapter's channel.
+      per-command:
+        renames:
+          types:
+            ReserveCreditCommand: "{Command}"
+            ReserveCreditResult: "{Operation}Result"
+            CustomerCreditReserved: "{SuccessReply}"
+            # A command has one failure reply, so the template's two are the same class.
+            CustomerNotFound: "{FailureReply}"
+            CustomerCreditLimitExceeded: "{FailureReply}"
+            CustomerManagementCommandHandlerTest: "{Operation}CommandHandlerTest"
+            CustomerManagementCommandHandlerIntegrationTest: "{Operation}CommandHandlerIntegrationTest"
+          members:
+            CustomerManagementCommandHandler.reserveCredit: "{operation}"
+          literals:
+            customerService: "{channel}"
+        classes:
+          command-api:
+            main:
+              - name: ReserveCreditCommand
+                transforms: [rename]
+              - name: ReserveCreditResult
+                transforms: [rename]
+              - name: CustomerCreditReserved
+                transforms: [rename]
+              - name: CustomerNotFound
+                transforms: [rename]
+            test:
+              - name: CustomerManagementCommandHandlerTest
+                transforms: [rename]
+            integrationTest:
+              - name: CustomerManagementCommandHandlerIntegrationTest
+                transforms: [rename]
+        contributes-to:
+          - target: CustomerManagementCommandHandler
+            module: command-api
+            source-set: main
+            methods:
+              - reserveCredit
       contributes-to:
         - target: CustomerManagementService
           module: domain
