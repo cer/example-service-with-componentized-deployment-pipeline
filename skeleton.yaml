@@ -27,6 +27,22 @@ template-names:
   entity: "Customer"
   base-package: "io.eventuate.customerservice"
 
+# Fields whose names no rename changes: in their class, in each member reference through a variable
+# of the class's type, and in the contracts listed. A saga participant generates its command from
+# ReserveCreditCommand and an orchestrator copies the participant's command from
+# AuthorizePaymentCommand, each renamed after its own service's entity. Fixing the fields keeps the
+# command's JSON the same in both services, so the orchestrator's contract tests pass against the
+# participant's stubs. The fields are placeholders that the service's implementation replaces.
+fixed-fields:
+  - class: ReserveCreditCommand
+    fields: [customerId, orderId, orderTotal]
+    contracts:
+      - customer-management/customer-management-command-api/src/contractTest/resources/contracts/client-service/commands/reserveCreditCommand.groovy
+  - class: AuthorizePaymentCommand
+    fields: [customerId, orderId, orderTotal]
+    contracts:
+      - other-service/other-subdomain-command-api/src/contractTest/resources/contracts/customer-service/commands/authorizePaymentCommand.groovy
+
 # ============================================================
 # Service-level structure (one per service)
 # ============================================================

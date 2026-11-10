@@ -223,7 +223,7 @@ public class CustomerServiceComponentTest {
         // Verify the saga sent a AuthorizePaymentCommand to other-service
         commandOutboxTestSupport.assertThatCommandMessageSent(
                 AuthorizePaymentCommand.class, OtherServiceProxy.CHANNEL,
-                cmd -> cmd.orderId().equals(orderId));
+                (AuthorizePaymentCommand cmd) -> cmd.orderId().equals(orderId));
     }
 
     @Test

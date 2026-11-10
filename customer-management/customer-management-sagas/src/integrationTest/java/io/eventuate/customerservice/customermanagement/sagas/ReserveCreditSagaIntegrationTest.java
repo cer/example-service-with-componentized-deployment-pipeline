@@ -79,7 +79,7 @@ public class ReserveCreditSagaIntegrationTest {
 
         Message authorizePaymentMessage = commandOutboxTestSupport.assertThatCommandMessageSent(
                 AuthorizePaymentCommand.class, OtherServiceProxy.CHANNEL,
-                cmd -> cmd.orderId().equals(orderId));
+                (AuthorizePaymentCommand cmd) -> cmd.orderId().equals(orderId));
 
         commandReplyProducer.sendReply(authorizePaymentMessage, AuthorizePaymentCommand.class, new PaymentAuthorized());
 
