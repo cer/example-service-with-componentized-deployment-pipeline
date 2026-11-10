@@ -21,9 +21,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * The other half of the async request/response contract: other-service's reply contracts, replayed
- * from its stubs in mavenLocal against customer-service, so that the replies it will actually receive
- * are verified. BaseForOtherServiceCommandTest covers the commands customer-service sends.
+ * The other half of the async request/response contract: a saga participant's reply contracts,
+ * replayed from its stubs in mavenLocal against customer-service, so that the replies it will
+ * actually receive are verified. The participant's command contract tests cover the commands
+ * customer-service sends.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
         classes = OtherServiceReplyHandlersTest.TestConfiguration.class)

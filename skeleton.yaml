@@ -520,39 +520,16 @@ subdomain:
     sagas:
       per-entity: false
       module: sagas
-      paths:
-        - other-service
-        # other-service stands in for the saga participants, and publishes its command stubs to mavenLocal
-        # before the contract tests resolve them by Maven coordinates.
-      # Applied once per subdomain. The per-saga part below is applied once for each saga the
-      # subdomain declares under domain.sagas.
+      # Applied once per subdomain. The per-participant part below is applied once for each service
+      # the subdomain's sagas invoke, and the per-saga part once for each saga it declares. Within
+      # the template, other-service stands in for every participant: its proxy, its command classes,
+      # and its stubs, which the template's composite build publishes to mavenLocal.
       classes:
         sagas:
           main:
             - name: CustomerManagementSagasConfiguration
               transforms: [rename, strip-methods]
               # Result: empty @Configuration; the proxy and per-saga beans are contributed.
-            - name: OtherServiceProxy
-              transforms: [rename]
-              # Saga participant proxy for the collaborating service. Distinct from the
-              # rest-api OtherServiceProxy in the other-service-proxy module.
-            # other-service's command and replies, which OtherServiceProxy sends and handles.
-            # They contain no template name, so they keep the package the contracts name.
-            - name: AuthorizePaymentCommand
-              transforms: []
-            - name: AuthorizePaymentResult
-              transforms: []
-            - name: PaymentDeclined
-              transforms: []
-            - name: PaymentAuthorized
-              transforms: []
-          contractTest:
-            - name: BaseForOtherServiceCommandTest
-              transforms: [rename]
-              # Keeps authorizePayment(), which the contract test generated from
-              # authorizePaymentCommand.groovy calls.
-            - name: OtherServiceReplyHandlersTest
-              transforms: [rename]
         domain:
           main:
             - name: RejectionReason
@@ -563,17 +540,112 @@ subdomain:
         - target: CustomerManagementSagasConfiguration
           module: sagas
           source-set: main
-          beans:
-            - name: otherServiceProxy
-              type: OtherServiceProxy
-              impl: OtherServiceProxy
           with-resources:
             sagas:
               contractTest:
                 # The H2 datasource the saga orchestration starter needs in the contract tests.
                 - application.properties
-                # other-service's stubs coordinates and the base class of its command contract tests.
-                - participants/other-service.properties
+
+      # {Participant} is the participant's name in Pascal case, {participant} in camel case and
+      # {participant-kebab} in kebab case. {channel} is its command channel, {stubs} the Maven
+      # coordinates of its stubs, and {participant-package} the package of its command classes.
+      per-participant:
+        renames:
+          types:
+            OtherServiceProxy: "{Participant}Proxy"
+            BaseForOtherServiceCommandTest: "BaseFor{Participant}CommandTest"
+            OtherServiceReplyHandlersTest: "{Participant}ReplyHandlersTest"
+          members:
+            CustomerManagementSagasConfiguration.otherServiceProxy: "{participant}Proxy"
+            BaseForOtherServiceCommandTest.otherServiceProxy: "{participant}Proxy"
+          literals:
+            otherService: "{channel}"
+            OtherServiceReplyHandlersTest: "{Participant}ReplyHandlersTest"
+            "io.eventuate.otherservice:other-subdomain-commands": "{stubs}"
+          text:
+            # The participant's properties file, its name and its stubs coordinates.
+            other-service: "{participant-kebab}"
+            "io.eventuate.otherservice:other-subdomain-commands": "{stubs}"
+          packages:
+            io.eventuate.otherservice.othersubdomain.commandapi: "{participant-package}"
+        classes:
+          sagas:
+            main:
+              - name: OtherServiceProxy
+                transforms: [rename]
+            contractTest:
+              - name: BaseForOtherServiceCommandTest
+                transforms: [rename]
+              - name: OtherServiceReplyHandlersTest
+                transforms: [rename]
+        resources:
+          sagas:
+            contractTest:
+              # The participant's stubs coordinates and the base class of its command contract tests.
+              - participants/other-service.properties
+        contributes-to:
+          - target: CustomerManagementSagasConfiguration
+            module: sagas
+            source-set: main
+            beans:
+              - name: otherServiceProxy
+                type: OtherServiceProxy
+                impl: OtherServiceProxy
+        # Applied once for each of the participant's operations the subdomain's sagas invoke.
+        # {Command}, {SuccessReply} and {FailureReply} are the operation's class names.
+        per-operation:
+          renames:
+            types:
+              AuthorizePaymentCommand: "{Command}"
+              AuthorizePaymentResult: "{Operation}Result"
+              PaymentAuthorized: "{SuccessReply}"
+              PaymentDeclined: "{FailureReply}"
+            members:
+              OtherServiceProxy.authorizePayment: "{operation}"
+              OtherServiceProxy.paymentDeclinedReply: "{operation}FailureReply"
+              BaseForOtherServiceCommandTest.authorizePayment: "{operation}"
+              OtherServiceReplyHandlersTest.shouldReceiveAuthorizePaymentSuccessReply: "shouldReceive{Operation}SuccessReply"
+              OtherServiceReplyHandlersTest.shouldReceiveAuthorizePaymentFailureReply: "shouldReceive{Operation}FailureReply"
+            literals:
+              # The reply channel, and the labels of the reply contracts.
+              authorizePayment: "{operation}"
+              PaymentAuthorized: "{SuccessReply}"
+              PaymentDeclined: "{FailureReply}"
+          classes:
+            sagas:
+              main:
+                - name: AuthorizePaymentCommand
+                  transforms: [rename]
+                - name: AuthorizePaymentResult
+                  transforms: [rename]
+                - name: PaymentAuthorized
+                  transforms: [rename]
+                - name: PaymentDeclined
+                  transforms: [rename]
+          contributes-to:
+            - target: OtherServiceProxy
+              module: sagas
+              source-set: main
+              methods:
+                - authorizePayment
+              fragments:
+                - field: paymentDeclinedReply
+            - target: BaseForOtherServiceCommandTest
+              module: sagas
+              source-set: contractTest
+              methods:
+                # Called by the test generated from the operation's command contract.
+                - authorizePayment
+            - target: OtherServiceReplyHandlersTest
+              module: sagas
+              source-set: contractTest
+              methods:
+                - shouldReceiveAuthorizePaymentSuccessReply
+                - shouldReceiveAuthorizePaymentFailureReply
+              fragments:
+                # The operation's reply channel, among those the test subscribes to.
+                - in: subscribeToReplyChannel
+                  containing: authorizePaymentReply
 
       per-saga:
         # {Saga} is the saga's name in Pascal case, {saga} in camel case. A type is renamed wherever
@@ -668,6 +740,103 @@ subdomain:
             source-set: contractTest
             dependencies:
               - param: CustomerManagementSagaService customerManagementSagaService
+        # Applied once for each service the saga invokes: the saga's proxy for it.
+        per-participant:
+          renames:
+            types:
+              OtherServiceProxy: "{Participant}Proxy"
+            members:
+              ReserveCreditSaga.otherServiceProxy: "{participant}Proxy"
+              CustomerManagementSagasConfiguration.otherServiceProxy: "{participant}Proxy"
+              ReserveCreditSagaTest.otherServiceProxy: "{participant}Proxy"
+          contributes-to:
+            - target: ReserveCreditSaga
+              module: sagas
+              source-set: main
+              fragments:
+                - field: otherServiceProxy
+                - in: ReserveCreditSaga
+                  containing: otherServiceProxy
+                - in: getParticipantProxies
+                  containing: otherServiceProxy
+            - target: CustomerManagementSagasConfiguration
+              module: sagas
+              source-set: main
+              fragments:
+                # The saga's bean method's parameter, and its argument to the saga's constructor.
+                - in: reserveCreditSaga
+                  containing: otherServiceProxy
+            - target: ReserveCreditSagaTest
+              module: sagas
+              source-set: test
+              fragments:
+                - field: otherServiceProxy
+                - in: setUp
+                  containing: otherServiceProxy
+                - in: makeSaga
+                  containing: otherServiceProxy
+        # Applied once for each of the saga's steps, in order. Its values are the step's participant's
+        # and its operation's: {OPERATION} is the operation in upper snake case.
+        per-step:
+          renames:
+            types:
+              OtherServiceProxy: "{Participant}Proxy"
+              AuthorizePaymentCommand: "{Command}"
+              PaymentAuthorized: "{SuccessReply}"
+              PaymentDeclined: "{FailureReply}"
+            members:
+              ReserveCreditSaga.otherServiceProxy: "{participant}Proxy"
+              ReserveCreditSaga.authorizePayment: "{operation}"
+              ReserveCreditSaga.handlePaymentDeclined: "handle{Operation}Failure"
+              OtherServiceProxy.authorizePayment: "{operation}"
+              OtherServiceProxy.paymentDeclinedReply: "{operation}FailureReply"
+              RejectionReason.PAYMENT_DECLINED: "{OPERATION}_FAILED"
+              ReserveCreditSagaTest.shouldRejectWhenPaymentDeclined: "shouldRejectWhen{Operation}Fails"
+              ReserveCreditSagaIntegrationTest.authorizePaymentMessage: "{operation}Message"
+            literals:
+              otherService: "{channel}"
+            packages:
+              io.eventuate.otherservice.othersubdomain.commandapi: "{participant-package}"
+          contributes-to:
+            - target: ReserveCreditSaga
+              module: sagas
+              source-set: main
+              methods:
+                - authorizePayment
+                - handlePaymentDeclined
+              fragments:
+                - in: sagaDefinition
+                  containing: authorizePayment
+                  from: step
+                  to: onReply
+            - target: RejectionReason
+              module: domain
+              source-set: main
+              fragments:
+                - in: RejectionReason
+                  containing: PAYMENT_DECLINED
+            - target: ReserveCreditSagaTest
+              module: sagas
+              source-set: test
+              fragments:
+                - in: shouldReserveCreditSuccessfully
+                  containing: AuthorizePaymentCommand
+                  from: expect
+                  to: successReply
+            # The saga fails at its first step, and is rolled back.
+            - target: ReserveCreditSagaTest
+              module: sagas
+              source-set: test
+              first-only: true
+              methods:
+                - shouldRejectWhenPaymentDeclined
+            - target: ReserveCreditSagaIntegrationTest
+              module: sagas
+              source-set: integrationTest
+              fragments:
+                # The step's command, and the reply the test sends to it.
+                - in: shouldReserveCreditSuccessfully
+                  containing: authorizePaymentMessage
 
     rest-api:
       per-entity: false

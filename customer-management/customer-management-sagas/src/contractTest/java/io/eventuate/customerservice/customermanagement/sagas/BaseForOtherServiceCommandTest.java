@@ -14,9 +14,9 @@ import org.springframework.context.annotation.Configuration;
 import java.util.UUID;
 
 /**
- * Base class for the tests that Spring Cloud Contract generates from other-service's command
- * contracts, which are downloaded from its published stubs. Each trigger method sends the command
- * that OtherServiceProxy builds, so the contract verifies the message customer-service actually
+ * Base class for the tests that Spring Cloud Contract generates from a saga participant's command
+ * contracts, which are unpacked from its published stubs. Each trigger method sends the command that
+ * the participant's proxy builds, so the contract verifies the message customer-service actually
  * puts on the wire.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
@@ -26,7 +26,6 @@ public abstract class BaseForOtherServiceCommandTest {
     public static final UUID CUSTOMER_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
     public static final Long ORDER_ID = 102L;
     public static final Money ORDER_TOTAL = new Money("12.34");
-    private static final String REPLY_CHANNEL = "authorizePaymentReply";
 
     @Configuration
     @EnableAutoConfiguration
@@ -46,14 +45,14 @@ public abstract class BaseForOtherServiceCommandTest {
     private CommandProducer commandProducer;
 
     protected void authorizePayment() {
-        send(otherServiceProxy.authorizePayment(CUSTOMER_ID, ORDER_ID, ORDER_TOTAL));
+        send(otherServiceProxy.authorizePayment(CUSTOMER_ID, ORDER_ID, ORDER_TOTAL), "authorizePaymentReply");
     }
 
-    private void send(CommandWithDestination command) {
+    private void send(CommandWithDestination command, String replyChannel) {
         commandProducer.send(command.getDestinationChannel(),
                 command.getResource(),
                 command.getCommand(),
-                REPLY_CHANNEL,
+                replyChannel,
                 command.getExtraHeaders());
     }
 }
