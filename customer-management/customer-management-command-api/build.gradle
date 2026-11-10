@@ -2,6 +2,13 @@ plugins {
     id 'io.eventuate.plugins.gradle.testing.integration-tests'
 }
 
+apply plugin: 'org.springframework.cloud.contract'
+apply plugin: io.eventuate.tram.spring.testing.cloudcontract.plugins.gradle.PublishStubsPlugin
+
+// Only the modules that publish stubs are versioned. The rest of the build leaves version unset
+// because customer-service-main/Dockerfile copies the unversioned build/libs/customer-service-main.jar.
+version = stubsVersion
+
 dependencies {
     implementation project(":customer-management:customer-management-domain")
 
@@ -28,7 +35,25 @@ dependencies {
     integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-producer-kafka"
     integrationTestImplementation "io.eventuate.tram.core:eventuate-tram-spring-testing-support-outbox"
 
-
-
+    contractTestImplementation "io.eventuate.tram.testingsupport.springcloudcontract:eventuate-tram-spring-testing-support-cloud-contract:$eventuateTramSpringTestingSupportCloudContractVersion"
+    contractTestImplementation "org.springframework.boot:spring-boot-starter-test"
+    contractTestImplementation "org.springframework.boot:spring-boot-starter-jdbc-test"
+    contractTestImplementation "org.springframework.cloud:spring-cloud-starter-contract-stub-runner"
+    contractTestImplementation "io.eventuate.util:eventuate-util-test:$eventuateUtilVersion"
 }
 
+// This module owns the contracts for the commands it handles and the replies it sends, laid out by
+// the service that sends the command. The generated tests verify the replies. A command is sent by
+// the orchestrator, which verifies itself against the command contract, so it is left out here and
+// CommandHandlersTest checks that the handler handles it.
+contracts {
+    testFramework = "JUNIT5"
+    basePackageForTests = "io.eventuate.customerservice.customermanagement.commandapi"
+    baseClassForTests = "io.eventuate.customerservice.customermanagement.commandapi.ContractVerifierBase"
+    ignoredFiles = ["*Command.groovy"]
+}
+
+// CommandHandlersTest triggers this module's own command stubs with stubsMode = LOCAL, from Maven local.
+tasks.named('contractTest') {
+    dependsOn('publishStubsPublicationToMavenLocal')
+}
