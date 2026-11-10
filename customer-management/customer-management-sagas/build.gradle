@@ -4,18 +4,24 @@ plugins {
 
 apply plugin: 'org.springframework.cloud.contract'
 
-// The contracts for the commands customer-service sends are owned by other-service. They are
-// delivered by the composite build (includeBuild 'other-service' in settings.gradle) as the
-// command-api module's stubs jar, selected with targetConfiguration - no Maven-layout repo involved.
-ext {
-    set('contractGroupId', 'io.eventuate.otherservice')
-    set('contractArtifactId', 'other-subdomain-command-api')
-    set('contractArtifactVersion', otherServiceStubsVersion)
+// The contracts for the commands customer-service sends are owned by each saga participant, which
+// publishes them as a stubs jar to mavenLocal. src/contractTest/resources/participants has one
+// properties file per participant: the stubs' Maven coordinates, group:artifact, and the base class
+// of the tests generated from its command contracts.
+def participants = fileTree('src/contractTest/resources/participants').files.sort().collect { file ->
+    def properties = new Properties()
+    file.withInputStream { properties.load(it) }
+    [name: file.name - '.properties', stubs: properties.stubs, baseClass: properties.baseClass]
+}
+
+repositories {
+    mavenLocal()
 }
 
 configurations {
-    otherServiceCommandStubs {
+    participantStubs {
         canBeConsumed = false
+        transitive = false
     }
 }
 
@@ -43,30 +49,59 @@ dependencies {
     contractTestImplementation "org.springframework.cloud:spring-cloud-starter-contract-stub-runner"
     contractTestImplementation "io.eventuate.util:eventuate-util-test:$eventuateUtilVersion"
 
-    otherServiceCommandStubs("${contractGroupId}:${contractArtifactId}:${contractArtifactVersion}") {
-        targetConfiguration = 'contractStubs'
+    // Each participant's ReplyHandlersTest, such as OtherServiceReplyHandlersTest, reads its stubs from mavenLocal with stubsMode = LOCAL
+    participants.each { participant ->
+        participantStubs "${participant.stubs}:+:stubs"
     }
-    // ReplyHandlersTest consumes the stubs with stubsMode = CLASSPATH
-    contractTestRuntimeOnly files(configurations.otherServiceCommandStubs)
 }
 
-// generateContractTests needs other-service's command contracts as a directory, so unpack the
-// composite-built stubs jar and point contractsDslDir at the commands subtree
-def unpackOtherServiceCommandStubs = tasks.register('unpackOtherServiceCommandStubs', Sync) {
-    from(configurations.otherServiceCommandStubs.elements.map { locations -> locations.collect { zipTree(it) } })
-    into(layout.buildDirectory.dir('other-service-command-stubs'))
+// generateContractTests needs each participant's contracts for the commands customer-service sends
+// as a directory, so unpack them from its stubs jar into a directory named after the participant
+// The stubs are resolved when the task runs, after any task that publishes them
+def unpackParticipantContracts = tasks.register('unpackParticipantContracts') {
+    def contractsDir = layout.buildDirectory.dir('participant-contracts')
+    outputs.dir(contractsDir)
+    // Within the template, other-service stands in for the participants and publishes its stubs first
+    def otherService = gradle.includedBuilds.find { it.name == 'other-service' }
+    if (otherService) {
+        dependsOn(otherService.task(':other-subdomain-command-api:publishStubsPublicationToMavenLocal'))
+    }
+    doLast {
+        project.delete(contractsDir)
+        participants.each { participant ->
+            def (group, artifact) = participant.stubs.tokenize(':')
+            def stubsJars = configurations.participantStubs.incoming.artifactView {
+                componentFilter { it instanceof ModuleComponentIdentifier && it.group == group && it.module == artifact }
+            }.files.files
+            project.copy {
+                from(stubsJars.collect { zipTree(it) })
+                include '**/contracts/customer-service/commands/*.groovy'
+                eachFile { it.relativePath = new RelativePath(true, participant.name, it.name) }
+                includeEmptyDirs = false
+                into(contractsDir)
+            }
+        }
+    }
 }
 
 contracts {
-    contractsDslDir = layout.buildDirectory.file("other-service-command-stubs/META-INF/${contractGroupId}/${contractArtifactId}/${contractArtifactVersion}/contracts/customer-service/commands").get().asFile
+    contractsDslDir = layout.buildDirectory.dir('participant-contracts').get().asFile
 
     testFramework = "JUNIT5"
     basePackageForTests = "io.eventuate.customerservice.customermanagement.sagas"
-    baseClassForTests = "io.eventuate.customerservice.customermanagement.sagas.BaseForOtherServiceCommandTest"
+    baseClassMappings {
+        participants.each { participant ->
+            baseClassMapping(".*${participant.name.replace('-', '.')}.*", participant.baseClass)
+        }
+    }
 
     failOnNoContracts = true
 }
 
 tasks.named('copyContracts') {
-    dependsOn(unpackOtherServiceCommandStubs)
+    dependsOn(unpackParticipantContracts)
+}
+
+tasks.named('contractTest') {
+    dependsOn(unpackParticipantContracts)
 }

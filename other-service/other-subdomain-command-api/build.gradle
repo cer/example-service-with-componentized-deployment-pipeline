@@ -9,3 +9,8 @@ contracts {
 // and published for consumers but no producer-side verification tests are run.
 tasks.named('generateContractTests') { enabled = false }
 tasks.named('contractTest') { enabled = false }
+
+// Published as io.eventuate.otherservice:other-subdomain-commands, which no project in the composite
+// build has, so customer-service resolves the stubs from mavenLocal by Maven coordinates, as a service
+// generated from the template does with each saga participant's stubs.
+publishing.publications.stubs.artifactId = 'other-subdomain-commands'

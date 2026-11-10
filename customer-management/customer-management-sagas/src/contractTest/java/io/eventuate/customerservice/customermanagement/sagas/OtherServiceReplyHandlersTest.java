@@ -21,18 +21,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * The other half of the async request/response contract: other-service's reply contract, replayed
- * against customer-service so that the reply it will actually receive is verified.
- * BaseForOtherServiceCommandTest covers the command customer-service sends.
+ * The other half of the async request/response contract: other-service's reply contracts, replayed
+ * from its stubs in mavenLocal against customer-service, so that the replies it will actually receive
+ * are verified. BaseForOtherServiceCommandTest covers the commands customer-service sends.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
-        classes = ReplyHandlersTest.TestConfiguration.class)
-@AutoConfigureStubRunner(ids = "io.eventuate.otherservice:other-subdomain-command-api",
-        stubsMode = StubRunnerProperties.StubsMode.CLASSPATH)
+        classes = OtherServiceReplyHandlersTest.TestConfiguration.class)
+@AutoConfigureStubRunner(ids = "io.eventuate.otherservice:other-subdomain-commands:+",
+        stubsMode = StubRunnerProperties.StubsMode.LOCAL)
 @DirtiesContext
-public class ReplyHandlersTest {
-
-    private static final String REPLY_CHANNEL = "authorizePaymentReply";
+public class OtherServiceReplyHandlersTest {
 
     @Configuration
     @EnableAutoConfiguration
@@ -50,19 +48,26 @@ public class ReplyHandlersTest {
 
     @BeforeEach
     public void subscribeToReplyChannel() {
-        messageConsumer.subscribe("ReplyHandlersTest", Set.of(REPLY_CHANNEL), replies::add);
+        messageConsumer.subscribe("OtherServiceReplyHandlersTest", Set.of("authorizePaymentReply"), replies::add);
     }
 
     @Test
-    public void shouldReceivePaymentAuthorizedReply() {
-        stubFinder.trigger("paymentAuthorized");
+    public void shouldReceiveAuthorizePaymentSuccessReply() {
+        stubFinder.trigger("authorizePaymentSuccessReply");
+        assertReplyReceived("io.eventuate.otherservice.othersubdomain.commandapi.PaymentAuthorized", "SUCCESS");
+    }
 
-        Eventually.eventually(() -> {
-            Message reply = replies.peek();
-            assertThat(reply).isNotNull();
-            assertThat(reply.getRequiredHeader("reply_type"))
-                    .isEqualTo("io.eventuate.otherservice.othersubdomain.commandapi.PaymentAuthorized");
-            assertThat(reply.getRequiredHeader("reply_outcome-type")).isEqualTo("SUCCESS");
-        });
+    @Test
+    public void shouldReceiveAuthorizePaymentFailureReply() {
+        stubFinder.trigger("authorizePaymentFailureReply");
+        assertReplyReceived("io.eventuate.otherservice.othersubdomain.commandapi.PaymentDeclined", "FAILURE");
+    }
+
+    private void assertReplyReceived(String replyType, String outcome) {
+        Eventually.eventually(() ->
+            assertThat(replies).anySatisfy(reply -> {
+                assertThat(reply.getRequiredHeader("reply_type")).isEqualTo(replyType);
+                assertThat(reply.getRequiredHeader("reply_outcome-type")).isEqualTo(outcome);
+            }));
     }
 }

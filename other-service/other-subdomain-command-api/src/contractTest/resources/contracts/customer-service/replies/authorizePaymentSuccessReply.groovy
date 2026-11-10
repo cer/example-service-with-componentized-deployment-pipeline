@@ -1,10 +1,10 @@
 package contracts
 
 org.springframework.cloud.contract.spec.Contract.make {
-    label 'paymentAuthorized'
+    label 'authorizePaymentSuccessReply'
     description "other-service tells customer-service that payment was authorized"
     input {
-        triggeredBy('paymentAuthorized()')
+        triggeredBy('authorizePaymentSuccessReply()')
     }
 
     outputMessage {

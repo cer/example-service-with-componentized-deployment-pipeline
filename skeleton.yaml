@@ -522,7 +522,8 @@ subdomain:
       module: sagas
       paths:
         - other-service
-        # Composite build that delivers other-service's command contracts to the contract tests.
+        # other-service stands in for the saga participants, and publishes its command stubs to mavenLocal
+        # before the contract tests resolve them by Maven coordinates.
       # Applied once per subdomain. The per-saga part below is applied once for each saga the
       # subdomain declares under domain.sagas.
       classes:
@@ -550,7 +551,7 @@ subdomain:
               transforms: [rename]
               # Keeps authorizePayment(), which the contract test generated from
               # authorizePaymentCommand.groovy calls.
-            - name: ReplyHandlersTest
+            - name: OtherServiceReplyHandlersTest
               transforms: [rename]
         domain:
           main:
@@ -571,6 +572,8 @@ subdomain:
               contractTest:
                 # The H2 datasource the saga orchestration starter needs in the contract tests.
                 - application.properties
+                # other-service's stubs coordinates and the base class of its command contract tests.
+                - participants/other-service.properties
 
       per-saga:
         # {Saga} is the saga's name in Pascal case, {saga} in camel case. A type is renamed wherever
