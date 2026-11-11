@@ -420,9 +420,15 @@ subdomain:
             # The H2 datasource the saga participant starter needs in the contract tests.
             - application.properties
       # Applied once for each command the adapter declares under commands, on the adapter's channel.
-      # {Command}, {SuccessReply} and {FailureReply} are the command's class names, {operation} its
-      # operation in camel case, {Operation} in Pascal case, and {channel} the adapter's channel.
       per-command:
+        items: adapter.commands
+        values:
+          Command: "{command}"
+          SuccessReply: "{success-reply}"
+          FailureReply: "{failure-reply}"
+          operation: "{operation}"
+          Operation: "{operation|pascal}"
+          channel: "{adapter.channel}"
         renames:
           types:
             ReserveCreditCommand: "{Command}"
@@ -487,6 +493,9 @@ subdomain:
         # Applied once for each service that sends the command: the contracts for the command and its
         # replies, laid out by that service's name.
         per-caller:
+          items: callers
+          values:
+            caller: "{item}"
           renames:
             text:
               client-service: "{caller}"
@@ -546,10 +555,18 @@ subdomain:
                 # The H2 datasource the saga orchestration starter needs in the contract tests.
                 - application.properties
 
-      # {Participant} is the participant's name in Pascal case, {participant} in camel case and
-      # {participant-kebab} in kebab case. {channel} is its command channel, {stubs} the Maven
-      # coordinates of its stubs, and {participant-package} the package of its command classes.
+      # One item per service the subdomain's sagas invoke: the first step that invokes it, with every
+      # step that does as its members.
       per-participant:
+        items: subdomain.domain.sagas.steps
+        distinct-by: participant
+        values:
+          Participant: "{participant|pascal}"
+          participant: "{participant|camel}"
+          participant-kebab: "{participant|kebab}"
+          participant-package: "{command-class|package}"
+          channel: "{channel}"
+          stubs: "{stubs}"
         renames:
           types:
             OtherServiceProxy: "{Participant}Proxy"
@@ -592,8 +609,16 @@ subdomain:
                 type: OtherServiceProxy
                 impl: OtherServiceProxy
         # Applied once for each of the participant's operations the subdomain's sagas invoke.
-        # {Command}, {SuccessReply} and {FailureReply} are the operation's class names.
         per-operation:
+          items: members
+          distinct-by: operation
+          values:
+            operation: "{operation}"
+            Operation: "{operation|pascal}"
+            OPERATION: "{operation|upper-snake}"
+            Command: "{command-class|simple-name}"
+            SuccessReply: "{success-reply-class|simple-name}"
+            FailureReply: "{failure-reply-class|simple-name}"
           renames:
             types:
               AuthorizePaymentCommand: "{Command}"
@@ -648,10 +673,14 @@ subdomain:
                   containing: authorizePaymentReply
 
       per-saga:
-        # {Saga} is the saga's name in Pascal case, {saga} in camel case. A type is renamed wherever
-        # it appears as a whole identifier. A member, Class.member, is renamed in its class and
-        # wherever it is referenced through a variable of that class's type. A literal is a
-        # substring renamed inside string literals.
+        items: subdomain.domain.sagas
+        values:
+          Saga: "{name|pascal}"
+          saga: "{name}"
+          saga-kebab: "{name|kebab}"
+        # A type is renamed wherever it appears as a whole identifier. A member, Class.member, is
+        # renamed in its class and wherever it is referenced through a variable of that class's type.
+        # A literal is a substring renamed inside string literals.
         renames:
           types:
             ReserveCreditSaga: "{Saga}Saga"
@@ -742,6 +771,15 @@ subdomain:
               - param: CustomerManagementSagaService customerManagementSagaService
         # Applied once for each service the saga invokes: the saga's proxy for it.
         per-participant:
+          items: steps
+          distinct-by: participant
+          values:
+            Participant: "{participant|pascal}"
+            participant: "{participant|camel}"
+            participant-kebab: "{participant|kebab}"
+            participant-package: "{command-class|package}"
+            channel: "{channel}"
+            stubs: "{stubs}"
           renames:
             types:
               OtherServiceProxy: "{Participant}Proxy"
@@ -775,9 +813,22 @@ subdomain:
                   containing: otherServiceProxy
                 - in: makeSaga
                   containing: otherServiceProxy
-        # Applied once for each of the saga's steps, in order. Its values are the step's participant's
-        # and its operation's: {OPERATION} is the operation in upper snake case.
+        # Applied once for each of the saga's steps, in order.
         per-step:
+          items: steps
+          values:
+            Participant: "{participant|pascal}"
+            participant: "{participant|camel}"
+            participant-kebab: "{participant|kebab}"
+            participant-package: "{command-class|package}"
+            channel: "{channel}"
+            stubs: "{stubs}"
+            operation: "{operation}"
+            Operation: "{operation|pascal}"
+            OPERATION: "{operation|upper-snake}"
+            Command: "{command-class|simple-name}"
+            SuccessReply: "{success-reply-class|simple-name}"
+            FailureReply: "{failure-reply-class|simple-name}"
           renames:
             types:
               OtherServiceProxy: "{Participant}Proxy"
