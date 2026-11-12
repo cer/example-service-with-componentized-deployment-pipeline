@@ -381,63 +381,68 @@ subdomain:
           methods:
             - shouldGetAsyncApiDocs
 
-      # One item per publishing subdomain, identified by its stubs coordinates: the first event this
-      # subdomain consumes from it, which is the publisher's example event. Its handler calls the
-      # domain service with the event's aggregate id, and its contract test replays the publisher's stub.
+      # One item per publishing subdomain, identified by its stubs coordinates. Its entity part takes the
+      # publisher's first entity, and the event part that entity's first event: the publisher's example
+      # event, which its stubs contain, whichever of its events this subdomain consumes. The event's
+      # handler calls the domain service with the aggregate id, and its contract test replays the stub.
       per-publisher:
-        items: adapter.consumed-events
-        distinct-by: stubs
+        items: adapter.publishers
         values:
-          Event: "{class|simple-name}"
-          event: "{class|simple-name|camel}"
-          event-package: "{class|package}"
-          channel: "{channel}"
           stubs: "{stubs}"
-        renames:
-          types:
-            OtherEvent: "{Event}"
-            CustomerManagementEventConsumerTest: "{Event}ConsumerTest"
-            CustomerManagementEventConsumerContractTest: "{Event}ConsumerContractTest"
-            CustomerManagementEventConsumerIntegrationTest: "{Event}ConsumerIntegrationTest"
-          members:
-            CustomerManagementEventConsumer.handleOtherEvent: "handle{Event}"
-            CustomerManagementService.noteOtherEvent: "note{Event}"
-            CustomerManagementEventConsumerTest.shouldConsumeOtherEvent: "shouldConsume{Event}"
-            CustomerManagementEventConsumerContractTest.shouldHandleOtherEvent: "shouldHandle{Event}"
-            CustomerManagementEventConsumerIntegrationTest.shouldConsumeOtherEvent: "shouldConsume{Event}"
-          literals:
-            "io.eventuate.otherservice.othersubdomain.domain.OtherAggregate": "{channel}"
-            "io.eventuate.otherservice:other-subdomain-event-publishing": "{stubs}"
-            # The label of the publisher's example-event contract, which the contract test triggers.
-            otherEvent: "{event}"
-            # The event's name in log messages.
-            OtherEvent: "{Event}"
-          packages:
-            io.eventuate.otherservice.othersubdomain.domain: "{event-package}"
-        classes:
-          event-subscribers:
-            main:
-              - name: OtherEvent
-                transforms: [rename]
-            test:
-              - name: CustomerManagementEventConsumerTest
-                transforms: [rename]
-              - name: CustomerManagementEventConsumerContractTest
-                transforms: [rename]
-            integrationTest:
-              - name: CustomerManagementEventConsumerIntegrationTest
-                transforms: [rename]
-        contributes-to:
-          - target: CustomerManagementEventConsumer
-            module: event-subscribers
-            source-set: main
-            methods:
-              - handleOtherEvent
-          - target: CustomerManagementService
-            module: domain
-            source-set: main
-            methods:
-              - noteOtherEvent
+        entity:
+          items: entities
+          event:
+            items: events
+            values:
+              Event: "{class|simple-name}"
+              event: "{class|simple-name|camel}"
+              event-package: "{class|package}"
+              channel: "{channel}"
+            renames:
+              types:
+                OtherEvent: "{Event}"
+                CustomerManagementEventConsumerTest: "{Event}ConsumerTest"
+                CustomerManagementEventConsumerContractTest: "{Event}ConsumerContractTest"
+                CustomerManagementEventConsumerIntegrationTest: "{Event}ConsumerIntegrationTest"
+              members:
+                CustomerManagementEventConsumer.handleOtherEvent: "handle{Event}"
+                CustomerManagementService.noteOtherEvent: "note{Event}"
+                CustomerManagementEventConsumerTest.shouldConsumeOtherEvent: "shouldConsume{Event}"
+                CustomerManagementEventConsumerContractTest.shouldHandleOtherEvent: "shouldHandle{Event}"
+                CustomerManagementEventConsumerIntegrationTest.shouldConsumeOtherEvent: "shouldConsume{Event}"
+              literals:
+                "io.eventuate.otherservice.othersubdomain.domain.OtherAggregate": "{channel}"
+                "io.eventuate.otherservice:other-subdomain-event-publishing": "{stubs}"
+                # The label of the publisher's example-event contract, which the contract test triggers.
+                otherEvent: "{event}"
+                # The event's name in log messages.
+                OtherEvent: "{Event}"
+              packages:
+                io.eventuate.otherservice.othersubdomain.domain: "{event-package}"
+            classes:
+              event-subscribers:
+                main:
+                  - name: OtherEvent
+                    transforms: [rename]
+                test:
+                  - name: CustomerManagementEventConsumerTest
+                    transforms: [rename]
+                  - name: CustomerManagementEventConsumerContractTest
+                    transforms: [rename]
+                integrationTest:
+                  - name: CustomerManagementEventConsumerIntegrationTest
+                    transforms: [rename]
+            contributes-to:
+              - target: CustomerManagementEventConsumer
+                module: event-subscribers
+                source-set: main
+                methods:
+                  - handleOtherEvent
+              - target: CustomerManagementService
+                module: domain
+                source-set: main
+                methods:
+                  - noteOtherEvent
 
     other-service-proxy:
       per-entity: false
