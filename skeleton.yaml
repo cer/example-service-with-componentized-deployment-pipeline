@@ -277,8 +277,6 @@ subdomain:
               transforms: [rename]
             - name: CustomerEvent
               transforms: [rename]
-            - name: CustomerCreatedEvent
-              transforms: [rename]
         event-publishing:
           main:
             - name: CustomerEventPublisherImpl
@@ -286,8 +284,7 @@ subdomain:
           integrationTest:
             - name: CustomerEventPublishingIntegrationTest
               transforms: [rename, strip-test-methods]
-              # Result: test shell with TestContainers setup.
-              # Each entity contributes its own publish test.
+              # Result: test shell with TestContainers setup. The entity's event contributes its publish test.
       contributes-to:
         - target: CustomerManagementService
           module: domain
@@ -297,8 +294,6 @@ subdomain:
               wired-in:
                 target: CustomerManagementDomainConfiguration
                 bean: customerManagementService
-          method-calls:
-            createCustomer: customerEventPublisher.publish
         - target: CustomerManagementEventPublishingConfiguration
           module: event-publishing
           source-set: main
@@ -311,22 +306,55 @@ subdomain:
           source-set: test
           dependencies:
             - param: CustomerEventPublisher customerEventPublisher
-          methods:
-            - createCustomerShouldPublishCustomerCreatedEvent
-        - target: CustomerEventPublishingIntegrationTest
-          module: event-publishing
-          source-set: integrationTest
-          methods:
-            - shouldPublishCustomerCreatedEvent
-        - target: BaseClass
-          module: event-publishing
-          source-set: contractTest
-          methods:
-            - customerCreatedEvent
-          with-resources:
-            event-publishing:
-              contractTest:
-                - contracts/client-service/customerCreatedEvent.groovy
+
+      # The skeleton's example event: the entity's first published event, a renamed copy of CustomerCreatedEvent
+      # that the entity's create method publishes. Claude Code adds the others when it implements the service.
+      event:
+        items: subdomain.domain.events
+        values:
+          Event: "{class|simple-name}"
+          event: "{class|simple-name|camel}"
+          Entity: "{aggregate}"
+        renames:
+          types:
+            CustomerCreatedEvent: "{Event}"
+          members:
+            CustomerManagementServiceTest.createCustomerShouldPublishCustomerCreatedEvent: "create{Entity}ShouldPublish{Event}"
+            CustomerEventPublishingIntegrationTest.shouldPublishCustomerCreatedEvent: "shouldPublish{Event}"
+            BaseClass.customerCreatedEvent: "{event}"
+          text:
+            # In the contract: its label, trigger method and file name.
+            customerCreatedEvent: "{event}"
+        classes:
+          domain:
+            main:
+              - name: CustomerCreatedEvent
+                transforms: [rename]
+        contributes-to:
+          - target: CustomerManagementService
+            module: domain
+            source-set: main
+            method-calls:
+              createCustomer: customerEventPublisher.publish
+          - target: CustomerManagementServiceTest
+            module: domain
+            source-set: test
+            methods:
+              - createCustomerShouldPublishCustomerCreatedEvent
+          - target: CustomerEventPublishingIntegrationTest
+            module: event-publishing
+            source-set: integrationTest
+            methods:
+              - shouldPublishCustomerCreatedEvent
+          - target: BaseClass
+            module: event-publishing
+            source-set: contractTest
+            methods:
+              - customerCreatedEvent
+            with-resources:
+              event-publishing:
+                contractTest:
+                  - contracts/client-service/customerCreatedEvent.groovy
 
     event-subscribers:
       per-entity: false
