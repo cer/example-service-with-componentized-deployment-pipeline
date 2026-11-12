@@ -42,7 +42,7 @@ public class CustomerManagementEventConsumerContractTest {
     public void shouldHandleOtherEvent() {
         stubFinder.trigger("otherEvent");
         eventually(() -> {
-            verify(customerManagementService).noteCreditReserved("99", 101L);
+            verify(customerManagementService).noteOtherEvent("11111111-1111-1111-1111-111111111111");
         });
     }
 }

@@ -388,7 +388,7 @@ subdomain:
           module: domain
           source-set: main
           methods:
-            - noteCreditReserved
+            - noteOtherEvent
         - target: CustomerServiceComponentTest
           module: customer-service-main
           source-set: componentTest

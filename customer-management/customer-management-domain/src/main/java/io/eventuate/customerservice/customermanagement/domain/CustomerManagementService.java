@@ -43,8 +43,8 @@ public class CustomerManagementService {
     return customerRepository.findById(customerId);
   }
 
-  public void noteCreditReserved(String customerId, Long orderId) {
-    logger.info("noteCreditReserved: customerId={}, orderId={}", customerId, orderId);
+  public void noteOtherEvent(String aggregateId) {
+    logger.info("noteOtherEvent: aggregateId={}", aggregateId);
   }
 
   public void noteCreditReservationPending(CreditReservationDetails details) {
