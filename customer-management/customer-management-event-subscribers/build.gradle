@@ -5,12 +5,6 @@ plugins {
 dependencies {
     implementation project(':customer-management:customer-management-domain')
 
-    // other-service's event stubs jar is delivered by the composite build (includeBuild in
-    // settings.gradle) and consumed by CustomerManagementEventConsumerContractTest with
-    // stubsMode = CLASSPATH
-    testRuntimeOnly('io.eventuate.otherservice:other-subdomain-event-publishing:0.2.0-SNAPSHOT') {
-        targetConfiguration = 'contractStubs'
-    }
     implementation 'io.eventuate.tram.core:eventuate-tram-spring-events-subscriber-starter'
 
     // For Idempotency
@@ -39,3 +33,13 @@ dependencies {
 
 }
 
+
+// Each event contract test, such as CustomerManagementEventConsumerContractTest, reads its publisher's
+// stubs from mavenLocal by Maven coordinates with stubsMode = LOCAL. Within the template, other-service
+// stands in for every publisher and publishes its stubs first.
+def otherService = gradle.includedBuilds.find { it.name == 'other-service' }
+if (otherService) {
+    tasks.named('test') {
+        dependsOn(otherService.task(':other-subdomain-event-publishing:publishStubsPublicationToMavenLocal'))
+    }
+}

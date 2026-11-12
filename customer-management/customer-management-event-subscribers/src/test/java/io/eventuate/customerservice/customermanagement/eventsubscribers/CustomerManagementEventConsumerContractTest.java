@@ -18,8 +18,8 @@ import static io.eventuate.util.test.async.Eventually.eventually;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@AutoConfigureStubRunner(ids = "io.eventuate.otherservice:other-subdomain-event-publishing",
-        stubsMode = StubRunnerProperties.StubsMode.CLASSPATH)
+@AutoConfigureStubRunner(ids = "io.eventuate.otherservice:other-subdomain-event-publishing:+",
+        stubsMode = StubRunnerProperties.StubsMode.LOCAL)
 @DirtiesContext
 public class CustomerManagementEventConsumerContractTest {
 
@@ -42,7 +42,7 @@ public class CustomerManagementEventConsumerContractTest {
     public void shouldHandleOtherEvent() {
         stubFinder.trigger("otherEvent");
         eventually(() -> {
-            verify(customerManagementService).noteCreditReserved("99", 101L);
+            verify(customerManagementService).noteOtherEvent("11111111-1111-1111-1111-111111111111");
         });
     }
 }

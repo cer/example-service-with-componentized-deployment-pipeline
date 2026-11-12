@@ -14,7 +14,7 @@ org.springframework.cloud.contract.spec.Contract.make {
         headers {
             header('event-aggregate-type', 'io.eventuate.otherservice.othersubdomain.domain.OtherAggregate')
             header('event-type', 'io.eventuate.otherservice.othersubdomain.domain.OtherEvent')
-            header('event-aggregate-id', '99')
+            header('event-aggregate-id', '11111111-1111-1111-1111-111111111111')
         }
     }
 }

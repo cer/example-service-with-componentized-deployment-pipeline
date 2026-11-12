@@ -12,7 +12,7 @@ import io.eventuate.examples.common.money.Money;
 import io.eventuate.examples.springauthorizationserver.testcontainers.AuthorizationServerContainerForServiceContainers;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeCluster;
 import io.eventuate.messaging.kafka.testcontainers.EventuateKafkaNativeContainer;
-import io.eventuate.otherservice.othersubdomain.commandapi.ReserveInventoryCommand;
+import io.eventuate.otherservice.othersubdomain.commandapi.AuthorizePaymentCommand;
 import io.eventuate.otherservice.othersubdomain.domain.OtherEvent;
 import io.eventuate.testcontainers.service.BuildArgsResolver;
 import io.eventuate.testcontainers.service.ServiceContainer;
@@ -220,10 +220,10 @@ public class CustomerServiceComponentTest {
                 .log().ifValidationFails()
                 .statusCode(200);
 
-        // Verify the saga sent a ReserveInventoryCommand to other-service
+        // Verify the saga sent a AuthorizePaymentCommand to other-service
         commandOutboxTestSupport.assertThatCommandMessageSent(
-                ReserveInventoryCommand.class, OtherServiceProxy.CHANNEL,
-                cmd -> cmd.orderId().equals(orderId));
+                AuthorizePaymentCommand.class, OtherServiceProxy.CHANNEL,
+                (AuthorizePaymentCommand cmd) -> cmd.orderId().equals(orderId));
     }
 
     @Test

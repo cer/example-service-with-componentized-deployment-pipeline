@@ -3,7 +3,7 @@ package io.eventuate.customerservice.customermanagement.sagas;
 import io.eventuate.customerservice.customermanagement.domain.CustomerManagementService;
 import io.eventuate.customerservice.customermanagement.domain.RejectionReason;
 import io.eventuate.customerservice.customermanagement.sagas.proxies.OtherServiceProxy;
-import io.eventuate.otherservice.othersubdomain.commandapi.InventoryOutOfStock;
+import io.eventuate.otherservice.othersubdomain.commandapi.PaymentDeclined;
 import io.eventuate.tram.commands.consumer.CommandWithDestination;
 import io.eventuate.tram.sagas.orchestration.SagaDefinition;
 import io.eventuate.tram.sagas.simpledsl.SimpleSaga;
@@ -31,8 +31,8 @@ public class ReserveCreditSaga implements SimpleSaga<ReserveCreditSagaData> {
                 .invokeLocal(this::create)
                 .withCompensation(this::reject)
             .step()
-                .invokeParticipant(this::reserveInventory)
-                .onReply(OtherServiceProxy.inventoryOutOfStockReply, this::handleInventoryOutOfStock)
+                .invokeParticipant(this::authorizePayment)
+                .onReply(OtherServiceProxy.paymentDeclinedReply, this::handlePaymentDeclined)
             .step()
                 .invokeLocal(this::approve)
             .build();
@@ -50,12 +50,12 @@ public class ReserveCreditSaga implements SimpleSaga<ReserveCreditSagaData> {
         customerManagementService.noteCreditReservationRejected(data.toCreditReservationDetails(), data.getRejectionReason());
     }
 
-    private CommandWithDestination reserveInventory(ReserveCreditSagaData data) {
-        return otherServiceProxy.reserveInventory(data.getOrderId());
+    private CommandWithDestination authorizePayment(ReserveCreditSagaData data) {
+        return otherServiceProxy.authorizePayment(data.getCustomerId().id(), data.getOrderId(), data.getOrderTotal());
     }
 
-    private void handleInventoryOutOfStock(ReserveCreditSagaData data, InventoryOutOfStock reply) {
-        data.setRejectionReason(RejectionReason.OUT_OF_STOCK);
+    private void handlePaymentDeclined(ReserveCreditSagaData data, PaymentDeclined reply) {
+        data.setRejectionReason(RejectionReason.PAYMENT_DECLINED);
     }
 
     private void approve(ReserveCreditSagaData data) {

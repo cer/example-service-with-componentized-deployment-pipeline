@@ -21,9 +21,8 @@ public class CustomerManagementEventConsumer {
         channel = "io.eventuate.otherservice.othersubdomain.domain.OtherAggregate"
     )
     public void handleOtherEvent(DomainEventEnvelope<OtherEvent> envelope) {
-        OtherEvent event = envelope.getEvent();
         String aggregateId = envelope.getAggregateId();
-        logger.info("Handling OtherEvent: aggregateId={}, orderId={}", aggregateId, event.orderId());
-        customerManagementService.noteCreditReserved(aggregateId, event.orderId());
+        logger.info("Handling OtherEvent: aggregateId={}", aggregateId);
+        customerManagementService.noteOtherEvent(aggregateId);
     }
 }

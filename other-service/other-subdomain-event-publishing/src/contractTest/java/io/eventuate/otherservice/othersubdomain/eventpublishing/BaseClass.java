@@ -17,7 +17,7 @@ public abstract class BaseClass {
     private DomainEventPublisher domainEventPublisher;
 
     public void otherEvent() {
-        domainEventPublisher.publish("io.eventuate.otherservice.othersubdomain.domain.OtherAggregate", "99", List.of(new OtherEvent(101L)));
+        domainEventPublisher.publish("io.eventuate.otherservice.othersubdomain.domain.OtherAggregate", "11111111-1111-1111-1111-111111111111", List.of(new OtherEvent(101L)));
     }
 
     @Configuration

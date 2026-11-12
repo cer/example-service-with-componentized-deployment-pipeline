@@ -83,7 +83,7 @@ public class CustomerManagementEventConsumerIntegrationTest {
         logger.info("Published OtherEvent with orderId 99");
 
         await().atMost(10, TimeUnit.SECONDS).untilAsserted(() ->
-                verify(customerManagementService).noteCreditReserved("1", 99L)
+                verify(customerManagementService).noteOtherEvent("1")
         );
     }
 }
