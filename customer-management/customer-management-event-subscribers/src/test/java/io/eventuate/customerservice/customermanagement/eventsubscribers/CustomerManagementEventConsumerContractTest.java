@@ -18,8 +18,8 @@ import static io.eventuate.util.test.async.Eventually.eventually;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@AutoConfigureStubRunner(ids = "io.eventuate.otherservice:other-subdomain-event-publishing",
-        stubsMode = StubRunnerProperties.StubsMode.CLASSPATH)
+@AutoConfigureStubRunner(ids = "io.eventuate.otherservice:other-subdomain-event-publishing:+",
+        stubsMode = StubRunnerProperties.StubsMode.LOCAL)
 @DirtiesContext
 public class CustomerManagementEventConsumerContractTest {
 
